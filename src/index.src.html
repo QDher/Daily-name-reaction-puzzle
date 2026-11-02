@@ -1,0 +1,575 @@
+<title>Name Reaction Daily</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Schibsted+Grotesk:wght@600;800&display=swap">
+<style>
+/* Layout: header strip, question figure (scheme + name box + hints), then editor (left) + mechanism ledger (right). Same system as One-Pot Puzzles, copper-sulfate blue accent. */
+:root {
+  --bg: #f1f4f6;
+  --surface: #ffffff;
+  --paper: #ffffff;
+  --paper-ink: #17222b;
+  --paper-muted: #55636e;
+  --ink: #17222b;
+  --muted: #55636e;
+  --line: #d4dce2;
+  --accent: #0f6a8b;
+  --accent-soft: #e0eff5;
+  --accent-ink: #ffffff;
+  --hint: #bfe0ec; --hint-ink: #0b3a4c;
+  --ok: #1f7a4d;   --ok-soft: #e1f2e8;
+  --warn: #8a5a00; --warn-soft: #fbefd2;
+  --bad: #b3261e;  --bad-soft: #f9e1df;
+  --font-display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11181d; --surface: #19232a; --paper: #f5f8fa; --paper-ink: #17222b; --paper-muted: #55636e;
+    --ink: #e7eef2; --muted: #9db0bb; --line: #2c3a44;
+    --accent: #6cc3e0; --accent-soft: #173341; --accent-ink: #0d1a20;
+    --hint: #bfe0ec; --hint-ink: #0b3a4c;
+    --ok: #5cc48e; --ok-soft: #1b3428; --warn: #e0b04b; --warn-soft: #3a2f16; --bad: #f2827a; --bad-soft: #3d1f1e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11181d; --surface: #19232a; --paper: #f5f8fa; --paper-ink: #17222b; --paper-muted: #55636e;
+  --ink: #e7eef2; --muted: #9db0bb; --line: #2c3a44;
+  --accent: #6cc3e0; --accent-soft: #173341; --accent-ink: #0d1a20;
+  --hint: #bfe0ec; --hint-ink: #0b3a4c;
+  --ok: #5cc48e; --ok-soft: #1b3428; --warn: #e0b04b; --warn-soft: #3a2f16; --bad: #f2827a; --bad-soft: #3d1f1e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.5 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 18px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+a { color: var(--accent); }
+button, input { font: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+/* Header */
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+.brand h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -.02em; }
+.brand { min-width: 0; max-width: 64ch; }
+.brand p { margin: 2px 0 0; color: var(--muted); }
+.clock { display: grid; gap: 4px; justify-items: end; text-align: right; margin-left: auto; }
+.clock .count { font-family: var(--font-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.daynav { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.daynav button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 2px 10px; cursor: pointer; }
+.daynav button:hover:not(:disabled) { border-color: var(--accent); }
+.daynav button:disabled { opacity: .4; cursor: default; }
+.stale { font-size: 13px; color: var(--warn); }
+
+/* Status strip: three goals of the day */
+.goals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 640px) { .goals { grid-template-columns: minmax(0, 1fr); } }
+.goal { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 2px; }
+.goal .k { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.goal .v { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
+.goal.done { border-color: var(--ok); background: var(--ok-soft); }
+.goal.done .v { color: var(--ok); }
+.goal.shown { border-style: dashed; }
+.dots { display: inline-flex; gap: 3px; vertical-align: middle; margin-right: 6px; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); display: inline-block; }
+.dots i.on { background: var(--accent); }
+
+/* Scheme figure */
+.figure { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 14px; }
+.figure-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.figure-head h2 { font-size: 20px; font-weight: 600; }
+.tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.scheme-scroll { overflow-x: auto; }
+.scheme { background: var(--paper); color: var(--paper-ink); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 8px; width: max-content; min-width: 100%; justify-content: center; }
+.scheme .mol svg { display: block; }
+.mol-label { text-align: center; font-size: 12px; color: var(--paper-muted); font-family: var(--font-mono); }
+.arrow { display: grid; grid-template-rows: 1fr auto 1fr; min-width: 190px; max-width: 280px; text-align: center; font-size: 13px; line-height: 1.35; }
+.arrow .above { align-self: end; padding-bottom: 6px; }
+.arrow .below { padding-top: 6px; color: var(--paper-muted); font-style: italic; }
+.arrow .line { height: 2px; background: var(--paper-ink); position: relative; margin-right: 6px; }
+.arrow .line::after { content: ""; position: absolute; right: -8px; top: -5px; border-left: 10px solid var(--paper-ink); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+@media (max-width: 600px) {
+  .scheme { flex-direction: column; width: auto; min-width: 0; }
+  .arrow { grid-template-rows: auto; grid-template-columns: 1fr auto 1fr; align-items: center; min-width: 0; max-width: none; width: 100%; gap: 10px; }
+  .arrow .above { text-align: right; padding: 0; align-self: center; }
+  .arrow .below { text-align: left; padding: 0; }
+  .arrow .line { width: 2px; height: 64px; margin: 0 0 8px; }
+  .arrow .line::after { right: auto; left: -5px; top: auto; bottom: -8px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 10px solid var(--paper-ink); border-bottom: 0; }
+  .scheme .mol svg { max-width: 100%; height: auto; }
+}
+.unknown { width: 220px; height: 160px; border: 2px dashed var(--paper-muted); border-radius: 8px; display: grid; place-items: center; font-family: var(--font-display); font-size: 48px; color: var(--paper-muted); opacity: .7; }
+.reagents { display: flex; flex-wrap: wrap; gap: 10px; }
+.reagent { background: var(--paper); color: var(--paper-ink); border-radius: 8px; padding: 6px 10px; display: grid; justify-items: center; font-size: 12px; font-family: var(--font-mono); }
+
+/* Name box */
+.namebox { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.namebox form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.namebox input { flex: 1 1 260px; min-width: 0; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 7px 10px; }
+.namebox input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px var(--accent-soft); }
+.name-msg { font-size: 13px; color: var(--muted); min-height: 1.5em; }
+.name-msg.ok { color: var(--ok); } .name-msg.bad { color: var(--bad); }
+
+.hints { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.hint-item { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; color: var(--ink); }
+.hint-num { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--hint); color: var(--hint-ink); font-family: var(--font-mono); font-size: 12px; font-weight: 500; margin-right: 6px; }
+.hint-btn { font-size: 13px; padding: 5px 12px; }
+
+/* Workspace */
+.work { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .work { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.card h3 { font-size: 16px; font-weight: 600; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 7px 14px; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.danger { border-color: var(--bad); color: var(--bad); }
+.editor-box { background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; height: 440px; position: relative; }
+@media (max-width: 600px) { .editor-box { height: 380px; } }
+#editor { width: 100%; height: 100%; }
+.verdict { border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; background: var(--bg); border: 1px solid var(--line); }
+.verdict .pill { font-family: var(--font-mono); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); } .verdict.ok .pill { color: var(--ok); }
+.verdict.warn { background: var(--warn-soft); border-color: var(--warn); } .verdict.warn .pill { color: var(--warn); }
+.verdict.bad { background: var(--bad-soft); border-color: var(--bad); } .verdict.bad .pill { color: var(--bad); }
+.verdict.info .pill { color: var(--muted); }
+.hint { font-size: 13px; color: var(--muted); }
+.hint ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 2px; }
+
+/* Mechanism ledger */
+.progress { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.meter { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.meter > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.step { display: grid; gap: 8px; }
+.step-head { display: flex; gap: 8px; align-items: baseline; border-top: 1px solid var(--line); padding-top: 10px; }
+.step-head .n { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.step-head .r { font-size: 13px; color: var(--muted); }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.slot { border-radius: 8px; min-height: 120px; display: grid; align-content: center; justify-items: center; gap: 4px; padding: 6px; text-align: center; font-size: 12px; }
+.slot.empty { border: 1.5px dashed var(--line); color: var(--muted); font-family: var(--font-mono); }
+.slot.found { background: var(--paper); color: var(--paper-ink); border: 1.5px solid var(--warn); }
+.slot.prod.found { border-color: var(--ok); }
+.slot.given { background: var(--paper); color: var(--paper-ink); border: 1.5px dashed var(--paper-muted); }
+.slot .lbl { line-height: 1.3; }
+.slot svg { max-width: 100%; height: auto; }
+.confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 8px; padding: 8px 10px; }
+.about { font-size: 13px; color: var(--muted); display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; }
+.about .links { display: flex; flex-wrap: wrap; gap: 6px; }
+.about .links a { display: inline-block; border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; text-decoration: none; background: var(--bg); }
+.about .links a:hover { border-color: var(--accent); }
+.flag { color: var(--warn); }
+.loading { padding: 40px 0; text-align: center; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .meter > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Name Reaction Daily</h1>
+      <p>One named reaction every day at 10:00 Eastern time, taken from Named Reactions Explorer, the Organic Chemistry Portal and the TCI name-reaction pages, using the example shown on the repository page. Name the reaction, draw the product, and find the intermediates of its mechanism.</p>
+    </div>
+    <div class="clock">
+      <span class="eyebrow" id="setText">Today's question</span>
+      <span class="count" id="countdown">--:--:--</span>
+      <div class="daynav">
+        <button id="prevDay" type="button">‹ Previous day</button>
+        <button id="nextDay" type="button">Next day ›</button>
+      </div>
+    </div>
+  </header>
+  <div class="stale" id="staleNote" hidden></div>
+
+  <div class="goals" id="goals" aria-live="polite"></div>
+
+  <section class="figure" aria-labelledby="schemeTitle">
+    <div class="figure-head">
+      <h2 id="schemeTitle">Loading question…</h2>
+      <span class="tag" id="caseTag"></span>
+    </div>
+    <div class="scheme-scroll"><div class="scheme" id="scheme"><div class="loading">Loading the chemistry engine…</div></div></div>
+    <div class="reagents" id="reagents"></div>
+    <div class="namebox">
+      <form id="nameForm" autocomplete="off">
+        <label for="nameInput" class="eyebrow">Name the reaction</label>
+        <input id="nameInput" type="text" placeholder="e.g. Claisen rearrangement" spellcheck="false">
+        <button class="btn" id="nameBtn" type="submit">Check name</button>
+      </form>
+      <div class="name-msg" id="nameMsg"></div>
+    </div>
+    <div class="hints" id="hints"></div>
+  </section>
+
+  <div class="work">
+    <section class="card" aria-labelledby="drawTitle">
+      <div class="row" style="justify-content: space-between;">
+        <h3 id="drawTitle">Draw a structure</h3>
+        <div class="row">
+          <button class="btn" id="loadSubBtn" type="button">Start from substrate</button>
+          <button class="btn" id="clearBtn" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="editor-box"><div id="editor"></div></div>
+      <div class="row">
+        <button class="btn primary" id="checkBtn" type="button">Check structure</button>
+        <span class="hint mono" id="attempts"></span>
+      </div>
+      <div class="verdict info" id="verdict" aria-live="polite">
+        <span class="pill">Ready</span>
+        <span id="verdictText">Draw the product or any intermediate, then check it.</span>
+      </div>
+      <div class="hint">
+        Validation ignores:
+        <ul>
+          <li>stereochemistry (wedges, dashes, E/Z), tautomers and protonation state;</li>
+          <li>counterions and by-products; only the species derived from the substrate is compared.</li>
+        </ul>
+        Draw metal alkoxides and enolates as O⁻. Charges: + / − tools in the toolbar. Radicals: the <b>?…</b> tool in the toolbar opens atom properties; set Radical State, then click the atom.
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="mechTitle">
+      <div class="progress">
+        <h3 id="mechTitle">Mechanism</h3>
+        <span class="mono hint" id="progressText">0 / 0</span>
+      </div>
+      <div class="meter" aria-hidden="true"><i id="meterBar"></i></div>
+      <div id="steps"></div>
+      <div class="row" id="answerRow">
+        <button class="btn" id="revealBtn" type="button">Show the answer</button>
+        <button class="btn" id="resetBtn" type="button">Reset progress</button>
+      </div>
+      <div class="confirm" id="confirmBox" hidden>
+        <span>Show the name, product and all intermediates?</span>
+        <button class="btn danger" id="confirmYes" type="button">Show</button>
+        <button class="btn" id="confirmNo" type="button">Keep trying</button>
+      </div>
+      <div class="about" id="about" hidden></div>
+    </section>
+  </div>
+</div>
+
+<script>/*CHEMKEY*/</script>
+<script>window.PUZZLES = /*PROBLEMS*/;</script>
+<script src="https://unpkg.com/@rdkit/rdkit@2026.9.1/dist/RDKit_minimal.js"></script>
+<script type="module">
+import * as OCL from 'https://cdn.jsdelivr.net/npm/openchemlib@9.25.1/dist/openchemlib.js';
+
+const DATA = window.PUZZLES;
+const SCH = DATA.schedule;
+const HL = [0.75, 0.88, 0.93];
+const $ = id => document.getElementById(id);
+let R, editor, P, ctx, state, viewDay = 0, currentDay = 0;
+
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} }
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* ---- schedule: a new question every day at SCH.changeHour, wall-clock time in SCH.timeZone ---- */
+const wallFmt = new Intl.DateTimeFormat('en-CA', { timeZone: SCH.timeZone, hourCycle: 'h23',
+  year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+function wall(t) {
+  const p = Object.fromEntries(wallFmt.formatToParts(new Date(t)).map(x => [x.type, +x.value || x.value]));
+  return { y: +p.year, m: +p.month, d: +p.day, h: +p.hour % 24, mi: +p.minute, s: +p.second };
+}
+const [SY, SM, SD] = SCH.startDate.split('-').map(Number);
+const START_UTC_DAY = Date.UTC(SY, SM - 1, SD);
+function dayIndex(t) {
+  const w = wall(t);
+  let day = Date.UTC(w.y, w.m - 1, w.d);
+  if (w.h < SCH.changeHour) day -= 864e5;
+  return Math.round((day - START_UTC_DAY) / 864e5);
+}
+function changeInstant(i) {
+  const target = START_UTC_DAY + i * 864e5 + SCH.changeHour * 36e5;
+  let t = target;
+  for (let k = 0; k < 3; k++) { const w = wall(t); t += target - Date.UTC(w.y, w.m - 1, w.d, w.h, w.mi, w.s); }
+  return t;
+}
+const dateOf = i => new Date(START_UTC_DAY + i * 864e5).toISOString().slice(0, 10);
+const fmtDay = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+function setFor(i) {
+  const want = dateOf(i);
+  const past = DATA.sets.filter(s => s.date <= want).sort((a, b) => a.date < b.date ? 1 : -1);
+  return past[0] || DATA.sets[0];
+}
+
+/* ---- reaction-name matching ---- */
+const STOP = new Set(['reaction', 'the', 'rxn']);
+const normName = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  .replace(/[‐-―−-]/g, ' ').replace(/[^a-z0-9 ]/g, ' ')
+  .split(/\s+/).filter(w => w && !STOP.has(w)).join(' ');
+function lev(a, b) {
+  const d = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = d[0]; d[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const t = d[j];
+      d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = t;
+    }
+  }
+  return d[b.length];
+}
+function nameMatches(guess, names) {
+  const g = normName(guess);
+  if (!g) return false;
+  return names.some(n => {
+    const t = normName(n);
+    const tol = t.length >= 14 ? 2 : t.length >= 7 ? 1 : 0;
+    return g === t || lev(g, t) <= tol;
+  });
+}
+
+/* ---- drawing ---- */
+function svg(smiles, w, h, marks = []) {
+  const src = marks.length ? smiles + ' |atomProp:' + marks.map(m => `${m.atom}.atomNote.${m.n}`).join(':') + '|' : smiles;
+  const m = R.get_mol(src);
+  if (!m) return '';
+  const opts = { width: w, height: h, clearBackground: false, bondLineWidth: 1.4, addStereoAnnotation: false, minFontSize: 11 };
+  if (marks.length) {
+    opts.atoms = marks.map(x => x.atom);
+    opts.highlightAtomColors = Object.fromEntries(marks.map(x => [x.atom, HL]));
+    opts.highlightAtomRadii = Object.fromEntries(marks.map(x => [x.atom, 0.45]));
+    opts.fillHighlights = true;
+    opts.annotationFontScale = 0.9;
+  }
+  const out = m.get_svg_with_highlights(JSON.stringify(opts));
+  m.delete();
+  return out;
+}
+
+function buildContext(p) {
+  const fp = substrateFingerprint(R, p.substrate.smiles);
+  const map = new Map();
+  p.steps.forEach((st, si) => st.intermediates.forEach((it, k) => {
+    it.forms.forEach(f => { const key = chemKey(R, f, fp); if (key && !map.has(key)) map.set(key, { si, k }); });
+  }));
+  const total = p.steps.reduce((a, s) => a + s.intermediates.length, 0);
+  return { fp, map, total, subKey: chemKey(R, p.substrate.smiles, fp), prodKey: chemKey(R, p.product.smiles, fp) };
+}
+const blank = () => ({ found: [], solved: false, named: false, revealed: false, attempts: 0, nameTries: 0, hints: 0 });
+const stateOf = p => Object.assign(blank(), store.get('namerxn:' + p.id) || {});
+const stepsText = p => p.steps.length === 1 ? 'one step' : `${p.steps.length} steps, one pot`;
+const nameShown = () => state.named || state.revealed;
+
+function loadDay(i) {
+  viewDay = i;
+  const daySet = setFor(i);
+  $('setText').textContent = (i === currentDay ? "Today's question · " : 'Question of ') + fmtDay(dateOf(i));
+  $('prevDay').disabled = i <= 0;
+  $('nextDay').disabled = i >= currentDay;
+  const stale = daySet.date !== dateOf(i);
+  $('staleNote').hidden = !stale;
+  if (stale) $('staleNote').textContent = `No question has been added for ${fmtDay(dateOf(i))} yet; showing the question of ${fmtDay(daySet.date)}.`;
+  P = daySet.problems[0];
+  ctx = buildContext(P);
+  state = stateOf(P);
+  $('nameInput').value = '';
+  $('confirmBox').hidden = true;
+  renderAll();
+  setVerdict('info', 'Ready', 'Draw the product or any intermediate, then check it.');
+  editor.clearAll();
+  updateAttempts();
+}
+
+function renderGoals() {
+  const dots = Array.from({ length: ctx.total }, (_, k) => `<i class="${k < state.found.length ? 'on' : ''}"></i>`).join('');
+  const g = (done, shown, k, v) => `<div class="goal${done ? ' done' : shown ? ' shown' : ''}"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+  $('goals').innerHTML =
+    g(state.named, state.revealed, 'Name', state.named ? 'Named' : state.revealed ? 'Shown' : 'Open') +
+    g(state.solved, state.revealed, 'Product', state.solved ? 'Found' : state.revealed ? 'Shown' : 'Open') +
+    g(state.found.length === ctx.total, state.revealed, 'Intermediates',
+      `<span class="dots" aria-hidden="true">${dots}</span>${state.found.length} / ${ctx.total}`);
+}
+
+function renderAll() {
+  $('schemeTitle').textContent = nameShown() ? P.reaction : state.solved ? 'Product found. Which named reaction is it?' : 'Predict the product and name the reaction';
+  $('caseTag').textContent = stepsText(P) + ' · example from ' + P.source.repository;
+  renderGoals(); renderScheme(); renderReagents(); renderName(); renderHints(); renderSteps(); renderAbout();
+}
+
+function shownHints() { return P.hints.slice(0, state.hints || 0).map((h, k) => ({ ...h, n: k + 1 })); }
+const marksFor = pred => shownHints().filter(pred).map(h => ({ atom: h.atom, n: h.n }));
+
+function renderScheme() {
+  const above = P.steps.map(st => (P.steps.length > 1 ? st.n + '. ' : '') + st.reagents.map(r => esc(r.text)).join(', ')).join('<br>');
+  const below = P.steps.filter(st => st.conditions && st.conditions !== 'see SI').map(st => (P.steps.length > 1 ? st.n + '. ' : '') + esc(st.conditions)).join('<br>');
+  const show = state.solved || state.revealed;
+  $('scheme').innerHTML =
+    `<div class="mol">${svg(P.substrate.smiles, 260, 180, marksFor(h => h.mol === 'substrate'))}<div class="mol-label">${esc(P.substrate.label)}</div></div>` +
+    `<div class="arrow"><div class="above">${above}</div><div class="line"></div><div class="below">${below}</div></div>` +
+    (show ? `<div class="mol">${svg(P.product.smiles, 260, 180)}<div class="mol-label">${esc(P.product.label)}</div></div>`
+          : `<div class="unknown" aria-label="Unknown product">?</div>`);
+}
+
+function renderReagents() {
+  const items = P.steps.flatMap(st => st.reagents.filter(r => r.smiles).map(r => ({ ...r, step: st.n })));
+  $('reagents').innerHTML = items.map(r => {
+    const big = r.smiles.length > 40;
+    const marks = marksFor(h => h.mol === 'reagent' && h.step === r.step && h.reagent === r.text);
+    return `<div class="reagent">${svg(r.smiles, big ? 300 : 150, big ? 190 : 90, marks)}<span>${esc(r.text)}</span></div>`;
+  }).join('');
+}
+
+function renderName() {
+  const done = nameShown();
+  $('nameInput').disabled = done; $('nameBtn').disabled = done;
+  const m = $('nameMsg');
+  if (state.named) { m.className = 'name-msg ok'; m.textContent = `Correct: ${P.reaction}` + (state.nameTries > 1 ? ` (${state.nameTries} tries).` : '.'); }
+  else if (state.revealed) { m.className = 'name-msg'; m.textContent = `Answer: ${P.reaction}.`; }
+  else { m.className = 'name-msg'; m.textContent = state.nameTries ? `${state.nameTries} ${state.nameTries > 1 ? 'tries' : 'try'} so far. Spelling, hyphens and accents are tolerated.` : 'Spelling, hyphens and accents are tolerated.'; }
+}
+
+function checkName(ev) {
+  ev.preventDefault();
+  const guess = $('nameInput').value.trim();
+  if (!guess || nameShown()) return;
+  state.nameTries++;
+  if (nameMatches(guess, P.names)) { state.named = true; save(); renderAll(); return; }
+  save(); renderGoals();
+  const m = $('nameMsg');
+  m.className = 'name-msg bad';
+  m.textContent = `“${guess}” is not the expected name (${state.nameTries} ${state.nameTries > 1 ? 'tries' : 'try'}).`;
+}
+
+function renderHints() {
+  const shown = shownHints(), total = P.hints.length;
+  const where = h => h.mol === 'substrate' ? 'the substrate' : esc(h.reagent);
+  $('hints').innerHTML =
+    shown.map(h => `<div class="hint-item"><span class="hint-num">${h.n}</span>Atom ${h.n} on ${where(h)}: one of its bonds is made or broken.</div>`).join('') +
+    (shown.length < total && !state.revealed ? `<button class="btn hint-btn" id="hintBtn" type="button">Show hint ${shown.length + 1} of ${total}</button>` : '');
+  const hb = $('hintBtn');
+  if (hb) hb.onclick = () => { state.hints = shown.length + 1; save(); renderScheme(); renderReagents(); renderHints(); };
+}
+
+function renderAbout() {
+  const show = nameShown(), s = P.source;
+  $('about').hidden = !show;
+  $('revealBtn').hidden = state.revealed;
+  if (!show) { $('about').innerHTML = ''; return; }
+  $('about').innerHTML =
+    `<span><span class="eyebrow">Mechanism pages</span></span>` +
+    `<div class="links">${P.repositories.map(r => `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.site)} ↗</a>`).join('')}</div>` +
+    `<span><span class="eyebrow">Example (${esc(s.repository)})</span> ${esc(s.citation)} ` + (s.doi ? `<a href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">doi:${esc(s.doi)}</a>` : `<a href="${esc(s.url)}" target="_blank" rel="noopener">page ↗</a>`) + `</span>` +
+    `<span>${esc(s.context)}</span>` +
+    (P.verified ? '' : `<span class="flag">Unverified: ${esc(P.verificationNote)}</span>`) +
+    `<span><span class="eyebrow">Mechanism references</span><br>${P.mechanismRefs.map(esc).join('<br>')}</span>` +
+    `<span><span class="eyebrow">By-products</span> ${esc(P.byproducts)}</span>`;
+}
+
+function renderSteps() {
+  let html = '';
+  P.steps.forEach((st, si) => {
+    html += `<div class="step"><div class="step-head"><span class="n">STEP ${st.n}</span><span class="r">${st.reagents.map(r => esc(r.text)).join(', ')}</span></div>`;
+    if (!st.intermediates.length) { html += '<span class="hint">No separate intermediate in this step; it leads directly to the product.</span></div>'; return; }
+    html += '<div class="slots">';
+    st.intermediates.forEach((it, k) => {
+      const id = si + '.' + k, got = state.found.includes(id);
+      if (got) html += `<div class="slot found">${svg(it.forms[0], 230, 135)}<span class="lbl">${esc(it.label)}</span></div>`;
+      else if (state.revealed) html += `<div class="slot given">${svg(it.forms[0], 230, 135)}<span class="lbl">${esc(it.label)}</span></div>`;
+      else html += `<div class="slot empty">intermediate ${k + 1}</div>`;
+    });
+    html += '</div></div>';
+  });
+  const prodCls = state.solved ? 'slot prod found' : state.revealed ? 'slot given' : '';
+  html += `<div class="step"><div class="step-head"><span class="n">PRODUCT</span></div><div class="slots">` +
+    (prodCls ? `<div class="${prodCls}">${svg(P.product.smiles, 230, 135)}<span class="lbl">${esc(P.product.label)}</span></div>`
+             : `<div class="slot empty">product</div>`) + '</div></div>';
+  $('steps').innerHTML = html;
+  const n = state.found.length + (state.solved ? 1 : 0), tot = ctx.total + 1;
+  $('progressText').textContent = `${state.found.length} / ${ctx.total} intermediates · product ${state.solved ? 'found' : state.revealed ? 'shown' : 'open'}`;
+  $('meterBar').style.width = (100 * n / tot) + '%';
+}
+
+function setVerdict(kind, pill, text) {
+  const v = $('verdict');
+  v.className = 'verdict ' + kind;
+  v.querySelector('.pill').textContent = pill;
+  $('verdictText').textContent = text;
+}
+function updateAttempts() { $('attempts').textContent = state.attempts ? state.attempts + ' check' + (state.attempts > 1 ? 's' : '') : ''; }
+function save() { store.set('namerxn:' + P.id, state); }
+
+function check() {
+  const mol = editor.getMolecule();
+  if (!mol || mol.getAllAtoms() === 0) { setVerdict('info', 'Empty', 'Draw a structure first.'); return; }
+  const key = chemKey(R, mol.toMolfile(), ctx.fp);
+  if (!key) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
+  state.attempts++; updateAttempts();
+  if (key === ctx.prodKey) {
+    const first = !state.solved; state.solved = true; save();
+    setVerdict('ok', 'Product', first ? 'Correct. This is the product of the repository example.' : 'Correct. Product already found.');
+    renderAll();
+    return;
+  }
+  const hit = ctx.map.get(key);
+  if (hit) {
+    const st = P.steps[hit.si], it = st.intermediates[hit.k], id = hit.si + '.' + hit.k;
+    const where = `step ${st.n} (${st.reagents.map(r => r.text).join(', ')}), intermediate ${hit.k + 1} of ${st.intermediates.length}`;
+    if (state.found.includes(id)) { setVerdict('warn', 'Intermediate', `Already found: ${where}.`); return; }
+    state.found.push(id); save(); renderSteps(); renderGoals();
+    setVerdict('warn', 'Intermediate · step ' + st.n, `Correct intermediate: ${where}. ${it.label}.`);
+    return;
+  }
+  if (key === ctx.subKey) { setVerdict('info', 'Starting material', 'This is the substrate (or a tautomer / protonation state of it).'); return; }
+  save();
+  setVerdict('bad', 'Not on the path', 'Not the product or a known intermediate of the mechanism.');
+}
+
+function tick() {
+  const now = Date.now(), d = Math.max(0, dayIndex(now));
+  if (d !== currentDay) { const follow = viewDay === currentDay; currentDay = d; loadDay(follow ? d : viewDay); }
+  const left = Math.max(0, changeInstant(currentDay + 1) - now);
+  const h = Math.floor(left / 3.6e6), m = Math.floor(left % 3.6e6 / 6e4), s = Math.floor(left % 6e4 / 1e3);
+  $('countdown').textContent = 'next question in ' + [h, m, s].map(x => String(x).padStart(2, '0')).join(':');
+}
+
+async function main() {
+  R = await window.initRDKitModule({ locateFile: f => 'rdkit/' + f });
+  editor = new OCL.CanvasEditor($('editor'), { initialMode: 'molecule' });
+  window.__puzzle = { OCL, editor, R, check: () => check(), nameMatches, dayIndex, changeInstant,
+    get state() { return state; }, get problem() { return P; }, loadDay: i => loadDay(i) };
+  $('checkBtn').onclick = check;
+  $('nameForm').onsubmit = checkName;
+  $('clearBtn').onclick = () => editor.clearAll();
+  $('loadSubBtn').onclick = () => {
+    const mol = OCL.Molecule.fromSmiles(P.substrate.smiles);
+    mol.scaleCoords(24 / (mol.getAverageBondLength(true) || 1));
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (let i = 0; i < mol.getAllAtoms(); i++) {
+      const x = mol.getAtomX(i), y = mol.getAtomY(i);
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+    const el = $('editor');
+    mol.translateCoords((el.clientWidth + 48) / 2 - (x0 + x1) / 2, el.clientHeight / 2 - (y0 + y1) / 2);
+    mol.setChirality(OCL.Molecule.cChiralityRacemic);
+    editor.setMolecule(mol);
+  };
+  $('revealBtn').onclick = () => { $('confirmBox').hidden = false; };
+  $('confirmNo').onclick = () => { $('confirmBox').hidden = true; };
+  $('confirmYes').onclick = () => { $('confirmBox').hidden = true; state.revealed = true; save(); renderAll(); };
+  $('resetBtn').onclick = () => { store.del('namerxn:' + P.id); loadDay(viewDay); };
+  $('prevDay').onclick = () => loadDay(Math.max(0, viewDay - 1));
+  $('nextDay').onclick = () => loadDay(Math.min(currentDay, viewDay + 1));
+  currentDay = Math.max(0, dayIndex(Date.now()));
+  loadDay(currentDay); tick(); setInterval(tick, 1000);
+}
+main().catch(e => { $('scheme').innerHTML = `<div class="loading">Could not start: ${esc(e.message || e)}</div>`; console.error(e); });
+</script>

@@ -1,0 +1,692 @@
+{
+  "schedule": {
+    "timeZone": "America/New_York",
+    "startDate": "2026-10-30",
+    "changeHour": 10
+  },
+  "sets": [
+    {
+      "date": "2026-10-30",
+      "problems": [
+        {
+          "id": "tci-fischer-indole-3-isopropylindole",
+          "reaction": "Fischer indole synthesis",
+          "names": [
+            "Fischer indole synthesis",
+            "Fischer indolization",
+            "Fischer indole",
+            "Fischer indole reaction"
+          ],
+          "repositories": [
+            {
+              "site": "TCI name reactions",
+              "url": "https://www.tcichemicals.com/product/name_reaction/Fischer_Indole_Synthesis"
+            },
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/fischer-indole-synthesis/"
+            },
+            {
+              "site": "Organic Chemistry Portal",
+              "url": "https://www.organic-chemistry.org/namedreactions/fischer-indole-synthesis.shtm"
+            }
+          ],
+          "source": {
+            "repository": "TCI name reactions",
+            "citation": "S. Chandrasekhar, S. Mukherjee. A Convenient Modification of the Fischer Indole Synthesis with a Solid Acid. Synth. Commun. 2015, 45, 1018–1022.",
+            "doi": "10.1080/00397911.2014.984854",
+            "context": "TCI page, example reaction 1 (ref. 1): phenylhydrazine + 3-methylbutanal with Amberlite IR 120 in EtOH. The paper reports one-pot reactions in refluxing EtOH, 6–10 h, 70–88% over the series."
+          },
+          "verified": false,
+          "verificationNote": "Example structures read from the TCI scheme image (low resolution) and matched to the abstract of ref. 1; the yield of this entry was not read. Mechanism follows the TCI general mechanism (hydrazone, ene-hydrazine, [3,3], diimine, aminal, loss of NH₃), with the carbinolamine added. Check the aldehyde (3-methylbutanal) against the TCI scheme.",
+          "substrate": {
+            "label": "phenylhydrazine",
+            "smiles": "NNc1ccccc1"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "3-methylbutanal",
+                  "smiles": "O=CCC(C)C"
+                },
+                {
+                  "text": "Amberlite IR 120 (H⁺)"
+                }
+              ],
+              "conditions": "EtOH, reflux",
+              "intermediates": [
+                {
+                  "label": "Carbinolamine (C–N formed)",
+                  "forms": [
+                    "OC(CC(C)C)NNc1ccccc1"
+                  ]
+                },
+                {
+                  "label": "Hydrazone ⇌ ene-hydrazine (C–O broken; tautomers)",
+                  "forms": [
+                    "CC(C)CC=NNc1ccccc1",
+                    "CC(C)C=CNNc1ccccc1"
+                  ]
+                },
+                {
+                  "label": "[3,3]-Sigmatropic product, diimine / aniline tautomers (C–C formed, N–N broken)",
+                  "forms": [
+                    "N=C1C=CC=CC1C(C=N)C(C)C",
+                    "Nc1ccccc1C(C=N)C(C)C"
+                  ]
+                },
+                {
+                  "label": "Cyclic aminal, 2-aminoindoline (C–N formed)",
+                  "forms": [
+                    "NC1Nc2ccccc2C1C(C)C"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "3-isopropylindole",
+            "smiles": "CC(C)c1c[nH]c2ccccc12"
+          },
+          "byproducts": "H₂O, NH₃ (retained on the resin as NH₄⁺)",
+          "mechanismRefs": [
+            "General mechanism: TCI name reactions, Fischer Indole Synthesis; Named Reactions Explorer, Fischer Indole Synthesis (say-my-name.net).",
+            "E. Fischer, F. Jourdan. Ber. Dtsch. Chem. Ges. 1883, 16, 2241 (doi:10.1002/cber.188301602141).",
+            "D. L. Hughes. Progress in the Fischer Indole Reaction. Org. Prep. Proced. Int. 1993, 25, 607 (doi:10.1080/00304949309356257)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 0
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "3-methylbutanal",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "3-methylbutanal",
+              "atom": 0
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 7
+            },
+            {
+              "transition": "step 1 int 4",
+              "mol": "substrate",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 4,
+            "sigmaBondEvents": 6,
+            "score": 7.0
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-10-31",
+      "problems": [
+        {
+          "id": "tci-vilsmeier-haack-dimethoxytoluene",
+          "reaction": "Vilsmeier–Haack reaction",
+          "names": [
+            "Vilsmeier–Haack reaction",
+            "Vilsmeier–Haack formylation",
+            "Vilsmeier reaction",
+            "Vilsmeier formylation",
+            "Vilsmeier–Haack"
+          ],
+          "repositories": [
+            {
+              "site": "TCI name reactions",
+              "url": "https://www.tcichemicals.com/product/name_reaction/Vilsmeier-Haack_reaction"
+            },
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/vilsmeier-haack-reaction/"
+            },
+            {
+              "site": "Organic Chemistry Portal",
+              "url": "https://www.organic-chemistry.org/namedreactions/vilsmeier-reaction.shtm"
+            }
+          ],
+          "source": {
+            "repository": "TCI name reactions",
+            "citation": "A. Miyawaki, D. Kikuchi, M. Niki, Y. Manabe, M. Kanematsu, H. Yokoe, M. Yoshida, K. Shishido. Total Synthesis of Natural Enantiomers of Heliespirones A and C via the Diastereoselective Intramolecular Hosomi–Sakurai Reaction. J. Org. Chem. 2012, 77, 8231–8243.",
+            "doi": "10.1021/jo3016055",
+            "context": "TCI page, selected example 1 (ref. 1): 2,5-dimethoxytoluene, N-methylformanilide, POCl₃, rt then 70 °C; then H₂O, 0 °C; 86%."
+          },
+          "verified": false,
+          "verificationNote": "Example structures and conditions read from the TCI scheme image (low resolution); regiochemistry (formylation para to CH₃, ortho to one OMe) consistent with the known Vilsmeier route to 2,5-dimethoxy-4-methylbenzaldehyde. The paper itself was not read. α-Chloro amine as in the Organic Chemistry Portal mechanism; arenium ion and hemiaminal follow the standard SEAr / iminium hydrolysis mechanism.",
+          "substrate": {
+            "label": "2,5-dimethoxytoluene",
+            "smiles": "Cc1cc(OC)ccc1OC"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "N-methylformanilide",
+                  "smiles": "O=CN(C)c1ccccc1"
+                },
+                {
+                  "text": "POCl₃",
+                  "smiles": "ClP(Cl)(Cl)=O"
+                }
+              ],
+              "conditions": "rt, then 70 °C",
+              "intermediates": [
+                {
+                  "label": "Arenium ion, σ-complex (C–C formed para to CH₃)",
+                  "forms": [
+                    "CC1=CC(=[O+]C)C(C(Cl)N(C)c2ccccc2)C=C1OC",
+                    "CC1=C[C+](OC)C(C(Cl)N(C)c2ccccc2)C=C1OC",
+                    "CC1=C(OC)[CH+]C(C(Cl)N(C)c2ccccc2)C(OC)=C1",
+                    "C[C+]1C(OC)=CC(C(Cl)N(C)c2ccccc2)C(OC)=C1"
+                  ]
+                },
+                {
+                  "label": "α-Chloro amine (rearomatized)",
+                  "forms": [
+                    "Cc1cc(OC)c(C(Cl)N(C)c2ccccc2)cc1OC"
+                  ]
+                },
+                {
+                  "label": "Aryl iminium ion (C–Cl broken)",
+                  "forms": [
+                    "Cc1cc(OC)c(C=[N+](C)c2ccccc2)cc1OC",
+                    "CC1=CC(=[O+]C)C(=CN(C)c2ccccc2)C=C1OC"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H₂O",
+                  "smiles": "O"
+                }
+              ],
+              "conditions": "0 °C",
+              "intermediates": [
+                {
+                  "label": "Hemiaminal (C–O formed)",
+                  "forms": [
+                    "Cc1cc(OC)c(C(O)N(C)c2ccccc2)cc1OC"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "2,5-dimethoxy-4-methylbenzaldehyde",
+            "smiles": "Cc1cc(OC)c(C=O)cc1OC"
+          },
+          "byproducts": "N-methylaniline (as HCl salt), HCl, phosphates (from POCl₃)",
+          "mechanismRefs": [
+            "General mechanism: TCI name reactions, Vilsmeier–Haack Reaction (Vilsmeier reagent, aryl iminium, hydrolysis); Organic Chemistry Portal, Vilsmeier Reaction (α-chloro amine); Named Reactions Explorer, Vilsmeier−Haack Reaction.",
+            "A. Vilsmeier, A. Haack. Ber. Dtsch. Chem. Ges. 1927, 60, 119 (doi:10.1002/cber.19270600118).",
+            "O. Meth-Cohn, S. P. Stanforth. The Vilsmeier–Haack Reaction. Comp. Org. Synth. 1991, 2, 777 (doi:10.1016/B978-0-08-052349-1.00049-4)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 6
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "N-methylformanilide",
+              "atom": 0
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "N-methylformanilide",
+              "atom": 1
+            },
+            {
+              "transition": "step 2 int 1",
+              "mol": "reagent",
+              "step": 2,
+              "reagent": "H₂O",
+              "atom": 0
+            },
+            {
+              "transition": "product",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "N-methylformanilide",
+              "atom": 2
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 4,
+            "sigmaBondEvents": 6,
+            "score": 9.0
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-01",
+      "problems": [
+        {
+          "id": "smn-paal-knorr-pyrrole-trimethylpyrrole",
+          "reaction": "Paal–Knorr pyrrole synthesis",
+          "names": [
+            "Paal–Knorr pyrrole synthesis",
+            "Paal–Knorr synthesis",
+            "Paal–Knorr reaction",
+            "Paal–Knorr pyrrole",
+            "Paal–Knorr"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/paal-knorr-pyrrole-synthesis/"
+            },
+            {
+              "site": "Organic Chemistry Portal",
+              "url": "https://www.organic-chemistry.org/namedreactions/paal-knorr-pyrrole-synthesis.shtm"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Paal–Knorr Pyrrole Synthesis: general equation with R = R′ = Me on the 1,4-diketone and R = Me on the amine.",
+            "url": "https://say-my-name.net/reaction/paal-knorr-pyrrole-synthesis/",
+            "context": "Equation of the say-my-name.net page (1,4-diketone + RNH₂ → N-substituted pyrrole), R groups replaced by methyl. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Equation and mechanism images of say-my-name.net viewed in a browser; intermediates follow that mechanism (hemiaminal, 2,5-dihydroxypyrrolidine, cyclic iminium, 2-hydroxy-2,3-dihydropyrrole, 2H-pyrrolium). The Organic Chemistry Portal page describes the same hemiaminal-cyclization pathway (Amarnath 1991).",
+          "substrate": {
+            "label": "hexane-2,5-dione",
+            "smiles": "CC(=O)CCC(C)=O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "MeNH₂",
+                  "smiles": "CN"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Hemiaminal (C–N formed)",
+                  "forms": [
+                    "CNC(C)(O)CCC(C)=O"
+                  ]
+                },
+                {
+                  "label": "2,5-Dihydroxypyrrolidine (second C–N formed)",
+                  "forms": [
+                    "CN1C(C)(O)CCC1(C)O"
+                  ]
+                },
+                {
+                  "label": "Cyclic iminium ion (C–O broken, −H₂O)",
+                  "forms": [
+                    "C[N+]1=C(C)CCC1(C)O"
+                  ]
+                },
+                {
+                  "label": "2-Hydroxy-2,3-dihydropyrrole (enamine, −H⁺)",
+                  "forms": [
+                    "CN1C(C)=CCC1(C)O"
+                  ]
+                },
+                {
+                  "label": "2H-Pyrrolium ion (C–O broken, −H₂O)",
+                  "forms": [
+                    "C[N+]1=C(C)CC=C1C"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "1,2,5-trimethylpyrrole",
+            "smiles": "Cc1ccc(C)n1C"
+          },
+          "byproducts": "2 H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Paal–Knorr Pyrrole Synthesis (say-my-name.net); Organic Chemistry Portal, Paal–Knorr Pyrrole Synthesis.",
+            "V. Amarnath, D. C. Anthony, K. Amarnath, W. M. Valentine, L. A. Wetterau, D. G. Graham. Intermediates in the Paal–Knorr synthesis of pyrroles. J. Org. Chem. 1991, 56, 6924–6931 (doi:10.1021/jo00024a040).",
+            "L. Knorr. Ber. Dtsch. Chem. Ges. 1884, 17, 2863; C. Paal. Ber. Dtsch. Chem. Ges. 1885, 18, 367."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "MeNH₂",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 5
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "step 1 int 5",
+              "mol": "substrate",
+              "atom": 7
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 5,
+            "sigmaBondEvents": 4,
+            "score": 7.0
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-02",
+      "problems": [
+        {
+          "id": "tci-pummerer-ethylthio-phenylthienofuran",
+          "reaction": "Pummerer rearrangement",
+          "names": [
+            "Pummerer rearrangement",
+            "Pummerer reaction",
+            "Pummerer cyclization",
+            "Pummerer-induced cyclization",
+            "Pummerer"
+          ],
+          "repositories": [
+            {
+              "site": "TCI name reactions",
+              "url": "https://www.tcichemicals.com/product/name_reaction/Pummerer_Rearrangement"
+            },
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/pummerer-rearrangement/"
+            }
+          ],
+          "source": {
+            "repository": "TCI name reactions",
+            "citation": "C. O. Kappe, A. Padwa. A Facile and Efficient Synthesis of Thieno[2,3-c]furans and Furo[3,4-b]indoles via a Pummerer-Induced Cyclization Reaction. J. Org. Chem. 1996, 61, 6166–6174.",
+            "doi": "10.1021/jo9607929",
+            "context": "TCI page, reference 2). The α-thiocarbocation from the Pummerer reaction of an o-aroyl-substituted sulfoxide is trapped by the adjacent keto oxygen; without a dienophile the paper isolates 4-(ethylthio)-6-phenylthieno[2,3-c]furan. Ac₂O/toluene with catalytic p-TsOH are the conditions the abstract gives as best (they suppress the normal acetoxy-sulfide Pummerer product)."
+          },
+          "verified": false,
+          "verificationNote": "The TCI scheme image could not be downloaded (proxy refusal), so the drawn example could not be identified; this is a representative entry taken from the abstract of ref. 2 (PubMed), which names the product 4-(ethylthio)-6-phenylthieno[2,3-c]furan. The sulfoxide precursor, 2-benzoyl-3-[(ethylsulfinyl)methyl]thiophene, was deduced from the product's ring numbering (Ph on C6, next to the thiophene S; SEt on C4) and not read in the paper; the exact conditions for this entry were not read either. Mechanism follows the TCI page (O-acylation of the sulfoxide, elimination to the thionium/α-thiocarbocation, nucleophilic trapping) with the keto oxygen as internal nucleophile, as in the abstract. A chemist should check the substrate regiochemistry and the conditions.",
+          "substrate": {
+            "label": "2-benzoyl-3-[(ethylsulfinyl)methyl]thiophene",
+            "smiles": "CCS(=O)Cc1ccsc1C(=O)c1ccccc1"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "Ac₂O",
+                  "smiles": "CC(=O)OC(C)=O"
+                },
+                {
+                  "text": "p-TsOH (cat.)"
+                }
+              ],
+              "conditions": "toluene",
+              "intermediates": [
+                {
+                  "label": "Acetoxysulfonium ion (O–C(acyl) formed)",
+                  "forms": [
+                    "CC[S+](OC(C)=O)Cc1ccsc1C(=O)c1ccccc1"
+                  ]
+                },
+                {
+                  "label": "Thionium ion / α-thiocarbocation (S–O broken, −AcOH)",
+                  "forms": [
+                    "CC[S+]=Cc1ccsc1C(=O)c1ccccc1",
+                    "CCS[CH+]c1ccsc1C(=O)c1ccccc1"
+                  ]
+                },
+                {
+                  "label": "Cyclic oxocarbenium ion (C–O formed by the keto oxygen)",
+                  "forms": [
+                    "CCSC1[O+]=C(c2ccccc2)c2sccc21",
+                    "CCSC1O[C+](c2ccccc2)c2sccc21"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "4-(ethylthio)-6-phenylthieno[2,3-c]furan",
+            "smiles": "CCSc1oc(-c2ccccc2)c2sccc12"
+          },
+          "byproducts": "AcOH (2 equiv. overall: one from O-acylation/elimination, one from the deprotonation step as AcO⁻ + H⁺)",
+          "mechanismRefs": [
+            "General mechanism: TCI name reactions, Pummerer Rearrangement (acylation of the sulfoxide oxygen, elimination to the thionium intermediate, trapping by a nucleophile); Named Reactions Explorer, Pummerer Rearrangement (say-my-name.net).",
+            "R. Pummerer. Ber. Dtsch. Chem. Ges. 1909, 42, 2282 (doi:10.1002/cber.19090420262).",
+            "C. O. Kappe, A. Padwa. J. Org. Chem. 1996, 61, 6166 (doi:10.1021/jo9607929); A. Padwa, D. E. Gunn, M. H. Osterhout. Application of the Pummerer Reaction toward the Synthesis of Complex Carbocycles and Heterocycles. Synthesis 1997, 1353 (doi:10.1055/s-1997-1384)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 3
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "Ac₂O",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "Ac₂O",
+              "atom": 3
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 4
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 3,
+            "sigmaBondEvents": 4,
+            "score": 5.0
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-03",
+      "problems": [
+        {
+          "id": "tci-corey-fuchs-citronellal-alkyne",
+          "reaction": "Corey–Fuchs reaction",
+          "names": [
+            "Corey–Fuchs reaction",
+            "Corey-Fuchs reaction",
+            "Corey–Fuchs",
+            "Corey-Fuchs",
+            "Corey–Fuchs alkyne synthesis",
+            "Corey–Fuchs olefination",
+            "Ramirez–Corey–Fuchs reaction"
+          ],
+          "repositories": [
+            {
+              "site": "TCI name reactions",
+              "url": "https://www.tcichemicals.com/product/name_reaction/Corey-Fuchs_reaction"
+            },
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/corey-fuchs-reaction/"
+            }
+          ],
+          "source": {
+            "repository": "TCI name reactions",
+            "citation": "K. C. Nicolaou, A. A. Shah, H. Korman, T. Khan, L. Shi, W. Worawalai, E. A. Theodorakis. Total Synthesis and Structural Revision of Antibiotic CJ-16,264. Angew. Chem. Int. Ed. 2015, 54, 9203–9208.",
+            "doi": "10.1002/anie.201504337",
+            "context": "TCI page, reference 1) (the page prints the volume as 45). First steps of the synthesis: citronellal treated with the ylide from Ph₃P and CBr₄ gives the 1,1-dibromoolefin (98%), and exposure to n-BuLi gives the terminal acetylene (95%). Solvents and temperatures are in the SI and were not read."
+          },
+          "verified": false,
+          "verificationNote": "The TCI scheme image could not be downloaded (proxy refusal), so the drawn example 1) was not seen; the structures come from the PMC full text of ref. 1 (citronellal → 1,1-dibromoolefin → terminal alkyne), stereochemistry omitted. The say-my-name.net equation and mechanism images could not be downloaded either. Mechanism is the established one (TCI text gives only the two-step summary): Wittig-type addition of Ph₃P=CBr₂ via betaine/oxaphosphetane, then Br/Li exchange, α-elimination to the vinylidene carbene and Fritsch–Buttenberg–Wiechell 1,2-H shift, deprotonation by the second equivalent of BuLi and aqueous workup. A chemist should check the betaine/oxaphosphetane drawings and the carbene (drawn as [C]=C) in step 2; the alternative pathway (HBr elimination to the bromoalkyne, then Br/Li exchange) is also found in textbooks.",
+          "substrate": {
+            "label": "Citronellal",
+            "smiles": "CC(C)=CCCC(C)CC=O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "CBr₄",
+                  "smiles": "BrC(Br)(Br)Br"
+                },
+                {
+                  "text": "PPh₃",
+                  "smiles": "P(c1ccccc1)(c1ccccc1)c1ccccc1"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Betaine (C–C formed by the dibromomethylene ylide Ph₃P=CBr₂)",
+                  "forms": [
+                    "[O-]C(CC(C)CCC=C(C)C)C(Br)(Br)[P+](c1ccccc1)(c1ccccc1)c1ccccc1"
+                  ]
+                },
+                {
+                  "label": "Oxaphosphetane (O–P formed)",
+                  "forms": [
+                    "CC(C)=CCCC(C)CC1OP(c2ccccc2)(c2ccccc2)(c2ccccc2)C1(Br)Br"
+                  ]
+                },
+                {
+                  "label": "1,1-Dibromoolefin (isolable; −Ph₃PO)",
+                  "forms": [
+                    "CC(C)=CCCC(C)CC=C(Br)Br"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "n-BuLi (2 equiv.)"
+                },
+                {
+                  "text": "H₂O (workup)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "1-Bromo-1-lithioalkene (Br/Li exchange)",
+                  "forms": [
+                    "CC(C)=CCCC(C)CC=[C-]Br",
+                    "CC(C)=CCCC(C)CC=C([Li])Br"
+                  ]
+                },
+                {
+                  "label": "Vinylidene carbene (α-elimination of LiBr), then 1,2-H shift",
+                  "forms": [
+                    "CC(C)=CCCC(C)CC=[C]"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "4,8-Dimethylnon-7-en-1-yne",
+            "smiles": "CC(C)=CCCC(C)CC#C"
+          },
+          "byproducts": "Ph₃PO, Ph₃PBr₂ (from the second PPh₃ in ylide formation); LiBr, n-BuBr, butane",
+          "mechanismRefs": [
+            "TCI name reactions, Corey-Fuchs Reaction (aldehyde → isolable 1,1-dibromoalkene with PPh₃/CBr₄, then strong base such as BuLi → terminal alkyne); Named Reactions Explorer, Corey−Fuchs Reaction (say-my-name.net).",
+            "E. J. Corey, P. L. Fuchs. Tetrahedron Lett. 1972, 13, 3769 (doi:10.1016/S0040-4039(01)94157-7).",
+            "F. Ramirez, N. B. Desai, N. McKelvie. J. Am. Chem. Soc. 1962, 84, 1745 (doi:10.1021/ja00868a057) (dibromomethylenation with Ph₃P/CBr₄)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 9
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 10
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "CBr₄",
+              "atom": 1
+            },
+            {
+              "transition": "step 2 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "CBr₄",
+              "atom": 2
+            },
+            {
+              "transition": "step 2 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "CBr₄",
+              "atom": 0
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 5,
+            "sigmaBondEvents": 9,
+            "score": 11.5
+          }
+        }
+      ]
+    }
+  ]
+}
