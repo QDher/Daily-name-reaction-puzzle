@@ -21,7 +21,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir _site
-          cp -r index.html data rdkit _site/
+          cp -r index.html data rdkit ketcher _site/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

@@ -138,9 +138,9 @@ button, input { font: inherit; }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .btn.primary:hover { filter: brightness(1.08); }
 .btn.danger { border-color: var(--bad); color: var(--bad); }
-.editor-box { background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; height: 440px; position: relative; }
-@media (max-width: 600px) { .editor-box { height: 380px; } }
-#editor { width: 100%; height: 100%; }
+.editor-box { background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; height: 540px; position: relative; }
+@media (max-width: 600px) { .editor-box { height: 480px; } }
+#editor { width: 100%; height: 100%; border: 0; display: block; }
 .verdict { border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; background: var(--bg); border: 1px solid var(--line); }
 .verdict .pill { font-family: var(--font-mono); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
 .verdict.ok { background: var(--ok-soft); border-color: var(--ok); } .verdict.ok .pill { color: var(--ok); }
@@ -222,7 +222,7 @@ button, input { font: inherit; }
           <button class="btn" id="clearBtn" type="button">Clear</button>
         </div>
       </div>
-      <div class="editor-box"><div id="editor"></div></div>
+      <div class="editor-box"><iframe id="editor" src="ketcher/index.html" title="Structure editor (Ketcher)"></iframe></div>
       <div class="row">
         <button class="btn primary" id="checkBtn" type="button">Check structure</button>
         <span class="hint mono" id="attempts"></span>
@@ -237,7 +237,7 @@ button, input { font: inherit; }
           <li>stereochemistry (wedges, dashes, E/Z), tautomers and protonation state;</li>
           <li>counterions and by-products; only the species derived from the substrate is compared.</li>
         </ul>
-        Draw metal alkoxides and enolates as O⁻. Charges: + / − tools in the toolbar. Radicals: the <b>?…</b> tool in the toolbar opens atom properties; set Radical State, then click the atom.
+        Draw metal alkoxides and enolates as O⁻. Charges: the <b>A⁺</b> / <b>A⁻</b> tools in the left toolbar, then click the atom. Radicals: double-click the atom to open Atom Properties and set Radical. Structure editor: <a href="https://lifescience.opensource.epam.com/ketcher/" target="_blank" rel="noopener">Ketcher</a> (EPAM, Apache 2.0).
       </div>
     </section>
 
@@ -266,7 +266,20 @@ button, input { font: inherit; }
 <script>window.PUZZLES = /*PROBLEMS*/;</script>
 <script src="https://unpkg.com/@rdkit/rdkit@2026.9.1/dist/RDKit_minimal.js"></script>
 <script type="module">
-import * as OCL from 'https://cdn.jsdelivr.net/npm/openchemlib@9.25.1/dist/openchemlib.js';
+// Structure editor: Ketcher (EPAM, Apache 2.0), standalone build served from ketcher/ in an iframe (same origin).
+const ketcherReady = new Promise(resolve => {
+  const poll = () => { const w = document.getElementById('editor').contentWindow; if (w && w.ketcher) resolve(w.ketcher); else setTimeout(poll, 200); };
+  poll();
+});
+function makeEditor(k) {
+  const atomCount = () => { try { return k.editor.struct().atoms.size; } catch (e) { return -1; } };
+  return {
+    isEmpty: () => atomCount() === 0,
+    getMolfile: () => k.getMolfile('v2000'),
+    clearAll: () => k.setMolecule(''),
+    setSmiles: smi => k.setMolecule(smi),
+  };
+}
 
 const DATA = window.PUZZLES;
 const SCH = DATA.schedule;
@@ -507,10 +520,11 @@ function setVerdict(kind, pill, text) {
 function updateAttempts() { $('attempts').textContent = state.attempts ? state.attempts + ' check' + (state.attempts > 1 ? 's' : '') : ''; }
 function save() { store.set('namerxn:' + P.id, state); }
 
-function check() {
-  const mol = editor.getMolecule();
-  if (!mol || mol.getAllAtoms() === 0) { setVerdict('info', 'Empty', 'Draw a structure first.'); return; }
-  const key = chemKey(R, mol.toMolfile(), ctx.fp);
+async function check() {
+  if (editor.isEmpty()) { setVerdict('info', 'Empty', 'Draw a structure first.'); return; }
+  let molfile;
+  try { molfile = await editor.getMolfile(); } catch (e) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
+  const key = chemKey(R, molfile, ctx.fp);
   if (!key) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
   state.attempts++; updateAttempts();
   if (key === ctx.prodKey) {
@@ -543,25 +557,13 @@ function tick() {
 
 async function main() {
   R = await window.initRDKitModule({ locateFile: f => 'rdkit/' + f });
-  editor = new OCL.CanvasEditor($('editor'), { initialMode: 'molecule' });
-  window.__puzzle = { OCL, editor, R, check: () => check(), nameMatches, dayIndex, changeInstant,
+  editor = makeEditor(await ketcherReady);
+  window.__puzzle = { editor, R, check: () => check(), nameMatches, dayIndex, changeInstant,
     get state() { return state; }, get problem() { return P; }, loadDay: i => loadDay(i) };
   $('checkBtn').onclick = check;
   $('nameForm').onsubmit = checkName;
   $('clearBtn').onclick = () => editor.clearAll();
-  $('loadSubBtn').onclick = () => {
-    const mol = OCL.Molecule.fromSmiles(P.substrate.smiles);
-    mol.scaleCoords(24 / (mol.getAverageBondLength(true) || 1));
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (let i = 0; i < mol.getAllAtoms(); i++) {
-      const x = mol.getAtomX(i), y = mol.getAtomY(i);
-      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
-    }
-    const el = $('editor');
-    mol.translateCoords((el.clientWidth + 48) / 2 - (x0 + x1) / 2, el.clientHeight / 2 - (y0 + y1) / 2);
-    mol.setChirality(OCL.Molecule.cChiralityRacemic);
-    editor.setMolecule(mol);
-  };
+  $('loadSubBtn').onclick = () => editor.setSmiles(P.substrate.smiles);
   $('revealBtn').onclick = () => { $('confirmBox').hidden = false; };
   $('confirmNo').onclick = () => { $('confirmBox').hidden = true; };
   $('confirmYes').onclick = () => { $('confirmBox').hidden = true; state.revealed = true; save(); renderAll(); };

@@ -13,6 +13,7 @@ The published artifact is the source of truth. It contains the page and everythi
 | `src/build.js` | builds `index.html` |
 | `src/test_chemkey.js` | unit tests of the key |
 | `rdkit/RDKit_minimal.wasm` | RDKit runtime (already published; never needs re-uploading) |
+| `ketcher/` | Ketcher structure editor (standalone build, loaded by the page in an iframe; already published; never needs re-uploading) |
 
 ## 1. Set up
 
