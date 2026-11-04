@@ -1,0 +1,22 @@
+{
+  "name": "ketcher-build",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Ketcher build used by the puzzle page (served from ketcher/)",
+  "scripts": {
+    "build": "vite build"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "ketcher-core": "^3.18.0",
+    "ketcher-react": "^3.18.0",
+    "ketcher-standalone": "^3.18.0",
+    "process": "^0.11.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.10"
+  }
+}
