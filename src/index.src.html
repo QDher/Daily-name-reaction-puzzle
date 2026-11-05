@@ -115,17 +115,20 @@ button, input { font: inherit; }
 .reagent { background: var(--paper); color: var(--paper-ink); border-radius: 8px; padding: 6px 10px; display: grid; justify-items: center; font-size: 12px; font-family: var(--font-mono); }
 
 /* Name box */
-.namebox { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
-.namebox form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.namebox input { flex: 1 1 260px; min-width: 0; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 7px 10px; }
+.namebox { display: grid; gap: 4px; border-top: 1px solid var(--line); padding-top: 8px; }
+.namebox form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0; }
+.namebox label { font-size: 11px; }
+.namebox input { flex: 0 1 380px; min-width: 0; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 6px; padding: 3px 8px; font-size: 13px; }
+.namebox .btn { font-size: 13px; padding: 3px 10px; border-radius: 6px; }
 .namebox input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px var(--accent-soft); }
-.name-msg { font-size: 13px; color: var(--muted); min-height: 1.5em; }
+.name-msg { font-size: 12.5px; color: var(--muted); }
+.name-msg:empty { display: none; }
 .name-msg.ok { color: var(--ok); } .name-msg.bad { color: var(--bad); }
 
 .hints { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .hint-item { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; color: var(--ink); }
 .hint-num { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--hint); color: var(--hint-ink); font-family: var(--font-mono); font-size: 12px; font-weight: 500; margin-right: 6px; }
-.hint-btn { font-size: 13px; padding: 5px 12px; }
+.hint-btn { font-size: 13px; padding: 3px 10px; border-radius: 6px; }
 
 /* Workspace */
 .work { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 18px; align-items: start; }
@@ -252,7 +255,7 @@ body { padding-block: 14px 40px; }
     <div class="namebox">
       <form id="nameForm" autocomplete="off">
         <label for="nameInput" class="eyebrow">Name the reaction</label>
-        <input id="nameInput" type="text" placeholder="e.g. Claisen rearrangement" spellcheck="false">
+        <input id="nameInput" type="text" placeholder="Spelling, hyphens and accents are tolerated" spellcheck="false">
         <button class="btn" id="nameBtn" type="submit">Check name</button>
       </form>
       <div class="name-msg" id="nameMsg"></div>
@@ -688,7 +691,7 @@ function renderName() {
   const m = $('nameMsg');
   if (state.named) { m.className = 'name-msg ok'; m.textContent = `Correct: ${P.reaction}` + (state.nameTries > 1 ? ` (${state.nameTries} tries).` : '.'); }
   else if (state.revealed) { m.className = 'name-msg'; m.textContent = `Answer: ${P.reaction}.`; }
-  else { m.className = 'name-msg'; m.textContent = state.nameTries ? `${state.nameTries} ${state.nameTries > 1 ? 'tries' : 'try'} so far. Spelling, hyphens and accents are tolerated.` : 'Spelling, hyphens and accents are tolerated.'; }
+  else { m.className = 'name-msg'; m.textContent = state.nameTries ? `${state.nameTries} ${state.nameTries > 1 ? 'tries' : 'try'} so far.` : ''; }
 }
 
 function checkName(ev) {
@@ -709,7 +712,7 @@ function renderHints() {
   $('hints').innerHTML =
     shown.map(h => `<div class="hint-item"><span class="hint-num">${h.n}</span>Atom ${h.n} on ${where(h)}: one of its bonds is made or broken.</div>`).join('') +
     (shown.length < total && !state.revealed ? `<button class="btn hint-btn" id="hintBtn" type="button">Show hint ${shown.length + 1} of ${total}</button>` : '') +
-    (shown.length < total && !state.final ? `<span>Hint ${shown.length + 1} adds ${shown.length + 1} to your score (hint 1 adds 1, hint 2 adds 2, …). Name guesses do not count.</span>` : '');
+    (total ? `<span>${shown.length < total && !state.final ? `Hint ${shown.length + 1} adds ${shown.length + 1} to your score. ` : ''}Each hint increases the score (hint 1 adds 1, hint 2 adds 2, …); name guesses do not count.</span>` : '');
   const hb = $('hintBtn');
   if (hb) hb.onclick = () => { state.hints = shown.length + 1; save(); renderScheme(); renderReagents(); renderHints(); updateAttempts(); };
 }
