@@ -174,6 +174,31 @@ button, input { font: inherit; }
 .flag { color: var(--warn); }
 .loading { padding: 40px 0; text-align: center; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .meter > i { transition: none; } }
+/* Results and ratings (shared Supabase store) */
+.fb { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .fb { grid-template-columns: minmax(0, 1fr); } }
+.fb[hidden] { display: none; }
+.fb-score { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.fb-sub { font-size: 13px; color: var(--muted); }
+.fb-chart { position: relative; }
+.fb-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.fb-chart .bar { fill: color-mix(in srgb, var(--accent) 40%, var(--surface)); }
+.fb-chart .bar.you { fill: var(--accent); }
+.fb-chart .bar.rev { fill: url(#fbHatch); stroke: var(--muted); stroke-width: 1; }
+.fb-chart .hit { fill: transparent; cursor: default; }
+.fb-chart .axis { stroke: var(--line); stroke-width: 1; }
+.fb-chart text { fill: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+.fb-chart text.lab { fill: var(--ink); }
+.fb-tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 12px; white-space: nowrap; transform: translate(-50%, -100%); box-shadow: 0 2px 8px rgb(0 0 0 / .12); }
+.fb-tip[hidden] { display: none; }
+.stars { display: flex; gap: 4px; }
+.star { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 8px; width: 40px; height: 40px; font-size: 20px; line-height: 1; cursor: pointer; }
+.star:hover, .star.on { border-color: var(--accent); color: var(--accent); }
+.star.on { background: var(--accent-soft); }
+.fb textarea { width: 100%; min-height: 84px; resize: vertical; font: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.fb textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fb-msg { font-size: 13px; color: var(--muted); }
+.fb-msg.bad { color: var(--bad); }
 </style>
 
 <div class="wrap">
@@ -253,11 +278,37 @@ button, input { font: inherit; }
         <button class="btn" id="resetBtn" type="button">Reset progress</button>
       </div>
       <div class="confirm" id="confirmBox" hidden>
-        <span>Show the name, product and all intermediates?</span>
+        <span>Show the name, product and all intermediates? If the product is not found yet, you are counted under "answer shown".</span>
         <button class="btn danger" id="confirmYes" type="button">Show</button>
         <button class="btn" id="confirmNo" type="button">Keep trying</button>
       </div>
       <div class="about" id="about" hidden></div>
+    </section>
+  </div>
+  <div class="fb" id="feedback" hidden>
+    <section class="card" aria-labelledby="fbStatsTitle">
+      <h3 id="fbStatsTitle">How others did</h3>
+      <div>
+        <div class="fb-score" id="fbScore"></div>
+        <div class="fb-sub" id="fbScoreSub"></div>
+      </div>
+      <div class="fb-chart" id="fbChart"></div>
+      <div class="fb-sub" id="fbSummary"></div>
+      <div class="hint">Score = structure checks until the product is found + hint penalty (hint 1 adds 1, hint 2 adds 2, hint 3 adds 3, …). Lower is better. Users who revealed the answer are shown as a separate bar.</div>
+    </section>
+    <section class="card" aria-labelledby="fbRateTitle">
+      <h3 id="fbRateTitle">Rate this problem</h3>
+      <form id="fbForm" autocomplete="off" style="display: grid; gap: 10px;">
+        <div class="stars" role="radiogroup" aria-label="Rating from 1 to 5" id="fbStars"></div>
+        <label class="eyebrow" for="fbRemark">Remark (optional)</label>
+        <textarea id="fbRemark" maxlength="1000" placeholder="What was good or bad about this problem: clarity, difficulty, structures, mechanism…"></textarea>
+        <div class="row">
+          <button class="btn primary" id="fbSend" type="submit" disabled>Send rating</button>
+          <span class="fb-msg" id="fbFormMsg"></span>
+        </div>
+      </form>
+      <div class="fb-msg" id="fbRated" hidden></div>
+      <div class="hint">Ratings and remarks are anonymous and are used to improve how problems are chosen. Remarks are not private: do not include personal information.</div>
     </section>
   </div>
 </div>
@@ -293,6 +344,164 @@ const store = {
   del(k) { try { localStorage.removeItem(k); } catch {} }
 };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* ---- results and ratings, shared through Supabase (see supabase/schema.sql) ---- */
+const FB_CFG = { url: '__FB_URL__', key: '__FB_KEY__' };
+const FB_SITE = 'namerxn';
+const fbOn = /^https:\/\//.test(FB_CFG.url) && FB_CFG.key.length > 20 && !FB_CFG.key.startsWith('__');
+const hintPenalty = h => h * (h + 1) / 2;
+const fbStatsCache = new Map();
+let fbStars = 0;
+function fbClient() {
+  let id = store.get('puzzles:client');
+  if (!id) {
+    id = crypto.randomUUID ? crypto.randomUUID()
+      : '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    store.set('puzzles:client', id);
+  }
+  return id;
+}
+async function fbPost(path, body, minimal) {
+  const headers = { apikey: FB_CFG.key, 'Content-Type': 'application/json' };
+  if (FB_CFG.key.startsWith('eyJ')) headers.Authorization = 'Bearer ' + FB_CFG.key;
+  if (minimal) headers.Prefer = 'return=minimal';
+  const r = await fetch(FB_CFG.url.replace(/\/$/, '') + '/rest/v1/' + path, { method: 'POST', headers, body: JSON.stringify(body) });
+  if (r.status === 409) return { duplicate: true };
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.status === 204 || minimal ? {} : r.json();
+}
+/* Called by the page when the problem is finished: product found (revealed = false) or answer shown first (revealed = true). */
+function finishProblem(revealed) {
+  if (state.final) return;
+  const hints = state.hints || 0;
+  state.final = { checks: state.attempts, hints, score: state.attempts + hintPenalty(hints), revealed };
+}
+async function fbSendResult(p, f) {
+  const k = `fbsent:${FB_SITE}:${p.id}`;
+  if (!fbOn || !f || store.get(k)) return;
+  try {
+    await fbPost('results', { site: FB_SITE, problem_id: p.id, client_id: fbClient(),
+      checks: f.checks, hints: f.hints, score: f.score, revealed: f.revealed }, true);
+    store.set(k, true);
+    fbStatsCache.delete(p.id);
+  } catch (e) { console.warn('result not sent', e); }
+}
+async function fbStats(p) {
+  const c = fbStatsCache.get(p.id);
+  if (c && Date.now() - c.t < 60e3) return c.v;
+  const v = await fbPost('rpc/problem_stats', { p_site: FB_SITE, p_problem: p.id });
+  fbStatsCache.set(p.id, { t: Date.now(), v });
+  return v;
+}
+function scoreText() {
+  const f = state.final;
+  if (f) return f.revealed ? 'answer shown' : 'score ' + f.score;
+  const h = state.hints || 0;
+  return state.attempts || h ? 'score so far ' + (state.attempts + hintPenalty(h)) : '';
+}
+function fbRender() {
+  const p = P, f = state.final, done = !!f || state.solved || state.revealed;
+  $('feedback').hidden = !done;
+  if (!done) return;
+  $('fbScore').textContent = !f ? 'Score not recorded' : f.revealed ? 'Answer shown' : `Your score: ${f.score}`;
+  $('fbScoreSub').textContent = !f ? 'This problem was solved before scoring was added.'
+    : `${f.checks} structure check${f.checks === 1 ? '' : 's'} + hint penalty ${hintPenalty(f.hints)} (${f.hints} hint${f.hints === 1 ? '' : 's'})` + (f.revealed ? ', then the answer was shown.' : '.');
+  fbRenderRating(p);
+  if (!fbOn) { $('fbChart').innerHTML = ''; $('fbSummary').textContent = 'Shared statistics are not available on this copy of the page.'; return; }
+  $('fbSummary').textContent = 'Loading results of other users…';
+  (async () => {
+    await fbSendResult(p, f);
+    const s = await fbStats(p);
+    if (p !== P) return;
+    fbChart(s, f);
+  })().catch(e => { if (p === P) { $('fbChart').innerHTML = ''; $('fbSummary').textContent = 'Results of other users could not be loaded.'; } console.warn(e); });
+}
+function fbChart(s, f) {
+  const solved = Object.entries(s.solved || {}).map(([k, n]) => [+k, +n]).sort((a, b) => a[0] - b[0]);
+  const nSolved = solved.reduce((a, x) => a + x[1], 0), nRev = +s.revealed || 0, N = nSolved + nRev;
+  if (!N) { $('fbChart').innerHTML = ''; $('fbSummary').textContent = 'No results recorded yet.'; return; }
+  const maxScore = Math.max(1, ...solved.map(x => x[0]), f && !f.revealed ? f.score : 0);
+  const w = Math.max(1, Math.ceil(maxScore / 20));                 // bin width so that there are at most ~20 bars
+  const bins = [];
+  for (let lo = w === 1 ? 0 : 1; lo <= maxScore; lo += w) bins.push({ lo, hi: w === 1 ? lo : lo + w - 1, n: 0 });
+  if (w === 1 && !solved.some(x => x[0] === 0) && !(f && !f.revealed && f.score === 0)) bins.shift();
+  solved.forEach(([sc, n]) => { const b = bins.find(b => sc >= b.lo && sc <= b.hi); if (b) b.n += n; });
+  const you = f && !f.revealed ? bins.find(b => f.score >= b.lo && f.score <= b.hi) : null;
+  const pct = n => 100 * n / N;
+  const top = Math.max(...bins.map(b => pct(b.n)), pct(nRev), 1);
+  const W = Math.max(300, Math.min(760, Math.round($('fbChart').clientWidth) || 640)), H = 210, L = 34, B = 28, T = 18, gap = 2, sep = 18;
+  const nb = bins.length + 1, bw = Math.min(42, (W - L - sep) / nb - gap);
+  const x0 = i => L + i * (bw + gap) + (i === bins.length ? sep : 0);
+  const y = v => T + (H - T - B) * (1 - v / top);
+  const bar = (x, v) => { const h = Math.max(0, H - B - y(v)); if (h <= 0) return ''; const r = Math.min(4, h, bw / 2);
+    return `M${x},${H - B}V${H - B - h + r}Q${x},${H - B - h} ${x + r},${H - B - h}H${x + bw - r}Q${x + bw},${H - B - h} ${x + bw},${H - B - h + r}V${H - B}Z`; };
+  const every = Math.ceil(bins.length / Math.max(4, Math.floor(W / 64)));
+  const lbl = b => b.lo === b.hi ? String(b.lo) : `${b.lo}–${b.hi}`;
+  let g = `<defs><pattern id="fbHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--surface)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="2"/></pattern></defs>`;
+  g += `<line class="axis" x1="${L}" x2="${W}" y1="${H - B}" y2="${H - B}"/>`;
+  g += `<text x="${L - 6}" y="${y(top) + 4}" text-anchor="end">${Math.round(top)}%</text><text x="${L - 6}" y="${H - B + 4}" text-anchor="end">0</text>`;
+  bins.forEach((b, i) => {
+    const x = x0(i), v = pct(b.n), isYou = b === you;
+    g += `<path class="bar${isYou ? ' you' : ''}" d="${bar(x, v)}"/>`;
+    if (isYou) g += `<text class="lab" x="${x + bw / 2}" y="${y(v) - 5}" text-anchor="middle">you</text>`;
+    if (i % every === 0 || isYou) g += `<text x="${x + bw / 2}" y="${H - B + 15}" text-anchor="middle">${lbl(b)}</text>`;
+    g += `<rect class="hit" x="${x - 1}" y="${T}" width="${bw + 2}" height="${H - B - T}" data-tip="Score ${lbl(b)}: ${b.n} user${b.n === 1 ? '' : 's'} (${v.toFixed(0)}%)${isYou ? ', including you' : ''}"/>`;
+  });
+  const xr = x0(bins.length), vr = pct(nRev);
+  g += `<path class="bar rev" d="${bar(xr, vr)}"/>`;
+  g += `<text class="lab" x="${xr + bw / 2}" y="${y(vr) - 5}" text-anchor="middle">${vr.toFixed(0)}%</text>`;
+  g += `<text x="${xr + bw / 2}" y="${H - B + 15}" text-anchor="middle">shown</text>`;
+  g += `<rect class="hit" x="${xr - 1}" y="${T}" width="${bw + 2}" height="${H - B - T}" data-tip="Answer shown: ${nRev} user${nRev === 1 ? '' : 's'} (${vr.toFixed(0)}%)${f && f.revealed ? ', including you' : ''}"/>`;
+  g += `<text x="${L + (xr - L) / 2}" y="${H - 2}" text-anchor="middle">score (lower is better)</text>`;
+  $('fbChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Distribution of scores of ${N} users">${g}</svg><div class="fb-tip" hidden></div>`;
+  const tip = $('fbChart').querySelector('.fb-tip'), box = $('fbChart');
+  box.querySelectorAll('.hit').forEach(r => {
+    r.onmouseenter = r.onclick = () => { const a = r.getBoundingClientRect(), c = box.getBoundingClientRect();
+      tip.textContent = r.dataset.tip; tip.hidden = false; tip.style.left = (a.left - c.left + a.width / 2) + 'px'; tip.style.top = (a.top - c.top + 8) + 'px'; };
+    r.onmouseleave = () => { tip.hidden = true; };
+  });
+  const sorted = solved.flatMap(([sc, n]) => Array(n).fill(sc));
+  const med = sorted.length ? sorted[Math.floor((sorted.length - 1) / 2)] : null;
+  let txt = `${N} user${N === 1 ? '' : 's'}: ${nSolved} found the product` + (med !== null ? ` (median score ${med})` : '') + `, ${nRev} showed the answer (${vr.toFixed(0)}%).`;
+  if (f && !f.revealed && nSolved > 1) {
+    const worse = sorted.filter(x => x > f.score).length + nRev, others = N - 1;
+    txt += ` You did better than ${Math.round(100 * worse / others)}% of the other users.`;
+  }
+  const rt = s.ratings || {};
+  if (rt.n) txt += ` Rating: ${rt.mean} / 5 (${rt.n} rating${rt.n === 1 ? '' : 's'}).`;
+  $('fbSummary').textContent = txt;
+}
+function fbRenderRating(p) {
+  const k = `fbrate:${FB_SITE}:${p.id}`, mine = store.get(k);
+  $('fbForm').hidden = !!mine || !fbOn;
+  $('fbRated').hidden = !mine && fbOn;
+  if (!fbOn) { $('fbRated').textContent = 'Rating is not available on this copy of the page.'; return; }
+  if (mine) { $('fbRated').textContent = `You rated this problem ${mine.stars} / 5. Thank you.`; return; }
+  fbStars = 0; $('fbRemark').value = ''; $('fbFormMsg').textContent = ''; $('fbFormMsg').className = 'fb-msg';
+  fbDrawStars();
+}
+function fbDrawStars() {
+  $('fbStars').innerHTML = [1, 2, 3, 4, 5].map(n =>
+    `<button type="button" class="star${n <= fbStars ? ' on' : ''}" role="radio" aria-checked="${n === fbStars}" aria-label="${n} of 5" data-n="${n}">★</button>`).join('');
+  $('fbStars').querySelectorAll('.star').forEach(b => b.onclick = () => { fbStars = +b.dataset.n; fbDrawStars(); });
+  $('fbSend').disabled = !fbStars;
+}
+async function fbSubmitRating(ev) {
+  ev.preventDefault();
+  const p = P, k = `fbrate:${FB_SITE}:${p.id}`;
+  if (!fbStars || store.get(k)) return;
+  const remark = $('fbRemark').value.trim().slice(0, 1000) || null;
+  $('fbSend').disabled = true; $('fbFormMsg').className = 'fb-msg'; $('fbFormMsg').textContent = 'Sending…';
+  try {
+    await fbPost('ratings', { site: FB_SITE, problem_id: p.id, client_id: fbClient(), stars: fbStars, remark }, true);
+    store.set(k, { stars: fbStars });
+    fbStatsCache.delete(p.id);
+    if (p === P) fbRender();
+  } catch (e) {
+    $('fbFormMsg').className = 'fb-msg bad'; $('fbFormMsg').textContent = 'Could not send the rating. Try again later.';
+    $('fbSend').disabled = false; console.warn(e);
+  }
+}
 
 /* ---- schedule: a new question every day at SCH.changeHour, wall-clock time in SCH.timeZone ---- */
 const wallFmt = new Intl.DateTimeFormat('en-CA', { timeZone: SCH.timeZone, hourCycle: 'h23',
@@ -415,7 +624,7 @@ function renderGoals() {
 function renderAll() {
   $('schemeTitle').textContent = nameShown() ? P.reaction : state.solved ? 'Product found. Which named reaction is it?' : 'Predict the product and name the reaction';
   $('caseTag').textContent = stepsText(P) + ' · example from ' + P.source.repository;
-  renderGoals(); renderScheme(); renderReagents(); renderName(); renderHints(); renderSteps(); renderAbout();
+  renderGoals(); renderScheme(); renderReagents(); renderName(); renderHints(); renderSteps(); renderAbout(); fbRender();
 }
 
 function shownHints() { return P.hints.slice(0, state.hints || 0).map((h, k) => ({ ...h, n: k + 1 })); }
@@ -467,9 +676,10 @@ function renderHints() {
   const where = h => h.mol === 'substrate' ? 'the substrate' : esc(h.reagent);
   $('hints').innerHTML =
     shown.map(h => `<div class="hint-item"><span class="hint-num">${h.n}</span>Atom ${h.n} on ${where(h)}: one of its bonds is made or broken.</div>`).join('') +
-    (shown.length < total && !state.revealed ? `<button class="btn hint-btn" id="hintBtn" type="button">Show hint ${shown.length + 1} of ${total}</button>` : '');
+    (shown.length < total && !state.revealed ? `<button class="btn hint-btn" id="hintBtn" type="button">Show hint ${shown.length + 1} of ${total}</button>` : '') +
+    (shown.length < total && !state.final ? `<span>Hint ${shown.length + 1} adds ${shown.length + 1} to your score (hint 1 adds 1, hint 2 adds 2, …). Name guesses do not count.</span>` : '');
   const hb = $('hintBtn');
-  if (hb) hb.onclick = () => { state.hints = shown.length + 1; save(); renderScheme(); renderReagents(); renderHints(); };
+  if (hb) hb.onclick = () => { state.hints = shown.length + 1; save(); renderScheme(); renderReagents(); renderHints(); updateAttempts(); };
 }
 
 function renderAbout() {
@@ -517,7 +727,10 @@ function setVerdict(kind, pill, text) {
   v.querySelector('.pill').textContent = pill;
   $('verdictText').textContent = text;
 }
-function updateAttempts() { $('attempts').textContent = state.attempts ? state.attempts + ' check' + (state.attempts > 1 ? 's' : '') : ''; }
+function updateAttempts() {
+  const c = state.attempts ? state.attempts + ' check' + (state.attempts > 1 ? 's' : '') : '', sc = scoreText();
+  $('attempts').textContent = [c, sc].filter(Boolean).join(' · ');
+}
 function save() { store.set('namerxn:' + P.id, state); }
 
 async function check() {
@@ -528,7 +741,7 @@ async function check() {
   if (!key) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
   state.attempts++; updateAttempts();
   if (key === ctx.prodKey) {
-    const first = !state.solved; state.solved = true; save();
+    const first = !state.solved; state.solved = true; if (first) finishProblem(false); save(); updateAttempts();
     setVerdict('ok', 'Product', first ? 'Correct. This is the product of the repository example.' : 'Correct. Product already found.');
     renderAll();
     return;
@@ -561,12 +774,13 @@ async function main() {
   window.__puzzle = { editor, R, check: () => check(), nameMatches, dayIndex, changeInstant,
     get state() { return state; }, get problem() { return P; }, loadDay: i => loadDay(i) };
   $('checkBtn').onclick = check;
+  $('fbForm').onsubmit = fbSubmitRating;
   $('nameForm').onsubmit = checkName;
   $('clearBtn').onclick = () => editor.clearAll();
   $('loadSubBtn').onclick = () => editor.setSmiles(P.substrate.smiles);
   $('revealBtn').onclick = () => { $('confirmBox').hidden = false; };
   $('confirmNo').onclick = () => { $('confirmBox').hidden = true; };
-  $('confirmYes').onclick = () => { $('confirmBox').hidden = true; state.revealed = true; save(); renderAll(); };
+  $('confirmYes').onclick = () => { $('confirmBox').hidden = true; state.revealed = true; if (!state.solved) finishProblem(true); save(); renderAll(); updateAttempts(); };
   $('resetBtn').onclick = () => { store.del('namerxn:' + P.id); loadDay(viewDay); };
   $('prevDay').onclick = () => loadDay(Math.max(0, viewDay - 1));
   $('nextDay').onclick = () => loadDay(Math.min(currentDay, viewDay + 1));
