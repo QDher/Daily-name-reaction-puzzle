@@ -346,7 +346,7 @@ const store = {
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /* ---- results and ratings, shared through Supabase (see supabase/schema.sql) ---- */
-const FB_CFG = { url: '__FB_URL__', key: '__FB_KEY__' };
+const FB_CFG = { url: 'https://gevbctklqelyumhynfnq.supabase.co', key: 'sb_publishable_uVp44kl4elFfJ3AeUvzFzQ_yzkjwRT1' };
 const FB_SITE = 'namerxn';
 const fbOn = /^https:\/\//.test(FB_CFG.url) && FB_CFG.key.length > 20 && !FB_CFG.key.startsWith('__');
 const hintPenalty = h => h * (h + 1) / 2;
