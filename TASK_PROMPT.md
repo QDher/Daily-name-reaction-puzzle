@@ -17,7 +17,7 @@ Backup of the Claude Code scheduled task that adds a daily question to the claud
 
 The earlier Cowork task "Name Reaction Daily question" is disabled and kept as a fallback; it cannot push to GitHub.
 
-Backed up on 2026-11-05 (step 3b: feedback log and proposals only, no changes applied).
+Backed up on 2026-11-05 (no mechanism indications in text shown before solving; feedback log).
 
 ## Prompt
 
@@ -88,6 +88,7 @@ Other rules:
 5. WRITE THE ENTRY
 Append {"date": "<target date YYYY-MM-DD>", "problems": [<one problem>]} at the end of "sets" in data/problems.json. Copy the shape of existing entries exactly: id (unique kebab-case: "smn-<reaction>-<product>", "tci-<reaction>-<product>" or "ocp-<reaction>-<product>"), reaction (display name), names (accepted answers: usual names and variants with/without "reaction", "synthesis", "rearrangement", "olefination", alternative names; must include "reaction"; never names of other reactions), repositories [{site, url}], source {repository, citation, doi or url, context}, verified: false, verificationNote (what was viewed or read: repository pages, images, reference abstract/full text/SI; which structures a chemist should check), substrate {label, smiles}, steps [{n, reagents [{text, smiles?}], conditions ("" if the page gives none), intermediates [{label, forms [SMILES, ...]}]}], product {label, smiles}, byproducts, mechanismRefs.
 Structure rules: stereochemistry is not needed. Intermediates in mechanism order; draw the species derived from the substrate (with reagent fragments attached when bonded). Charges as charged atoms ([O-], [C+], [O+]=, [N+]), radicals as [C], [N]. "forms" lists every drawing a student could reasonably give for the same species (resonance forms of arenium ions, carbocations, carbanions, ylides; tautomers the key may not merge, e.g. diimine/aniline after a [3,3] shift). Give a reagent a SMILES when its atoms end up in an intermediate or the product; catalysts and simple acids/bases can be text only. Check every SMILES with RDKit before use (ring sizes, atom counts). Never write "hints" or "difficulty" by hand. Do not edit existing sets or any src/ file.
+Shown before solving: the substrate label, the reagent texts and the conditions. They give only identities (chemical names or formulas, never names of people or reactions, e.g. not "Rawal diene", "Vilsmeier reagent"), amounts, solvent, temperature, time and work-up. They never indicate the reaction name, the mechanism, the role of a reagent (no "acceptor", "donor", "I⁺ source", "nucleophile"), fragments lost (no "loss of CO2", "−N₂") or reacting atoms; conditions are "" when the page gives none. Draw a reagent as the real compound (MeI as CI, I₂ as II), never as the bare cation it delivers. A new step starts only when a reagent is added or the solvent or temperature changes; never split one operation into steps to follow the mechanism. Mechanistic descriptions belong only in intermediate labels, which are shown once the intermediate is found. src/validate_problems.js rejects the most common wordings and the answer appearing in this text.
 
 5b. CHECK STRUCTURES AGAINST PUBCHEM
 For the substrate, the product and every reagent that has a SMILES, compare your SMILES with PubChem through its PUG-REST API (curl, at most 5 requests per second, URL-encode names and SMILES):
@@ -99,7 +100,7 @@ Compare the first 14 characters of the InChIKey (connectivity layer) computed fr
   python3 src/curate.py data/problems.json --write
     Read the bond changes printed for the new question: each transition must show the bonds the mechanism makes/breaks, on the right atoms. Unexpected bonds mean an intermediate SMILES is wrong; fix and rerun. If the mapping puts a new bond on a look-alike but chemically different atom (e.g. N-CH3 vs N-CHO on the same N), rewrite the substrate/reagent SMILES with a different atom order (e.g. "O=CN(C)c1ccccc1") until the printed bonds and hints sit on the reacting atoms. Swaps between truly equivalent atoms (symmetric molecules) need no fix.
   node src/validate_problems.js data/problems.json
-    Must end with "ALL OK". Fix every reported problem (or choose another reaction) and rerun.
+    Must end with "ALL OK". It also rejects text shown before solving that indicates the mechanism or contains the answer. Fix every reported problem (or choose another reaction) and rerun.
   node src/build.js            (writes index.html)
   Confirm index.html contains the new id.
 

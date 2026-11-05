@@ -627,11 +627,13 @@ function renderAll() {
   renderGoals(); renderScheme(); renderReagents(); renderName(); renderHints(); renderSteps(); renderAbout(); fbRender();
 }
 
+// identical reagent texts in one step (e.g. a reagent listed once per equivalent consumed) are shown once
+const reagentTexts = st => [...new Set(st.reagents.map(r => r.text))];
 function shownHints() { return P.hints.slice(0, state.hints || 0).map((h, k) => ({ ...h, n: k + 1 })); }
 const marksFor = pred => shownHints().filter(pred).map(h => ({ atom: h.atom, n: h.n }));
 
 function renderScheme() {
-  const above = P.steps.map(st => (P.steps.length > 1 ? st.n + '. ' : '') + st.reagents.map(r => esc(r.text)).join(', ')).join('<br>');
+  const above = P.steps.map(st => (P.steps.length > 1 ? st.n + '. ' : '') + reagentTexts(st).map(esc).join(', ')).join('<br>');
   const below = P.steps.filter(st => st.conditions && st.conditions !== 'see SI').map(st => (P.steps.length > 1 ? st.n + '. ' : '') + esc(st.conditions)).join('<br>');
   const show = state.solved || state.revealed;
   $('scheme').innerHTML =
@@ -642,7 +644,7 @@ function renderScheme() {
 }
 
 function renderReagents() {
-  const items = P.steps.flatMap(st => st.reagents.filter(r => r.smiles).map(r => ({ ...r, step: st.n })));
+  const items = P.steps.flatMap(st => st.reagents.filter((r, i, a) => r.smiles && a.findIndex(x => x.text === r.text) === i).map(r => ({ ...r, step: st.n })));
   $('reagents').innerHTML = items.map(r => {
     const big = r.smiles.length > 40;
     const marks = marksFor(h => h.mol === 'reagent' && h.step === r.step && h.reagent === r.text);
@@ -700,7 +702,7 @@ function renderAbout() {
 function renderSteps() {
   let html = '';
   P.steps.forEach((st, si) => {
-    html += `<div class="step"><div class="step-head"><span class="n">STEP ${st.n}</span><span class="r">${st.reagents.map(r => esc(r.text)).join(', ')}</span></div>`;
+    html += `<div class="step"><div class="step-head"><span class="n">STEP ${st.n}</span><span class="r">${reagentTexts(st).map(esc).join(', ')}</span></div>`;
     if (!st.intermediates.length) { html += '<span class="hint">No separate intermediate in this step; it leads directly to the product.</span></div>'; return; }
     html += '<div class="slots">';
     st.intermediates.forEach((it, k) => {
@@ -749,7 +751,7 @@ async function check() {
   const hit = ctx.map.get(key);
   if (hit) {
     const st = P.steps[hit.si], it = st.intermediates[hit.k], id = hit.si + '.' + hit.k;
-    const where = `step ${st.n} (${st.reagents.map(r => r.text).join(', ')}), intermediate ${hit.k + 1} of ${st.intermediates.length}`;
+    const where = `step ${st.n} (${reagentTexts(st).join(', ')}), intermediate ${hit.k + 1} of ${st.intermediates.length}`;
     if (state.found.includes(id)) { setVerdict('warn', 'Intermediate', `Already found: ${where}.`); return; }
     state.found.push(id); save(); renderSteps(); renderGoals();
     setVerdict('warn', 'Intermediate · step ' + st.n, `Correct intermediate: ${where}. ${it.label}.`);

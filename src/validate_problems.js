@@ -15,6 +15,22 @@ const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase
   .replace(/[‐-―−-]/g, ' ').replace(/[^a-z0-9 ]/g, ' ')
   .split(/\s+/).filter(w => w && !['reaction', 'the', 'rxn'].includes(w)).join(' ');
 
+// Text shown before solving (substrate label, reagent text, conditions) must not indicate the mechanism,
+// fragments lost or reacting atoms. Mechanistic wording belongs in intermediate labels and "reaction".
+const LEAK = /intramolecular|intermolecular|cycli[sz]|annulation|fragment|eliminat|rearrang|sigmatropic|\[\d,\d\]|migrat|loss of|\blost\b|extru|decarboxyl|tautomer|aldol|michael|wittig|ylide|acceptor|\bdonor|\bsource\b|carbamic|isocyanate|intermediate|\bvia\b|attack|nucleophil|electrophil|modification|procedure/i;
+function leakErrors(P) {
+  const out = [], seen = (where, s) => { const m = String(s || '').match(LEAK); if (m) out.push(`${where} "${s}" contains "${m[0]}"`); };
+  seen('substrate label', P.substrate && P.substrate.label);
+  for (const st of P.steps || []) {
+    seen(`step ${st.n} conditions`, st.conditions);
+    for (const r of st.reagents || []) {
+      seen(`step ${st.n} reagent`, r.text);
+      if (r.smiles && /^\[[A-Z][a-z]?H?[0-3]?\+\]$/.test(r.smiles)) out.push(`step ${st.n} reagent "${r.text}" drawn as a bare cation (${r.smiles}); give the real reagent`);
+    }
+  }
+  return out;
+}
+
 init().then(R => {
   const errors = [];
   const err = (where, msg) => errors.push(`${where}: ${msg}`);
@@ -43,6 +59,10 @@ init().then(R => {
       }
 
       // names and repositories
+      leakErrors(P).forEach(m => err(w, 'mechanism indicated before solving: ' + m));
+      { const shown = [P.substrate && P.substrate.label, ...P.steps.flatMap(st => [st.conditions, ...st.reagents.map(r => r.text)])].map(norm).join(' | ');
+        const generic = /\b(synthesis|rearrangement|olefination|reaction|formylation|degradation|cyclization|annulation|reduction|oxidation|condensation|coupling|alkyne|pyrrole|indole)\b/g;
+        for (const n of P.names || []) { const core = norm(n).replace(generic, ' ').replace(/\s+/g, ' ').trim(); if (core.length > 3 && shown.includes(core)) err(w, `answer "${n}" appears in the text shown before solving`); } }
       const names = P.names || [];
       if (!names.length || !names.includes(P.reaction)) err(w, '"names" must be a non-empty list that includes "reaction"');
       const rk = norm(P.reaction);

@@ -752,7 +752,7 @@
                   "text": "chiral primary amine catalyst (amino-acid-derived, 1 mol%)"
                 }
               ],
-              "conditions": "intramolecular aldol condensation",
+              "conditions": "",
               "intermediates": [
                 {
                   "label": "Aldol adduct (bicyclic ketol / alkoxide, C–C formed)",
@@ -896,7 +896,7 @@
                   "smiles": "O"
                 }
               ],
-              "conditions": "loss of CO2 from the carbamic acid",
+              "conditions": "",
               "intermediates": [
                 {
                   "label": "Carbamic acid (OH− adds to C=O of the isocyanate)",
