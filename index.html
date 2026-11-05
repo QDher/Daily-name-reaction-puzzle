@@ -178,6 +178,8 @@ button, input { font: inherit; }
 .fb { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (max-width: 860px) { .fb { grid-template-columns: minmax(0, 1fr); } }
 .fb[hidden] { display: none; }
+.fb [hidden] { display: none !important; }
+.fb-form { display: grid; gap: 10px; }
 .fb-score { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
 .fb-sub { font-size: 13px; color: var(--muted); }
 .fb-chart { position: relative; }
@@ -298,7 +300,7 @@ button, input { font: inherit; }
     </section>
     <section class="card" aria-labelledby="fbRateTitle">
       <h3 id="fbRateTitle">Rate this problem</h3>
-      <form id="fbForm" autocomplete="off" style="display: grid; gap: 10px;">
+      <form id="fbForm" class="fb-form" autocomplete="off">
         <div class="stars" role="radiogroup" aria-label="Rating from 1 to 5" id="fbStars"></div>
         <label class="eyebrow" for="fbRemark">Remark (optional)</label>
         <textarea id="fbRemark" maxlength="1000" placeholder="What was good or bad about this problem: clarity, difficulty, structures, mechanism…"></textarea>
