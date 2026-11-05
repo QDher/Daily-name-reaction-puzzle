@@ -201,6 +201,24 @@ button, input { font: inherit; }
 .fb textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .fb-msg { font-size: 13px; color: var(--muted); }
 .fb-msg.bad { color: var(--bad); }
+
+/* Compact layout: title on one line, smaller structures, question and editor visible together */
+body { padding-block: 14px 40px; }
+.wrap { gap: 12px; }
+.top { align-items: center; }
+.brand { max-width: none; flex: 1 1 560px; }
+.brand h1 { white-space: nowrap; font-size: clamp(22px, 2.6vw, 32px); }
+.brand p { max-width: 95ch; font-size: 14px; line-height: 1.45; }
+@media (max-width: 640px) { .brand h1 { white-space: normal; } }
+.figure { gap: 10px; padding: 12px 16px; }
+.figure-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.figure-row .scheme-scroll { flex: 0 1 auto; min-width: 0; max-width: 100%; }
+.scheme { min-width: 0; padding: 8px 12px; }
+.mol-label { font-size: 11px; }
+.unknown { width: 140px; height: 100px; font-size: 34px; }
+.arrow { min-width: 150px; font-size: 12.5px; }
+.reagent { padding: 4px 8px; font-size: 11px; }
+@media (max-width: 600px) { .unknown { width: 120px; height: 90px; } }
 </style>
 
 <div class="wrap">
@@ -227,8 +245,10 @@ button, input { font: inherit; }
       <h2 id="schemeTitle">Loading question…</h2>
       <span class="tag" id="caseTag"></span>
     </div>
-    <div class="scheme-scroll"><div class="scheme" id="scheme"><div class="loading">Loading the chemistry engine…</div></div></div>
-    <div class="reagents" id="reagents"></div>
+    <div class="figure-row">
+      <div class="scheme-scroll"><div class="scheme" id="scheme"><div class="loading">Loading the chemistry engine…</div></div></div>
+      <div class="reagents" id="reagents"></div>
+    </div>
     <div class="namebox">
       <form id="nameForm" autocomplete="off">
         <label for="nameInput" class="eyebrow">Name the reaction</label>
@@ -566,11 +586,15 @@ function nameMatches(guess, names) {
 }
 
 /* ---- drawing ---- */
-function svg(smiles, w, h, marks = []) {
+function svg(smiles, w, h, marks = [], bond = 28) {
   const src = marks.length ? smiles + ' |atomProp:' + marks.map(m => `${m.atom}.atomNote.${m.n}`).join(':') + '|' : smiles;
   const m = R.get_mol(src);
   if (!m) return '';
-  const opts = { width: w, height: h, clearBackground: false, bondLineWidth: 1.4, addStereoAnnotation: false, minFontSize: 11 };
+  // fixed bond length, so small molecules stay small; the canvas fits the molecule, within w x h
+  const base = { clearBackground: false, bondLineWidth: 1.4, addStereoAnnotation: false, minFontSize: 14, maxFontSize: 18, fixedBondLength: bond };
+  const fit = (m.get_svg_with_highlights(JSON.stringify({ ...base, width: -1, height: -1 })).match(/width='([\d.]+)px' height='([\d.]+)px'/) || []).slice(1).map(Number);
+  if (fit.length === 2) { w = Math.min(w, Math.max(70, Math.ceil(fit[0] + 28))); h = Math.min(h, Math.max(50, Math.ceil(fit[1] + 28))); }
+  const opts = { ...base, width: w, height: h };
   if (marks.length) {
     opts.atoms = marks.map(x => x.atom);
     opts.highlightAtomColors = Object.fromEntries(marks.map(x => [x.atom, HL]));
@@ -643,9 +667,9 @@ function renderScheme() {
   const below = P.steps.filter(st => st.conditions && st.conditions !== 'see SI').map(st => (P.steps.length > 1 ? st.n + '. ' : '') + esc(st.conditions)).join('<br>');
   const show = state.solved || state.revealed;
   $('scheme').innerHTML =
-    `<div class="mol">${svg(P.substrate.smiles, 260, 180, marksFor(h => h.mol === 'substrate'))}<div class="mol-label">${esc(P.substrate.label)}</div></div>` +
+    `<div class="mol">${svg(P.substrate.smiles, 300, 170, marksFor(h => h.mol === 'substrate'))}<div class="mol-label">${esc(P.substrate.label)}</div></div>` +
     `<div class="arrow"><div class="above">${above}</div><div class="line"></div><div class="below">${below}</div></div>` +
-    (show ? `<div class="mol">${svg(P.product.smiles, 260, 180)}<div class="mol-label">${esc(P.product.label)}</div></div>`
+    (show ? `<div class="mol">${svg(P.product.smiles, 300, 170)}<div class="mol-label">${esc(P.product.label)}</div></div>`
           : `<div class="unknown" aria-label="Unknown product">?</div>`);
 }
 
@@ -654,7 +678,7 @@ function renderReagents() {
   $('reagents').innerHTML = items.map(r => {
     const big = r.smiles.length > 40;
     const marks = marksFor(h => h.mol === 'reagent' && h.step === r.step && h.reagent === r.text);
-    return `<div class="reagent">${svg(r.smiles, big ? 300 : 150, big ? 190 : 90, marks)}<span>${esc(r.text)}</span></div>`;
+    return `<div class="reagent">${svg(r.smiles, big ? 240 : 160, big ? 130 : 90, marks, 24)}<span>${esc(r.text)}</span></div>`;
   }).join('');
 }
 
@@ -794,6 +818,12 @@ async function main() {
   $('nextDay').onclick = () => loadDay(Math.min(currentDay, viewDay + 1));
   currentDay = Math.max(0, dayIndex(Date.now()));
   loadDay(currentDay); tick(); setInterval(tick, 1000);
+  // The editor iframe takes focus while loading and the browser scrolls to it; return to the question
+  // unless the visitor has already scrolled or clicked.
+  let moved = false;
+  ['wheel', 'touchstart', 'mousedown', 'keydown'].forEach(ev => addEventListener(ev, () => { moved = true; }, { once: true, passive: true }));
+  const toTop = () => { if (!moved) window.scrollTo(0, 0); };
+  toTop(); setTimeout(toTop, 300); setTimeout(toTop, 1200);
 }
 main().catch(e => { $('scheme').innerHTML = `<div class="loading">Could not start: ${esc(e.message || e)}</div>`; console.error(e); });
 </script>
