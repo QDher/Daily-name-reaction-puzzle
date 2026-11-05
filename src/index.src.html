@@ -302,11 +302,13 @@ button, input { font: inherit; }
       <h3 id="fbRateTitle">Rate this problem</h3>
       <form id="fbForm" class="fb-form" autocomplete="off">
         <div class="stars" role="radiogroup" aria-label="Rating from 1 to 5" id="fbStars"></div>
+        <div class="fb-sub">Rate the problem as a whole: clarity, interest, correctness of the structures and mechanism. Difficulty is only one part of it, and your score above is already recorded.</div>
         <label class="eyebrow" for="fbRemark">Remark (optional)</label>
-        <textarea id="fbRemark" maxlength="1000" placeholder="What was good or bad about this problem: clarity, difficulty, structures, mechanism…"></textarea>
+        <textarea id="fbRemark" maxlength="200" placeholder="What was good or bad about this problem: clarity, difficulty, structures, mechanism…"></textarea>
         <div class="row">
           <button class="btn primary" id="fbSend" type="submit" disabled>Send rating</button>
           <span class="fb-msg" id="fbFormMsg"></span>
+          <span class="fb-msg mono" id="fbCount" style="margin-left: auto;">0 / 200</span>
         </div>
       </form>
       <div class="fb-msg" id="fbRated" hidden></div>
@@ -480,6 +482,8 @@ function fbRenderRating(p) {
   if (!fbOn) { $('fbRated').textContent = 'Rating is not available on this copy of the page.'; return; }
   if (mine) { $('fbRated').textContent = `You rated this problem ${mine.stars} / 5. Thank you.`; return; }
   fbStars = 0; $('fbRemark').value = ''; $('fbFormMsg').textContent = ''; $('fbFormMsg').className = 'fb-msg';
+  const count = () => { $('fbCount').textContent = $('fbRemark').value.length + ' / 200'; };
+  $('fbRemark').oninput = count; count();
   fbDrawStars();
 }
 function fbDrawStars() {
@@ -492,7 +496,7 @@ async function fbSubmitRating(ev) {
   ev.preventDefault();
   const p = P, k = `fbrate:${FB_SITE}:${p.id}`;
   if (!fbStars || store.get(k)) return;
-  const remark = $('fbRemark').value.trim().slice(0, 1000) || null;
+  const remark = $('fbRemark').value.trim().slice(0, 200) || null;
   $('fbSend').disabled = true; $('fbFormMsg').className = 'fb-msg'; $('fbFormMsg').textContent = 'Sending…';
   try {
     await fbPost('ratings', { site: FB_SITE, problem_id: p.id, client_id: fbClient(), stars: fbStars, remark }, true);

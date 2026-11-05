@@ -23,7 +23,7 @@ create table if not exists public.ratings (
   problem_id  text        not null check (char_length(problem_id) between 1 and 120),
   client_id   uuid        not null,
   stars       smallint    not null check (stars between 1 and 5),
-  remark      text        check (remark is null or char_length(remark) <= 1000),
+  remark      text        check (remark is null or char_length(remark) <= 200),
   created_at  timestamptz not null default now(),
   unique (site, problem_id, client_id)
 );
