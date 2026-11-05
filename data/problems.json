@@ -950,6 +950,145 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-06",
+      "problems": [
+        {
+          "id": "smn-strecker-alanine",
+          "reaction": "Strecker amino acid synthesis",
+          "names": [
+            "Strecker amino acid synthesis",
+            "Strecker α-amino acid synthesis",
+            "Strecker alpha-amino acid synthesis",
+            "Strecker synthesis",
+            "Strecker reaction",
+            "Strecker amino acid reaction",
+            "Strecker"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/strecker-amino-acid-synthesis/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Strecker α-Amino Acid Synthesis (general equation, R = Me, R′ = H).",
+            "url": "https://say-my-name.net/reaction/strecker-amino-acid-synthesis/",
+            "context": "General equation of the say-my-name.net page (RCHO + R′NH₂, NaCN, H⁺ → R′NH–CH(R)–CO₂H) with R = Me on the aldehyde and R′ = H on the amine (ammonia): acetaldehyde → alanine, the example of Strecker's original 1850 paper. The intermediates follow the page's mechanism image: imine (−H₂O), α-aminonitrile (cyanide addition), imidic acid (water addition to the nitrile), then hydrolysis to the acid with loss of NH₃ (H₃O⁺). The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. R = Me / R′ = H substitution chosen here (R′ = H is the classical ammonia variant; R = Me rather than H avoids the formaldehyde special case, as in earlier Named Reactions Explorer entries). The Organic Chemistry Portal and TCI sites refused all requests (HTTP 403) during this run, so their pages could not be checked or linked. PubChem (connectivity layer of the InChIKey): acetaldehyde CID 177, ammonia CID 222, cyanide CID 5975 (sodium cyanide CID 8929), 2-aminopropanenitrile CID 411840 and alanine CID 5950 all matched. Structures a chemist should check: the imine (ethanimine, drawn with its iminium form), the α-aminonitrile and the imidic acid / amide stage of the nitrile hydrolysis (the page draws the imidic acid; the amide tautomer is accepted as the same species).",
+          "substrate": {
+            "label": "acetaldehyde",
+            "smiles": "CC=O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "NH₃",
+                  "smiles": "N"
+                },
+                {
+                  "text": "NaCN (cyanide)",
+                  "smiles": "[C-]#N"
+                },
+                {
+                  "text": "H⁺"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Imine (ethanimine) / iminium ion, after loss of H₂O",
+                  "forms": [
+                    "CC=N",
+                    "CC=[NH2+]"
+                  ]
+                },
+                {
+                  "label": "α-Aminonitrile (2-aminopropanenitrile), from cyanide addition to the C=N",
+                  "forms": [
+                    "CC(N)C#N",
+                    "CC([NH3+])C#N"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H₃O⁺"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Imidic acid (tautomer of 2-aminopropanamide), from water addition to the nitrile",
+                  "forms": [
+                    "CC(N)C(O)=N",
+                    "CC(N)C(N)=O",
+                    "CC(N)C(O)=[NH2+]"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "alanine (racemic)",
+            "smiles": "CC(N)C(=O)O"
+          },
+          "byproducts": "H₂O, NH₃ (as NH₄⁺)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Strecker α-Amino Acid Synthesis (mechanism image: imine formation, cyanide addition, nitrile hydration to the imidic acid, hydrolysis with loss of NH₃).",
+            "A. Strecker. Ueber die künstliche Bildung der Milchsäure und einen neuen, dem Glycocoll homologen Körper. Liebigs Ann. Chem. 1850, 75, 27–45 (doi:10.1002/jlac.18500750103).",
+            "H. Gröger. Catalytic Enantioselective Strecker Reactions and Analogous Syntheses. Chem. Rev. 2003, 103, 2795–2828 (doi:10.1021/cr020038p)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "NH₃",
+              "atom": 0
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "NaCN (cyanide)",
+              "atom": 0
+            },
+            {
+              "transition": "product",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "NaCN (cyanide)",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 3,
+            "sigmaBondEvents": 6,
+            "score": 8.0
+          }
+        }
+      ]
     }
   ]
 }
