@@ -10,7 +10,8 @@ Scheduled runs: the scheduled-task prompt is authoritative; this file does not c
 | Public copy | GitHub Pages https://qdher.github.io/Daily-name-reaction-puzzle/ (deployed from `main` by `.github/workflows/pages.yml`) |
 | Daily generation | Claude Code scheduled task "Name Reaction Daily question (Claude Code)" (`trig_01Ke7KmM7zYWFMFeXDzg5bHT`), daily at 20:31 America/New_York |
 | Scheduled-task prompt backup | `TASK_PROMPT.md` |
-| Problems | `data/problems.json` (built into `index.html` by `src/build.js`) |
+| Problems | `data/problems.json` (last 32 days and later; built into `index.html` by `src/build.js`) |
+| Archive | `data/archive.json.gz` (older sets, moved by `src/build.js` via `src/archive.js`; read with `zcat`); the page shows the last month only |
 | Feedback log | `data/feedback_log.json` (written by the scheduled runs, step 3b) |
 | Results and ratings | Supabase project `gevbctklqelyumhynfnq`, site key `namerxn`; schema in `supabase/schema.sql` |
 

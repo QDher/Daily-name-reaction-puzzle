@@ -87,3 +87,7 @@ Publish to the same artifact URL with `file_path` = `index.html`, `root` = the w
   "src/PIPELINE.md": { "from": "src/PIPELINE.md", "contentType": "text/markdown" }
 }
 ```
+
+## Archive and date list
+
+`src/build.js` first calls `src/archive.js`: sets dated more than 32 days before today (schedule time zone) are moved from `data/problems.json` into `data/archive.json.gz` (gzip of `{"sets": [...]}`), then the page is built from what remains. The page lists the last 31 days that have a set in a drop-down, with the visitor's progress for each day (stored in the browser). Archived sets are not shown on the page; `validate_problems.js` still reads them for ids, paper + reaction pairs and repeated reactions. Read the archive with `zcat data/archive.json.gz`. Results and ratings of archived problems stay in Supabase.

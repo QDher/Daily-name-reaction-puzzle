@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const init = require('@rdkit/rdkit');
 const { speciesInfo, matches, substrateFingerprint } = require('./chemkey.js');
+const { readArchive } = require('./archive.js');
 const file = process.argv[2] || path.join(__dirname, '..', 'data', 'problems.json');
 const data = JSON.parse(fs.readFileSync(file, 'utf8'));
 
@@ -39,6 +40,16 @@ init().then(R => {
   if ([...dates].sort().join() !== dates.join()) err('sets', 'dates are not in ascending order');
   if (new Set(dates).size !== dates.length) err('sets', 'duplicate date');
   const ids = new Map(), steps = new Map(), lastSeen = new Map();
+  // archived sets (data/archive.json.gz) count for ids, examples and the repeat window (negative set indices)
+  const archived = readArchive();
+  archived.forEach((day, k) => { for (const P of day.problems) {
+    const tag = day.date + ' (archived)';
+    ids.set(P.id, tag);
+    steps.set((P.source && (P.source.doi || P.source.url)) + ' | ' + P.reaction, tag);
+    lastSeen.set(norm(P.reaction), { i: k - archived.length, date: tag });
+  } });
+  const archivedDates = new Set(archived.map(s => s.date));
+  for (const d of dates) if (archivedDates.has(d)) err(d, 'date also present in data/archive.json.gz');
 
   data.sets.forEach((day, di) => {
     if (day.problems.length !== 1) err(day.date, `exactly one problem per day (found ${day.problems.length})`);

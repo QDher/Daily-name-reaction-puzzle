@@ -72,6 +72,7 @@ button, input { font: inherit; }
 .daynav button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 2px 10px; cursor: pointer; }
 .daynav button:hover:not(:disabled) { border-color: var(--accent); }
 .daynav button:disabled { opacity: .4; cursor: default; }
+.daynav select { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 2px 6px; font: inherit; font-size: 13px; max-width: 15.5em; }
 .stale { font-size: 13px; color: var(--warn); }
 
 /* Status strip: three goals of the day */
@@ -234,8 +235,9 @@ body { padding-block: 14px 40px; }
       <span class="eyebrow" id="setText">Today's question</span>
       <span class="count" id="countdown">--:--:--</span>
       <div class="daynav">
-        <button id="prevDay" type="button">‹ Previous day</button>
-        <button id="nextDay" type="button">Next day ›</button>
+        <button id="prevDay" type="button" aria-label="Previous day">‹</button>
+        <select id="dayList" aria-label="Choose a day (last month)"></select>
+        <button id="nextDay" type="button" aria-label="Next day">›</button>
       </div>
     </div>
   </header>
@@ -625,12 +627,39 @@ const stateOf = p => Object.assign(blank(), store.get('namerxn:' + p.id) || {});
 const stepsText = p => p.steps.length === 1 ? 'one step' : `${p.steps.length} steps, one pot`;
 const nameShown = () => state.named || state.revealed;
 
+
+/* ---- date list: the last WINDOW_DAYS days that have a question (older sets are archived by build.js) ---- */
+const WINDOW_DAYS = 31;
+const firstDay = () => Math.max(0, currentDay - (WINDOW_DAYS - 1));
+const setOnDate = iso => DATA.sets.find(s => s.date === iso);
+// solved marker for the day's question (progress stored in this browser)
+function dayMark(s) {
+  const x = stateOf(s.problems[0]);
+  if (x.solved) return x.named ? '✓ solved and named' : '✓ solved';
+  if (x.revealed) return 'answer shown';
+  return x.found.length || x.attempts ? 'started' : '';
+}
+function renderDayList() {
+  const opts = [];
+  for (let i = currentDay; i >= firstDay(); i--) {
+    const s = setOnDate(dateOf(i));
+    if (!s && i !== currentDay) continue;
+    const m = s ? dayMark(s) : '';
+    opts.push(`<option value="${i}">${fmtDay(dateOf(i))}${i === currentDay ? ' (today)' : ''}${m ? ' · ' + m : ''}</option>`);
+  }
+  const el = $('dayList');
+  el.innerHTML = opts.join('');
+  el.value = String(viewDay);
+}
+
 function loadDay(i) {
+  i = Math.min(currentDay, Math.max(firstDay(), i));
   viewDay = i;
   const daySet = setFor(i);
   $('setText').textContent = (i === currentDay ? "Today's question · " : 'Question of ') + fmtDay(dateOf(i));
-  $('prevDay').disabled = i <= 0;
+  $('prevDay').disabled = i <= firstDay();
   $('nextDay').disabled = i >= currentDay;
+  renderDayList();
   const stale = daySet.date !== dateOf(i);
   $('staleNote').hidden = !stale;
   if (stale) $('staleNote').textContent = `No question has been added for ${fmtDay(dateOf(i))} yet; showing the question of ${fmtDay(daySet.date)}.`;
@@ -767,7 +796,7 @@ function updateAttempts() {
   const c = state.attempts ? state.attempts + ' check' + (state.attempts > 1 ? 's' : '') : '', sc = scoreText();
   $('attempts').textContent = [c, sc].filter(Boolean).join(' · ');
 }
-function save() { store.set('namerxn:' + P.id, state); }
+function save() { store.set('namerxn:' + P.id, state); renderDayList(); }
 
 async function check() {
   if (editor.isEmpty()) { setVerdict('info', 'Empty', 'Draw a structure first.'); return; }
@@ -823,8 +852,9 @@ async function main() {
   $('confirmNo').onclick = () => { $('confirmBox').hidden = true; };
   $('confirmYes').onclick = () => { $('confirmBox').hidden = true; state.revealed = true; if (!state.solved) finishProblem(true); save(); renderAll(); updateAttempts(); };
   $('resetBtn').onclick = () => { store.del('namerxn:' + P.id); loadDay(viewDay); };
-  $('prevDay').onclick = () => loadDay(Math.max(0, viewDay - 1));
-  $('nextDay').onclick = () => loadDay(Math.min(currentDay, viewDay + 1));
+  $('prevDay').onclick = () => loadDay(viewDay - 1);
+  $('dayList').onchange = e => loadDay(+e.target.value);
+  $('nextDay').onclick = () => loadDay(viewDay + 1);
   currentDay = Math.max(0, dayIndex(Date.now()));
   loadDay(currentDay); tick(); setInterval(tick, 1000);
   // The editor iframe takes focus while loading and the browser scrolls to it; return to the question
