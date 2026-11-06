@@ -1089,6 +1089,134 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-07",
+      "problems": [
+        {
+          "id": "smn-hantzsch-pyrrole-ethyl-2-methylpyrrole-3-carboxylate",
+          "reaction": "Hantzsch pyrrole synthesis",
+          "names": [
+            "Hantzsch pyrrole synthesis",
+            "Hantzsch pyrrole reaction",
+            "Hantzsch synthesis",
+            "Hantzsch reaction",
+            "Hantzsch pyrrole",
+            "Hantzsch"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/hantzsch-pyrrole-synthesis/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Hantzsch Pyrrole Synthesis (general equation, R¹ = H, R² = H, R³ = Me).",
+            "url": "https://say-my-name.net/reaction/hantzsch-pyrrole-synthesis/",
+            "context": "General equation of the say-my-name.net page (α-chloro ketone R¹CO–CHClR² + ethyl 3-oxoalkanoate R³COCH₂CO₂Et, NH₃ → ethyl 2-R³-4-R¹-5-R²-pyrrole-3-carboxylate) with R¹ = R² = H (chloroacetaldehyde) and R³ = Me (ethyl acetoacetate); R³ = H would make the β-dicarbonyl component an aldehyde (ethyl formylacetate), so the simplest β-keto ester was used. Product: ethyl 2-methyl-1H-pyrrole-3-carboxylate. The intermediates follow the page's mechanism image: enamine from the β-keto ester and NH₃, C-attack of the enamine on the carbonyl of the chloro carbonyl compound, loss of H₂O, N-alkylation with loss of Cl⁻ to a 2H-pyrrolium ion, proton shift and loss of H⁺ to the aromatic pyrrole. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution R¹ = R² = H, R³ = Me chosen here. The Organic Chemistry Portal and TCI sites refused all requests (HTTP 403) during this run, so their pages could not be checked or linked. PubChem (connectivity layer of the InChIKey): ethyl acetoacetate CID 8868, ammonia CID 222, chloroacetaldehyde CID 33 and ethyl 2-methyl-1H-pyrrole-3-carboxylate CID 136747 matched; the enamine intermediate (ethyl 3-aminocrotonate, CID 637551) also matched. Structures a chemist should check: the aldol-type adduct (drawn as the imine, as on the page; the enamine tautomer is accepted), the dehydrated chloro imine, and the regiochemistry of the product (C–C bond to the carbonyl carbon, N–C bond to the CHCl carbon, as drawn on the page). The page's 2H-pyrrolium ions are not asked separately: the comparison key treats the neutral 2H-pyrrole as a tautomer of the product. The page draws the C-attack of the enamine on the carbonyl first (the order of C- and N-alkylation is debated in the literature).",
+          "substrate": {
+            "label": "ethyl acetoacetate",
+            "smiles": "CC(=O)CC(=O)OCC"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "NH₃",
+                  "smiles": "N"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Enamine (ethyl 3-aminobut-2-enoate), from addition of NH₃ to the ketone and loss of H₂O",
+                  "forms": [
+                    "NC(C)=CC(=O)OCC",
+                    "N=C(C)CC(=O)OCC"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "ClCH₂CHO (chloroacetaldehyde)",
+                  "smiles": "ClCC=O"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Aldol-type adduct: the enamine α-carbon has added to the aldehyde C=O (imine / enamine tautomers)",
+                  "forms": [
+                    "N=C(C)C(C(=O)OCC)C(O)CCl",
+                    "NC(C)=C(C(=O)OCC)C(O)CCl"
+                  ]
+                },
+                {
+                  "label": "Unsaturated chloro imine, after loss of H₂O (the N then displaces Cl⁻ to close the 2H-pyrrolium ring, which loses H⁺ to the pyrrole)",
+                  "forms": [
+                    "N=C(C)C(C(=O)OCC)=CCCl"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "ethyl 2-methyl-1H-pyrrole-3-carboxylate",
+            "smiles": "Cc1[nH]ccc1C(=O)OCC"
+          },
+          "byproducts": "H₂O (2 equiv.), HCl (as NH₄Cl)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Hantzsch Pyrrole Synthesis (mechanism image: enamine formation, enamine C-attack on the carbonyl, loss of H₂O, N-alkylation with loss of Cl⁻, proton shift and loss of H⁺).",
+            "A. Hantzsch. Neue Bildungsweise von Pyrrolderivaten. Ber. Dtsch. Chem. Ges. 1890, 23, 1474–1476 (doi:10.1002/cber.189002301243).",
+            "J. J. Li. Name Reactions, 6th ed., Springer, 2021: Hantzsch pyrrole synthesis."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "step 2 int 1",
+              "mol": "substrate",
+              "atom": 3
+            },
+            {
+              "transition": "step 2 int 2",
+              "mol": "reagent",
+              "step": 2,
+              "reagent": "ClCH₂CHO (chloroacetaldehyde)",
+              "atom": 2
+            },
+            {
+              "transition": "product",
+              "mol": "reagent",
+              "step": 2,
+              "reagent": "ClCH₂CHO (chloroacetaldehyde)",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 3,
+            "sigmaBondEvents": 6,
+            "score": 8.0
+          }
+        }
+      ]
     }
   ]
 }
