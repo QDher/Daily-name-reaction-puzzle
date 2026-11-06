@@ -92,3 +92,48 @@ revoke all on function public.problem_stats(text, text), public.feedback_export(
   public.problem_summary(text) from public;
 grant execute on function public.problem_stats(text, text), public.feedback_export(text, timestamptz),
   public.problem_summary(text) to anon, authenticated;
+
+-- ---------------------------------------------------------------------------------------------
+-- Difficulty questions (One-Pot page), asked after a problem is finished. One answer per visitor
+-- and problem; insert only. Used by the scheduled runs to check the step-level classification.
+create table if not exists public.difficulty_answers (
+  id               bigint generated always as identity primary key,
+  site             text        not null check (site in ('onepot', 'namerxn')),
+  problem_id       text        not null check (char_length(problem_id) between 1 and 120),
+  client_id        uuid        not null,
+  seen             text        not null check (seen in ('undergraduate', 'graduate', 'papers', 'never')),
+  hardest_step     smallint    check (hardest_step between 1 and 20),
+  known_reagents   text[]      not null default '{}' check (cardinality(known_reagents) <= 6 and char_length(array_to_string(known_reagents, '|')) <= 600),
+  unknown_reagents text[]      not null default '{}' check (cardinality(unknown_reagents) <= 6 and char_length(array_to_string(unknown_reagents, '|')) <= 600),
+  created_at       timestamptz not null default now(),
+  unique (site, problem_id, client_id)
+);
+alter table public.difficulty_answers enable row level security;
+drop policy if exists difficulty_insert on public.difficulty_answers;
+create policy difficulty_insert on public.difficulty_answers for insert to anon, authenticated with check (true);
+revoke all on public.difficulty_answers from anon, authenticated;
+grant insert (site, problem_id, client_id, seen, hardest_step, known_reagents, unknown_reagents) on public.difficulty_answers to anon, authenticated;
+
+-- Per problem: answer counts, where the reaction had been seen, hardest step, reagents known / unknown.
+create or replace function public.difficulty_summary(p_site text)
+returns table (problem_id text, answers bigint, seen_undergraduate bigint, seen_graduate bigint,
+               seen_papers bigint, seen_never bigint, hardest_step json, reagents json)
+language sql stable security definer set search_path = public as $$
+  select d.problem_id, count(*),
+         count(*) filter (where d.seen = 'undergraduate'), count(*) filter (where d.seen = 'graduate'),
+         count(*) filter (where d.seen = 'papers'), count(*) filter (where d.seen = 'never'),
+         (select coalesce(json_object_agg(h, n), '{}'::json) from
+            (select x.hardest_step h, count(*) n from difficulty_answers x
+             where x.site = p_site and x.problem_id = d.problem_id and x.hardest_step is not null
+             group by x.hardest_step) s),
+         (select coalesce(json_object_agg(r, json_build_object('known', k, 'unknown', u)), '{}'::json) from
+            (select r, sum(k) k, sum(u) u from (
+               select unnest(x.known_reagents) r, 1 k, 0 u from difficulty_answers x where x.site = p_site and x.problem_id = d.problem_id
+               union all
+               select unnest(x.unknown_reagents), 0, 1 from difficulty_answers x where x.site = p_site and x.problem_id = d.problem_id) z
+             group by r) q)
+  from difficulty_answers d where d.site = p_site
+  group by d.problem_id order by d.problem_id;
+$$;
+revoke all on function public.difficulty_summary(text) from public;
+grant execute on function public.difficulty_summary(text) to anon, authenticated;
