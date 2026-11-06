@@ -22,7 +22,7 @@ mkdir -p work && cd work            # artifact files here: index.html, data/, sr
 npm init -y >/dev/null && npm install @rdkit/rdkit@2026.9.1
 pip download --no-deps rdkit==2026.9.1 -d whl        # a plain `pip install rdkit` can stall
 pip install --break-system-packages --no-deps whl/rdkit-*.whl
-node src/test_chemkey.js            # expect 22/22
+node src/test_chemkey.js            # every case must pass (last line: N/N as expected)
 ```
 
 ## 2. Which date

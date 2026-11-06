@@ -40,7 +40,7 @@ Create an empty folder in your scratchpad, e.g. <scratchpad>/namerxn. Use the Ar
   pip download --no-deps rdkit==2026.9.1 -d whl      (a plain "pip install rdkit" can stall for minutes)
   pip install --break-system-packages --no-deps whl/rdkit-*.whl
   pip install --break-system-packages -q cairosvg     (renders repository SVG images to PNG)
-  node src/test_chemkey.js                            (must print 22/22 as expected)
+  node src/test_chemkey.js                            (every case must pass: the last line reads N/N as expected)
 
 3. WHICH DATE
 A question appears every day at 10:00 America/New_York. Let "tomorrow" be tomorrow's date in America/New_York. Target date = the earliest date >= tomorrow with no entry in data/problems.json "sets". If tomorrow and the day after both already have sets, do not change anything: report "queue already full until <date>" and stop (still run step 8 so GitHub matches the artifact).
