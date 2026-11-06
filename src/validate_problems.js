@@ -4,7 +4,7 @@
 const path = require('path');
 const fs = require('fs');
 const init = require('@rdkit/rdkit');
-const { chemKey, substrateFingerprint } = require('./chemkey.js');
+const { speciesInfo, matches, substrateFingerprint } = require('./chemkey.js');
 const file = process.argv[2] || path.join(__dirname, '..', 'data', 'problems.json');
 const data = JSON.parse(fs.readFileSync(file, 'utf8'));
 
@@ -81,22 +81,23 @@ init().then(R => {
       // structures
       let fp;
       try { fp = substrateFingerprint(R, P.substrate.smiles); } catch (e) { err(w, 'substrate SMILES unreadable'); continue; }
-      const sk = chemKey(R, P.substrate.smiles, fp), pk = chemKey(R, P.product.smiles, fp);
-      if (!sk) err(w, 'substrate SMILES unreadable');
-      if (!pk) err(w, 'product SMILES unreadable');
-      if (sk && sk === pk) err(w, 'product has the same key as the substrate');
+      // species are compared as on the page: same structure up to protonation, counterions, stereo and
+      // tautomers in which protons move to or from N, O or S (chemkey.js)
+      const sub = speciesInfo(R, P.substrate.smiles, fp), prod = speciesInfo(R, P.product.smiles, fp);
+      if (!sub.key) err(w, 'substrate SMILES unreadable');
+      if (!prod.key) err(w, 'product SMILES unreadable');
+      if (matches(sub, prod)) err(w, 'product is the same species as the substrate');
       for (const st of P.steps) for (const r of st.reagents)
         if (r.smiles) { const m = R.get_mol(r.smiles); if (!m || !m.is_valid()) err(w, `reagent ${r.text}: SMILES unreadable`); if (m) m.delete(); }
-      const seen = new Map([[sk, 'substrate'], [pk, 'product']]);
+      const seen = [{ label: 'substrate', infos: [sub] }, { label: 'product', infos: [prod] }];
       let distinct = 0;
       for (const st of P.steps) for (const [k, it] of st.intermediates.entries()) {
-        const keys = it.forms.map(f => chemKey(R, f, fp));
-        if (!it.forms.length || keys.some(x => !x)) err(w, `step ${st.n} intermediate ${k + 1}: unreadable or missing form`);
-        const uniq = [...new Set(keys.filter(Boolean))];
-        const clash = uniq.filter(x => seen.has(x)).map(x => seen.get(x));
-        if (clash.length) err(w, `step ${st.n} intermediate ${k + 1} has the same key as ${clash.join(', ')} (tautomer / protonation state / resonance form); merge or remove it`);
+        const infos = it.forms.map(f => speciesInfo(R, f, fp));
+        if (!it.forms.length || infos.some(x => !x.key)) err(w, `step ${st.n} intermediate ${k + 1}: unreadable or missing form`);
+        const clash = seen.filter(o => o.infos.some(a => infos.some(b => matches(a, b)))).map(o => o.label);
+        if (clash.length) err(w, `step ${st.n} intermediate ${k + 1} is the same species as ${clash.join(', ')} (tautomer with a proton moved to or from N/O/S, protonation state or resonance form); merge or remove it`);
         else distinct++;
-        uniq.forEach(x => seen.has(x) || seen.set(x, `step ${st.n} intermediate ${k + 1}`));
+        seen.push({ label: `step ${st.n} intermediate ${k + 1}`, infos });
       }
       if (distinct < 2) err(w, `only ${distinct} distinct intermediate(s); at least 2 are required`);
 

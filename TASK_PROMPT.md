@@ -17,7 +17,7 @@ Backup of the Claude Code scheduled task that adds a daily question to the claud
 
 The earlier Cowork task "Name Reaction Daily question" is disabled and kept as a fallback; it cannot push to GitHub.
 
-Backed up on 2026-11-05 (no mechanism indications in text shown before solving; feedback log).
+Backed up on 2026-11-06 (tautomers: only proton moves to or from N, O or S are equivalent).
 
 ## Prompt
 
@@ -82,7 +82,7 @@ Other rules:
 - Not already in data/problems.json within the previous 90 sets (the validator checks the display name; also avoid the same reaction under another name).
 - Vary the reaction class (rearrangement, olefination, heterocycle synthesis, oxidation, reduction, C–C bond formation, cycloaddition, multicomponent, etc.): do not repeat the class of the previous set.
 - Mechanism: as drawn/described on the repository page(s) (say-my-name mechanism image, TCI general mechanism, Organic Chemistry Portal text), consistent with the established mechanism; references = repository pages plus the original paper and/or a mechanistic study or review.
-- At least 2 distinct intermediates once the comparison key is applied (the key ignores stereochemistry, E/Z, tautomers, protonation state and counterions; carbocations, oxocarbenium and iminium ions stay distinct). Multistep one-pot examples are allowed (each step listed separately).
+- At least 2 distinct intermediates once the comparison key is applied (the key ignores stereochemistry, E/Z, protonation state, counterions and tautomers in which each moved proton forms or breaks a bond to N, O or S (keto/enol, imine/enamine, amide/imidic acid); a proton moved from one carbon to another (alkene isomer, e.g. beta,gamma- vs alpha,beta-unsaturated ketone) gives a different species, even via an enol; an intermediate that is such a tautomer of the substrate, the product or another intermediate must be removed or merged; carbocations, oxocarbenium and iminium ions stay distinct). Multistep one-pot examples are allowed (each step listed separately).
 - The product can be deduced from substrate + reagents.
 
 5. WRITE THE ENTRY

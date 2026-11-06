@@ -284,7 +284,8 @@ body { padding-block: 14px 40px; }
       <div class="hint">
         Validation ignores:
         <ul>
-          <li>stereochemistry (wedges, dashes, E/Z), tautomers and protonation state;</li>
+          <li>stereochemistry (wedges, dashes, E/Z) and protonation state;</li>
+          <li>tautomers in which a proton moves to or from N, O or S (keto/enol, imine/enamine); a proton moved from one carbon to another (alkene isomer) is a different structure;</li>
           <li>counterions and by-products; only the species derived from the substrate is compared.</li>
         </ul>
         Draw metal alkoxides and enolates as O⁻. Charges: the <b>A⁺</b> / <b>A⁻</b> tools in the left toolbar, then click the atom. Radicals: double-click the atom to open Atom Properties and set Radical. Structure editor: <a href="https://lifescience.opensource.epam.com/ketcher/" target="_blank" rel="noopener">Ketcher</a> (EPAM, Apache 2.0).
@@ -612,12 +613,12 @@ function svg(smiles, w, h, marks = [], bond = 28) {
 
 function buildContext(p) {
   const fp = substrateFingerprint(R, p.substrate.smiles);
-  const map = new Map();
+  const species = [];   // every accepted drawing of every intermediate, in mechanism order
   p.steps.forEach((st, si) => st.intermediates.forEach((it, k) => {
-    it.forms.forEach(f => { const key = chemKey(R, f, fp); if (key && !map.has(key)) map.set(key, { si, k }); });
+    it.forms.forEach(f => species.push({ info: speciesInfo(R, f, fp), hit: { si, k } }));
   }));
   const total = p.steps.reduce((a, s) => a + s.intermediates.length, 0);
-  return { fp, map, total, subKey: chemKey(R, p.substrate.smiles, fp), prodKey: chemKey(R, p.product.smiles, fp) };
+  return { fp, species, total, sub: speciesInfo(R, p.substrate.smiles, fp), prod: speciesInfo(R, p.product.smiles, fp) };
 }
 const blank = () => ({ found: [], solved: false, named: false, revealed: false, attempts: 0, nameTries: 0, hints: 0 });
 const stateOf = p => Object.assign(blank(), store.get('namerxn:' + p.id) || {});
@@ -772,16 +773,16 @@ async function check() {
   if (editor.isEmpty()) { setVerdict('info', 'Empty', 'Draw a structure first.'); return; }
   let molfile;
   try { molfile = await editor.getMolfile(); } catch (e) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
-  const key = chemKey(R, molfile, ctx.fp);
-  if (!key) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
+  const drawn = speciesInfo(R, molfile, ctx.fp);
+  if (!drawn.key) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
   state.attempts++; updateAttempts();
-  if (key === ctx.prodKey) {
+  if (matches(drawn, ctx.prod)) {
     const first = !state.solved; state.solved = true; if (first) finishProblem(false); save(); updateAttempts();
     setVerdict('ok', 'Product', first ? 'Correct. This is the product of the repository example.' : 'Correct. Product already found.');
     renderAll();
     return;
   }
-  const hit = ctx.map.get(key);
+  const hit = (ctx.species.find(x => matches(drawn, x.info)) || {}).hit;
   if (hit) {
     const st = P.steps[hit.si], it = st.intermediates[hit.k], id = hit.si + '.' + hit.k;
     const where = `step ${st.n} (${reagentTexts(st).join(', ')}), intermediate ${hit.k + 1} of ${st.intermediates.length}`;
@@ -790,7 +791,7 @@ async function check() {
     setVerdict('warn', 'Intermediate · step ' + st.n, `Correct intermediate: ${where}. ${it.label}.`);
     return;
   }
-  if (key === ctx.subKey) { setVerdict('info', 'Starting material', 'This is the substrate (or a tautomer / protonation state of it).'); return; }
+  if (matches(drawn, ctx.sub)) { setVerdict('info', 'Starting material', 'This is the substrate (or a tautomer / protonation state of it).'); return; }
   save();
   setVerdict('bad', 'Not on the path', 'Not the product or a known intermediate of the mechanism.');
 }

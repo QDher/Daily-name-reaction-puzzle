@@ -1,8 +1,12 @@
-// chemkey.js — comparison key for drawn structures (RDKit.js >= 2026.09)
-// Ignores: stereocentres, E/Z, H-tautomers (incl. keto/enol), protonation state,
-// counterions and by-products (only the fragment most similar to the substrate is kept).
-// Not merged: some tautomer classes (e.g. nitro/aci-nitro) and resonance forms of
-// delocalized anions/cations — store every accepted form.
+// chemkey.js — comparison of drawn structures with stored ones (RDKit.js >= 2026.09)
+// chemKey(drawn) gives the key of a structure; chemKeys(stored) gives every key accepted for it.
+// A drawing is accepted when one structure is an allowed tautomer of the other (see matches below).
+// Ignored: stereocentres, E/Z, protonation state, counterions and by-products (only the fragment
+// most similar to the substrate is kept), and tautomers in which each moved proton forms or breaks
+// a bond to N, O or S (more electronegative than H): keto/enol, imine/enamine, amide/imidic acid,
+// nitro/aci-nitro. A net proton move from carbon to carbon (alkene isomerization, e.g.
+// beta,gamma- vs alpha,beta-unsaturated ketone) is NOT a tautomer here, even when it can be reached
+// via an enol. Not merged: resonance forms of delocalized anions/cations — store every accepted form.
 
 const HETERO = new Set([7, 8, 15, 16]); // N, O, P, S
 
@@ -73,16 +77,20 @@ function neutralize(RDKit, mol) {
   return out;
 }
 
-const inchiOf = mol => mol.get_inchi('-SNon -KET -15T').replace(/\/p[+-]\d+/, '');
+// Standard InChI (stereo off, protonation layer removed). Its mobile-H layer only moves H between
+// heteroatoms (allowed). InChI keto/enol (-KET) and 1,5 (-15T) merging is not used, because it can
+// merge carbon-to-carbon proton moves; those tautomers are enumerated below with the N/O/S rule.
+const inchiOf = mol => mol.get_inchi('-SNon').replace(/\/p[+-]\d+/, '');
 
-// Prototropic tautomers that InChI does not merge (e.g. dienol / α,β-enone / β,γ-enone,
-// nitro / aci-nitro): enumerate 1,3 and 1,5 H-shifts with at least one N/O/S end,
-// away from aromatic rings and radicals (end atoms uncharged), and keep the smallest InChI.
+// Prototropic tautomers: enumerate 1,3 and 1,5 H-shifts with at least one N/O/S end, away from
+// aromatic rings and radicals (end atoms uncharged). A tautomer is accepted only if the net change
+// of H counts can be split into moves that each start or end on N, O or S:
+// H lost by carbon <= H gained by N/O/S, and H gained by carbon <= H lost by N/O/S.
 const TAUT_ENDS = new Set([7, 8, 16]);
 const TAUT_ATOMS = new Set([6, 7, 8, 16]);
 const TAUT_CAP = 400;
 
-function tautomerKey(RDKit, mol) {
+function tautomerKeys(RDKit, mol) {
   const doc = JSON.parse(mol.get_json());
   const d = doc.defaults.atom, db = doc.defaults.bond, m = doc.molecules[0];
   const arom = new Set(((m.extensions || []).find(e => e.aromaticAtoms) || {}).aromaticAtoms || []);
@@ -126,9 +134,20 @@ function tautomerKey(RDKit, mol) {
     return out;
   };
 
-  let best = inchiOf(mol);
+  const orig = atoms.map(a => a.impHs);
+  const allowed = hs => {
+    let cLost = 0, cGained = 0, xLost = 0, xGained = 0;
+    hs.forEach((h, i) => {
+      const d = h - orig[i];
+      if (!d) return;
+      if (TAUT_ENDS.has(atoms[i].z)) { if (d > 0) xGained += d; else xLost -= d; }
+      else { if (d > 0) cGained += d; else cLost -= d; }
+    });
+    return cLost <= xGained && cGained <= xLost;
+  };
+  const keys = new Set([inchiOf(mol)]);
   const seen = new Set([mol.get_smiles()]);
-  const queue = [[atoms.map(a => a.impHs), bonds.map(b => b.bo)]];
+  const queue = [[orig, bonds.map(b => b.bo)]];
   while (queue.length && seen.size < TAUT_CAP) {
     const [hs, bos] = queue.shift();
     for (const [h, b] of moves(hs, bos)) {
@@ -137,29 +156,47 @@ function tautomerKey(RDKit, mol) {
       const smi = t.get_smiles();
       if (!seen.has(smi)) {
         seen.add(smi);
-        const k = inchiOf(t);
-        if (k < best) best = k;
+        if (allowed(h)) keys.add(inchiOf(t));
         queue.push([h, b]);
       }
       t.delete();
     }
   }
-  return best;
+  return [...keys];
 }
 
 // input: SMILES or molfile. refFp: fingerprint of the substrate (optional).
-// Returns the key string, or null if the structure is invalid or empty.
-function chemKey(RDKit, input, refFp) {
+function prepare(RDKit, input, refFp) {
   let mol = RDKit.get_mol(input);
-  if (!mol || !mol.is_valid() || mol.get_num_atoms() === 0) return null;
+  if (!mol || !mol.is_valid() || mol.get_num_atoms() === 0) { if (mol) mol.delete(); return null; }
   mol = mainFragment(RDKit, mol, refFp);
   if (!mol) return null;
   mol = neutralize(RDKit, mol);
   if (!mol || !mol.is_valid()) return null;
-  const key = tautomerKey(RDKit, mol);
+  return mol;
+}
+// Key of one structure (a drawing), or null if invalid or empty.
+function chemKey(RDKit, input, refFp) {
+  const mol = prepare(RDKit, input, refFp);
+  if (!mol) return null;
+  const key = inchiOf(mol);
   mol.delete();
   return key || null;
 }
+// Every key accepted for a stored structure (its own key plus allowed tautomers); [] if invalid.
+function chemKeys(RDKit, input, refFp) {
+  const mol = prepare(RDKit, input, refFp);
+  if (!mol) return [];
+  const keys = tautomerKeys(RDKit, mol).filter(Boolean);
+  mol.delete();
+  return keys;
+}
+// Matching is checked in both directions (the enumeration does not move H on aromatic atoms, so
+// e.g. a cyclohexadienone reaches phenol but not the reverse): a drawing D matches a stored form S
+// when key(D) is in keys(S), or key(S) is in keys(D).
+function speciesInfo(RDKit, input, refFp) { return { key: chemKey(RDKit, input, refFp), keys: chemKeys(RDKit, input, refFp) }; }
+const matches = (d, s) => !!d.key && !!s.key && (s.keys.includes(d.key) || d.keys.includes(s.key));
+const sameSpecies = (RDKit, drawn, stored, refFp) => matches(speciesInfo(RDKit, drawn, refFp), speciesInfo(RDKit, stored, refFp));
 
 function substrateFingerprint(RDKit, smiles) {
   const m = RDKit.get_mol(smiles);
@@ -168,5 +205,5 @@ function substrateFingerprint(RDKit, smiles) {
   return fp;
 }
 
-if (typeof module !== 'undefined') module.exports = { chemKey, substrateFingerprint };
-if (typeof window !== 'undefined') Object.assign(window, { chemKey, substrateFingerprint });
+if (typeof module !== 'undefined') module.exports = { chemKey, chemKeys, speciesInfo, matches, sameSpecies, substrateFingerprint };
+if (typeof window !== 'undefined') Object.assign(window, { chemKey, chemKeys, speciesInfo, matches, sameSpecies, substrateFingerprint });

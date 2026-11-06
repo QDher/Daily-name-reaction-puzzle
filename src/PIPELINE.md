@@ -7,7 +7,7 @@ The published artifact is the source of truth. It contains the page and everythi
 | `index.html` | the page (built; questions and key function embedded) |
 | `data/problems.json` | schedule and all daily questions |
 | `src/index.src.html` | page template |
-| `src/chemkey.js` | comparison key (stereo, E/Z, tautomers, protonation, counterions ignored); same as One-Pot Puzzles |
+| `src/chemkey.js` | structure comparison (stereo, E/Z, protonation, counterions ignored; tautomers only when protons move to or from N, O or S); same as One-Pot Puzzles |
 | `src/curate.py` | atom hints (up to 5) and difficulty score (steps, intermediates, bond changes) |
 | `src/validate_problems.js` | checks before publishing |
 | `src/build.js` | builds `index.html` |
@@ -63,7 +63,7 @@ Copy the shape of an existing entry in `data/problems.json`. Fields beyond One-P
 
 `names` lists the usual names and variants (with and without "reaction", "synthesis", "rearrangement", "olefination", common alternative names). Matching on the page ignores case, accents, hyphens and the word "reaction", and tolerates 1 typo (2 for names of 14+ characters); do not add names of other reactions.
 
-Structure rules are those of One-Pot Puzzles: no stereochemistry needed; intermediates in mechanism order, derived from the substrate; charges as charged atoms, radicals as `[C]`; `forms` lists every reasonable drawing (resonance forms, tautomers the key does not merge); reagents whose atoms enter get a SMILES. `hints` and `difficulty` are written by `curate.py`. New entries have `"verified": false`.
+Structure rules are those of One-Pot Puzzles: no stereochemistry needed; intermediates in mechanism order, derived from the substrate; charges as charged atoms, radicals as `[C]`; `forms` lists every reasonable drawing (resonance forms, tautomers the key does not merge; the key merges only tautomers in which protons move to or from N, O or S); reagents whose atoms enter get a SMILES. `hints` and `difficulty` are written by `curate.py`. New entries have `"verified": false`.
 
 ## 5. Check, build, publish
 
