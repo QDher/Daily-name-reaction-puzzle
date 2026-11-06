@@ -15,9 +15,11 @@ A bond is "made/broken" when a heavy-atom bond appears or disappears between two
 not tracked. A reagent's own bonds count as pre-existing; a bond between two atoms that
 both leave (e.g. inside Ph3PO) is not counted as broken.
 
-Hints (up to 5 per question; fewer when the mechanism has fewer atoms that change): one atom per transition with a sigma change, in mechanism order, substrate
-atoms preferred; with more such transitions than hints, an evenly spread subset including
-the first and last is kept; with fewer, extra sigma atoms and then pi atoms are added.
+Hints (up to 5 per question): atoms with a sigma bond made or broken between the substrate (with the
+reagents) and the product, in the order in which the mechanism first changes them, substrate atoms
+first; an evenly spread subset when there are more. Two atoms joined by a double or triple bond are
+never both hinted (only the C or the O of a carbonyl, one C of an alkene or alkyne). Only when
+fewer than the minimum (2) exist are atoms changed in single mechanistic steps added.
 
 Difficulty score = 2 x (steps - 1) + intermediates + 0.5 x sigma bond events.
 
@@ -228,31 +230,67 @@ def transitions(path, labels, reagents):
 N_HINTS = 5
 
 
-def pick_hints(trans, n_hints=3):
-    def rank(l, tr):
-        return (0 if l[0] == "S" else 1,
-                -(tr["sigma"].get(l, 0) + tr["pi"].get(l, 0)), str(l))
+def overall_sigma_atoms(path, labels, reagents):
+    """Atoms with a bond made or broken between the substrate (plus the reagents, whose own bonds
+    count as pre-existing) and the product. Intermediates are ignored: an atom that is bonded to a
+    fragment and released again before the product is not included."""
+    a = bond_table(path[0][1], labels[0])
+    for ri, _, _, rm in reagents:
+        for bd in rm.GetBonds():
+            a.setdefault(frozenset((("R", ri, bd.GetBeginAtomIdx()), ("R", ri, bd.GetEndAtomIdx()))),
+                         bd.GetBondTypeAsDouble())
+    b = bond_table(path[-1][1], labels[-1])
+    present = set(labels[-1])
+    out = set()
+    for k in [k for k in b if k not in a] + [k for k in a if k not in b and k & present]:
+        out |= set(k)
+    return out
 
-    used, per_t = set(), []
+
+MIN_HINTS = 2
+
+
+def pick_hints(trans, n_hints, overall, sub, reagents, n_min=MIN_HINTS):
+    """Hint atoms: atoms with a bond made or broken between substrate and product (overall), in the
+    order in which the mechanism first changes them, substrate atoms first; an evenly spread subset
+    when there are more than n_hints. Two atoms joined by a double or triple bond in the drawn
+    molecule are never both hinted (only the C or the O of a carbonyl, one C of an alkene/alkyne).
+    Only if fewer than n_min such atoms exist, atoms changed in single mechanistic steps are added."""
+    first = {}
     for t, tr in enumerate(trans):
-        cands = [l for l in sorted(tr["sigma"], key=lambda l: rank(l, tr))
-                 if l[0] != "X" and l not in used]
-        if cands:
-            used.add(cands[0])
-            per_t.append((t, cands[0]))
-    if len(per_t) > n_hints:  # spread evenly over the mechanism, first and last included
-        keep = sorted({round(k * (len(per_t) - 1) / (n_hints - 1)) for k in range(n_hints)})
-        used = {per_t[i][1] for i in keep}
-        per_t = [per_t[i] for i in keep]
-    if len(per_t) < n_hints:  # extra sigma atoms, then pi atoms, as far as the mechanism allows
+        for l in list(tr["sigma"]) + list(tr["pi"]):
+            first.setdefault(l, t)
+
+    def multiple_bond(l, m):
+        if l[0] == "S" and m[0] == "S":
+            bd = sub.GetBondBetweenAtoms(l[1], m[1])
+        elif l[0] == "R" and m[0] == "R" and l[1] == m[1]:
+            bd = reagents[l[1]][3].GetBondBetweenAtoms(l[2], m[2])
+        else:
+            return False
+        return bd is not None and bd.GetBondTypeAsDouble() >= 2
+
+    def allowed(l, chosen):
+        return l[0] != "X" and l not in chosen and not any(multiple_bond(l, m) for m in chosen)
+
+    order = lambda l: (first.get(l, len(trans)), 0 if l[0] == "S" else 1, str(l))
+    cands = []
+    for l in sorted(overall, key=order):
+        if allowed(l, cands):
+            cands.append(l)
+    if len(cands) > n_hints:  # spread evenly over the mechanism, first and last included
+        idx = sorted({round(k * (len(cands) - 1) / (n_hints - 1)) for k in range(n_hints)}) if n_hints > 1 else [0]
+        cands = [cands[i] for i in idx]
+    if len(cands) < n_min:  # too few overall changes: add atoms changed in single steps
+        def rank(l, tr):
+            return (0 if l[0] == "S" else 1, -(tr["sigma"].get(l, 0) + tr["pi"].get(l, 0)), str(l))
         for key in ("sigma", "pi"):
-            for t, tr in enumerate(trans):
+            for tr in trans:
                 for l in sorted(tr[key], key=lambda l: rank(l, tr)):
-                    if len(per_t) < n_hints and l[0] != "X" and l not in used:
-                        used.add(l)
-                        per_t.append((t, l))
-        per_t.sort(key=lambda x: x[0])
-    return per_t
+                    if len(cands) < n_min and allowed(l, cands):
+                        cands.append(l)
+    cands.sort(key=order)
+    return [(min(first.get(l, 0), len(trans) - 1), l) for l in cands]
 
 
 def describe(l, sub, reagents):
@@ -267,7 +305,7 @@ def describe(l, sub, reagents):
 def curate(problem):
     sub, reagents, path, labels = label_structures(problem)
     trans = transitions(path, labels, reagents)
-    hints = pick_hints(trans, N_HINTS)
+    hints = pick_hints(trans, N_HINTS, overall_sigma_atoms(path, labels, reagents), sub, reagents)
     sigma_events = sum(len(tr["made"]) + len(tr["broken"]) for tr in trans)
     n_int = sum(len(s["intermediates"]) for s in problem["steps"])
     score = 2 * (len(problem["steps"]) - 1) + n_int + 0.5 * sigma_events

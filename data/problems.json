@@ -103,14 +103,7 @@
               "atom": 0
             },
             {
-              "transition": "step 1 int 2",
-              "mol": "reagent",
-              "step": 1,
-              "reagent": "3-methylbutanal",
-              "atom": 1
-            },
-            {
-              "transition": "step 1 int 2",
+              "transition": "step 1 int 1",
               "mol": "reagent",
               "step": 1,
               "reagent": "3-methylbutanal",
@@ -119,12 +112,19 @@
             {
               "transition": "step 1 int 3",
               "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
               "atom": 7
             },
             {
-              "transition": "step 1 int 4",
-              "mol": "substrate",
-              "atom": 1
+              "transition": "step 1 int 3",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "3-methylbutanal",
+              "atom": 2
             }
           ],
           "difficulty": {
@@ -261,7 +261,7 @@
               "mol": "reagent",
               "step": 1,
               "reagent": "N-methylformanilide",
-              "atom": 1
+              "atom": 2
             },
             {
               "transition": "step 2 int 1",
@@ -269,13 +269,6 @@
               "step": 2,
               "reagent": "H₂O",
               "atom": 0
-            },
-            {
-              "transition": "product",
-              "mol": "reagent",
-              "step": 1,
-              "reagent": "N-methylformanilide",
-              "atom": 2
             }
           ],
           "difficulty": {
@@ -393,16 +386,6 @@
               "transition": "step 1 int 2",
               "mol": "substrate",
               "atom": 5
-            },
-            {
-              "transition": "step 1 int 3",
-              "mol": "substrate",
-              "atom": 2
-            },
-            {
-              "transition": "step 1 int 5",
-              "mol": "substrate",
-              "atom": 7
             }
           ],
           "difficulty": {
@@ -500,31 +483,17 @@
             {
               "transition": "step 1 int 1",
               "mol": "substrate",
-              "atom": 3
-            },
-            {
-              "transition": "step 1 int 1",
-              "mol": "reagent",
-              "step": 1,
-              "reagent": "Ac₂O",
-              "atom": 1
-            },
-            {
-              "transition": "step 1 int 1",
-              "mol": "reagent",
-              "step": 1,
-              "reagent": "Ac₂O",
-              "atom": 3
+              "atom": 2
             },
             {
               "transition": "step 1 int 2",
               "mol": "substrate",
-              "atom": 2
+              "atom": 4
             },
             {
               "transition": "step 1 int 3",
               "mol": "substrate",
-              "atom": 4
+              "atom": 11
             }
           ],
           "difficulty": {
@@ -650,19 +619,21 @@
             {
               "transition": "step 1 int 1",
               "mol": "substrate",
-              "atom": 9
-            },
-            {
-              "transition": "step 1 int 2",
-              "mol": "substrate",
               "atom": 10
             },
             {
-              "transition": "step 1 int 3",
+              "transition": "step 1 int 1",
               "mol": "reagent",
               "step": 1,
               "reagent": "CBr₄",
               "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "CBr₄",
+              "atom": 3
             },
             {
               "transition": "step 2 int 1",
@@ -799,11 +770,6 @@
               "step": 1,
               "reagent": "methyl vinyl ketone",
               "atom": 3
-            },
-            {
-              "transition": "product",
-              "mol": "substrate",
-              "atom": 3
             }
           ],
           "difficulty": {
@@ -928,18 +894,6 @@
               "transition": "step 2 int 1",
               "mol": "substrate",
               "atom": 1
-            },
-            {
-              "transition": "step 2 int 1",
-              "mol": "substrate",
-              "atom": 0
-            },
-            {
-              "transition": "step 3 int 1",
-              "mol": "reagent",
-              "step": 3,
-              "reagent": "hydroxide / water",
-              "atom": 0
             }
           ],
           "difficulty": {
@@ -1056,11 +1010,6 @@
             },
             {
               "transition": "step 1 int 1",
-              "mol": "substrate",
-              "atom": 2
-            },
-            {
-              "transition": "step 1 int 1",
               "mol": "reagent",
               "step": 1,
               "reagent": "NH₃",
@@ -1072,13 +1021,6 @@
               "step": 1,
               "reagent": "NaCN (cyanide)",
               "atom": 0
-            },
-            {
-              "transition": "product",
-              "mol": "reagent",
-              "step": 1,
-              "reagent": "NaCN (cyanide)",
-              "atom": 1
             }
           ],
           "difficulty": {
@@ -1187,19 +1129,21 @@
             {
               "transition": "step 1 int 1",
               "mol": "substrate",
-              "atom": 2
-            },
-            {
-              "transition": "step 2 int 1",
-              "mol": "substrate",
               "atom": 3
             },
             {
-              "transition": "step 2 int 2",
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "NH₃",
+              "atom": 0
+            },
+            {
+              "transition": "product",
               "mol": "reagent",
               "step": 2,
               "reagent": "ClCH₂CHO (chloroacetaldehyde)",
-              "atom": 2
+              "atom": 0
             },
             {
               "transition": "product",

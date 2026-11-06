@@ -320,7 +320,7 @@ body { padding-block: 14px 40px; }
       </div>
       <div class="fb-chart" id="fbChart"></div>
       <div class="fb-sub" id="fbSummary"></div>
-      <div class="hint">Score = structure checks until the product is found + hint penalty (hint 1 adds 1, hint 2 adds 2, hint 3 adds 3, …). Lower is better. Users who revealed the answer are shown as a separate bar.</div>
+      <div class="hint">Score = different structures checked until the product is found + hint penalty (hint 1 adds 1, hint 2 adds 2, hint 3 adds 3, …). Lower is better. Users who revealed the answer are shown as a separate bar.</div>
     </section>
     <section class="card" aria-labelledby="fbRateTitle">
       <h3 id="fbRateTitle">Rate this problem</h3>
@@ -775,10 +775,15 @@ async function check() {
   try { molfile = await editor.getMolfile(); } catch (e) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
   const drawn = speciesInfo(R, molfile, ctx.fp);
   if (!drawn.key) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
-  state.attempts++; updateAttempts();
+  // the same structure checked again is not counted again (score = distinct structures checked + hint penalty)
+  state.checked = state.checked || [];
+  const repeat = state.checked.includes(drawn.key);
+  if (!repeat) { state.checked.push(drawn.key); state.attempts++; save(); }
+  updateAttempts();
+  const say = (kind, pill, text) => setVerdict(kind, pill, text + (repeat ? ' Already checked: not counted again.' : ''));
   if (matches(drawn, ctx.prod)) {
     const first = !state.solved; state.solved = true; if (first) finishProblem(false); save(); updateAttempts();
-    setVerdict('ok', 'Product', first ? 'Correct. This is the product of the repository example.' : 'Correct. Product already found.');
+    say('ok', 'Product', first ? 'Correct. This is the product of the repository example.' : 'Correct. Product already found.');
     renderAll();
     return;
   }
@@ -786,14 +791,14 @@ async function check() {
   if (hit) {
     const st = P.steps[hit.si], it = st.intermediates[hit.k], id = hit.si + '.' + hit.k;
     const where = `step ${st.n} (${reagentTexts(st).join(', ')}), intermediate ${hit.k + 1} of ${st.intermediates.length}`;
-    if (state.found.includes(id)) { setVerdict('warn', 'Intermediate', `Already found: ${where}.`); return; }
+    if (state.found.includes(id)) { say('warn', 'Intermediate', `Already found: ${where}.`); return; }
     state.found.push(id); save(); renderSteps(); renderGoals();
-    setVerdict('warn', 'Intermediate · step ' + st.n, `Correct intermediate: ${where}. ${it.label}.`);
+    say('warn', 'Intermediate · step ' + st.n, `Correct intermediate: ${where}. ${it.label}.`);
     return;
   }
-  if (matches(drawn, ctx.sub)) { setVerdict('info', 'Starting material', 'This is the substrate (or a tautomer / protonation state of it).'); return; }
+  if (matches(drawn, ctx.sub)) { say('info', 'Starting material', 'This is the substrate (or a tautomer / protonation state of it).'); return; }
   save();
-  setVerdict('bad', 'Not on the path', 'Not the product or a known intermediate of the mechanism.');
+  say('bad', 'Not on the path', 'Not the product or a known intermediate of the mechanism.');
 }
 
 function tick() {
