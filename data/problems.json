@@ -1161,6 +1161,109 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-08",
+      "problems": [
+        {
+          "id": "smn-staudinger-reduction-methylamine",
+          "reaction": "Staudinger reduction",
+          "names": [
+            "Staudinger reduction",
+            "Staudinger reaction",
+            "Staudinger azide reduction",
+            "Staudinger reduction reaction",
+            "Staudinger azide reaction",
+            "Staudinger"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/staudinger-reduction/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Staudinger Reduction (general equation, R = Me, R′ = Me).",
+            "url": "https://say-my-name.net/reaction/staudinger-reduction/",
+            "context": "General equation of the say-my-name.net page (R–N₃ + PR′₃, H₂O → R–NH₂) with R = Me (methyl azide; R = H would be hydrazoic acid giving ammonia) and R′ = Me (trimethylphosphine): methyl azide → methylamine. The intermediates follow the page's mechanism image: addition of the phosphine to the terminal azide N, drawn as a four-membered N–N=N–P ring; loss of N₂ to the iminophosphorane R–N=PR′₃; hydrolysis by water to the amine and R′₃P=O. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution R = Me, R′ = Me chosen here. The Organic Chemistry Portal and TCI sites refused all requests (HTTP 403) during this run, so their pages could not be checked or linked; no reference article was read. PubChem (connectivity layer of the InChIKey): methyl azide CID 79079, trimethylphosphine CID 68983, water CID 962 and methylamine CID 6329 matched. Structures a chemist should check: the four-membered phosphatriazene ring as drawn on the page (the open phosphazide Me–N=N–N=PMe₃ / its zwitterion are accepted as forms of the same stage) and the iminophosphorane (N-methyl trimethylphosphine imide). The hydrolysis of the iminophosphorane is not drawn step by step on the page and is not asked.",
+          "substrate": {
+            "label": "methyl azide",
+            "smiles": "CN=[N+]=[N-]"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "PMe₃ (trimethylphosphine)",
+                  "smiles": "CP(C)C"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Phosphazide adduct: the phosphine has added to the terminal azide N; drawn as the four-membered N–N=N–P ring (open phosphazide forms accepted)",
+                  "forms": [
+                    "CN1N=NP1(C)(C)C",
+                    "CN=NN=P(C)(C)C",
+                    "CN=N[N-][P+](C)(C)C"
+                  ]
+                },
+                {
+                  "label": "Iminophosphorane (aza-ylide) Me–N=PMe₃, after loss of N₂",
+                  "forms": [
+                    "CN=P(C)(C)C",
+                    "C[N-][P+](C)(C)C"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H₂O",
+                  "smiles": "O"
+                }
+              ],
+              "conditions": "",
+              "intermediates": []
+            }
+          ],
+          "product": {
+            "label": "methylamine",
+            "smiles": "CN"
+          },
+          "byproducts": "N₂, Me₃P=O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Staudinger Reduction (mechanism image: phosphine addition to the terminal azide N, four-membered N–N=N–P ring, loss of N₂ to the iminophosphorane, hydrolysis to the amine and R′₃PO).",
+            "H. Staudinger, J. Meyer. Über neue organische Phosphorverbindungen III. Phosphinmethylenderivate und Phosphinimine. Helv. Chim. Acta 1919, 2, 635–646 (doi:10.1002/hlca.19190020164).",
+            "Y. G. Gololobov, I. N. Zhmurova, L. F. Kasukhin. Sixty years of Staudinger reaction. Tetrahedron 1981, 37, 437–472 (doi:10.1016/S0040-4020(01)92417-2)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 3
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 2,
+            "sigmaBondEvents": 5,
+            "score": 6.5
+          }
+        }
+      ]
     }
   ]
 }
