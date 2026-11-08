@@ -1264,6 +1264,107 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-09",
+      "problems": [
+        {
+          "id": "smn-baylis-hillman-methyl-3-hydroxy-2-methylenebutanoate",
+          "reaction": "Baylis–Hillman reaction",
+          "names": [
+            "Baylis–Hillman reaction",
+            "Baylis-Hillman reaction",
+            "Baylis–Hillman",
+            "Baylis Hillman reaction",
+            "Morita–Baylis–Hillman reaction",
+            "Morita-Baylis-Hillman reaction",
+            "Morita–Baylis–Hillman",
+            "MBH reaction"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/baylis-hillman-reaction/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Baylis–Hillman Reaction (general equation, R¹ = Me, R² = H, Y = N, R′ = Me).",
+            "url": "https://say-my-name.net/reaction/baylis-hillman-reaction/",
+            "context": "General equation of the say-my-name.net page (R¹C(O)R² + methyl acrylate, R′₃Y with Y = N or P → R¹R²C(OH)–C(=CH₂)CO₂Me) with R² = H (allowed by the equation), R¹ = Me and the catalyst R′₃Y = trimethylamine (Y = N, R′ = Me): acetaldehyde + methyl acrylate → methyl 3-hydroxy-2-methylenebutanoate. The intermediates follow the page's mechanism image: conjugate addition of the amine to methyl acrylate (zwitterionic ammonium enolate); addition of the enolate carbon to the aldehyde C=O (ammonium alkoxide); proton transfer from the α-C to the alkoxide (ammonium enolate); elimination of the amine to the product. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG (with Chromium; cairosvg was not usable in this run). Substitution R¹ = Me, R² = H, Y = N, R′ = Me chosen here. The Organic Chemistry Portal and TCI sites refused requests (HTTP 403) during this run, so their pages could not be checked or linked; no reference article was read. PubChem (connectivity layer of the InChIKey): methyl acrylate CID 7294, acetaldehyde CID 177, trimethylamine CID 1146 and methyl 3-hydroxy-2-methylidenebutanoate CID 5080248 matched. The comparison key merges the alkoxide and the enolate formed after the proton transfer (keto/enol relationship after neutralization), so both are listed as forms of the second intermediate. Structures a chemist should check: the zwitterionic ammonium enolate and the ammonium alkoxide / enolate.",
+          "substrate": {
+            "label": "methyl acrylate",
+            "smiles": "C=CC(=O)OC"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "acetaldehyde",
+                  "smiles": "CC=O"
+                },
+                {
+                  "text": "NMe₃ (trimethylamine, catalytic)",
+                  "smiles": "CN(C)C"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Zwitterionic ammonium enolate: Michael-type addition of NMe₃ to the β-carbon of methyl acrylate",
+                  "forms": [
+                    "C[N+](C)(C)CC=C([O-])OC",
+                    "C[N+](C)(C)C[CH-]C(=O)OC"
+                  ]
+                },
+                {
+                  "label": "Aldol-type adduct: the enolate α-carbon has added to the aldehyde C=O (ammonium alkoxide); proton transfer from the α-C to the alkoxide gives the ammonium enolate (both drawings accepted)",
+                  "forms": [
+                    "C[N+](C)(C)CC(C(=O)OC)C(C)[O-]",
+                    "C[N+](C)(C)CC(=C([O-])OC)C(C)O",
+                    "C[N+](C)(C)C[C-](C(=O)OC)C(C)O"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "methyl 3-hydroxy-2-methylenebutanoate",
+            "smiles": "C=C(C(=O)OC)C(C)O"
+          },
+          "byproducts": "none (NMe₃ is released)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Baylis–Hillman Reaction (mechanism image: addition of R′₃Y to the acrylate, addition of the enolate to the carbonyl, proton transfer, elimination of R′₃Y).",
+            "A. B. Baylis, M. E. D. Hillman. German Patent DE 2155113, 1972 (Chem. Abstr. 1972, 77, 34174q).",
+            "K. Morita, Z. Suzuki, H. Hirose. A tertiary phosphine-catalyzed reaction of acrylic compounds with aldehydes. Bull. Chem. Soc. Jpn. 1968, 41, 2815 (doi:10.1246/bcsj.41.2815).",
+            "D. Basavaiah, A. J. Rao, T. Satyanarayana. Recent advances in the Baylis–Hillman reaction and applications. Chem. Rev. 2003, 103, 811–892 (doi:10.1021/cr010043d)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "acetaldehyde",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 2,
+            "sigmaBondEvents": 3,
+            "score": 3.5
+          }
+        }
+      ]
     }
   ]
 }
