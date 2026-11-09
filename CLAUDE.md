@@ -15,10 +15,6 @@ Scheduled runs: the scheduled-task prompt is authoritative; this file does not c
 | Feedback log | `data/feedback_log.json` (written by the scheduled runs, step 3b) |
 | Results and ratings | Supabase project `gevbctklqelyumhynfnq`, site key `namerxn`; schema in `supabase/schema.sql` |
 
-## Pending for the user (remind at the start of the next session, then remove when done)
-
-- Run the `difficulty_answers` table and `difficulty_summary` function block of `supabase/schema.sql` in the Supabase SQL editor (project `gevbctklqelyumhynfnq`). Until then the difficulty questions on the One-Pot page fail with "Could not send the answers" (checked 2026-11-06: table and function not found). After it is run, test with a POST to `/rest/v1/difficulty_answers` and `/rest/v1/rpc/difficulty_summary`.
-
 ## Working conventions
 
 - Prompt changes: update the scheduled task (`update_trigger`, full prompt text) and `TASK_PROMPT.md` in the same session, with identical prompt text; update the "Backed up on" line. Commit `TASK_PROMPT.md` to `main`.
