@@ -1365,6 +1365,126 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-10",
+      "problems": [
+        {
+          "id": "smn-dakin-oxidation-hydroquinone",
+          "reaction": "Dakin oxidation",
+          "names": [
+            "Dakin oxidation",
+            "Dakin reaction",
+            "Dakin oxidation reaction",
+            "Dakin phenol synthesis",
+            "Dakin"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/dakin-oxidation/"
+            },
+            {
+              "site": "Organic Chemistry Portal",
+              "url": "https://www.organic-chemistry.org/namedreactions/dakin-reaction.shtm"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Dakin Oxidation (general equation, R = H).",
+            "url": "https://say-my-name.net/reaction/dakin-oxidation/",
+            "context": "General equation of the say-my-name.net page (4-hydroxyphenyl ketone or aldehyde 4-HOC₆H₄COR, R = C or H; 1) H₂O₂, NaOH, Δ; 2) H⁺ → hydroquinone) with R = H (allowed by the equation): 4-hydroxybenzaldehyde → hydroquinone. The intermediates follow the page's mechanism image: addition of HOO⁻ to the carbonyl (tetrahedral peroxide adduct), aryl migration from C to O with loss of HO⁻ (4-hydroxyphenyl formate), hydrolysis of the ester by HO⁻ to the phenoxide, protonation (H⁺) to the diol. The page gives no conditions beyond the reagents and heating."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution R = H chosen here (the equation allows R = C or H). The Organic Chemistry Portal Dakin Reaction page was read (its mechanism section refers to the Baeyer–Villiger oxidation page); other Organic Chemistry Portal pages and all TCI pages refused requests (HTTP 403) during this run, so TCI could not be checked or linked; no reference article was read. PubChem (connectivity layer of the InChIKey): 4-hydroxybenzaldehyde CID 126, hydrogen peroxide CID 784 and hydroquinone CID 785 matched; the aryl formate intermediate (4-hydroxyphenyl formate, CID 13148437) also matched. Structures a chemist should check: the tetrahedral peroxide adduct (drawn as the alkoxide, as on the page; the neutral hydroxy hydroperoxide is accepted) and the 4-hydroxyphenyl formate. The tetrahedral intermediate of the ester hydrolysis is not drawn on the page and is not asked; the phenoxide drawn on the page is the same species as the product for the comparison key, so step 2 (acidic work-up) has no intermediate.",
+          "substrate": {
+            "label": "4-hydroxybenzaldehyde",
+            "smiles": "O=Cc1ccc(O)cc1"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "H₂O₂",
+                  "smiles": "OO"
+                },
+                {
+                  "text": "NaOH"
+                }
+              ],
+              "conditions": "heat (Δ)",
+              "intermediates": [
+                {
+                  "label": "Tetrahedral peroxide adduct: HOO⁻ has added to the aldehyde C=O (hydroxy hydroperoxide / its alkoxide)",
+                  "forms": [
+                    "Oc1ccc(cc1)C([O-])OO",
+                    "Oc1ccc(cc1)C(O)OO"
+                  ]
+                },
+                {
+                  "label": "4-Hydroxyphenyl formate: the aryl group has migrated from C to the proximal peroxide O with loss of HO⁻ (the ester is then hydrolysed by HO⁻ to the phenoxide)",
+                  "forms": [
+                    "O=COc1ccc(O)cc1"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H⁺ (acidic work-up)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": []
+            }
+          ],
+          "product": {
+            "label": "hydroquinone (benzene-1,4-diol)",
+            "smiles": "Oc1ccc(O)cc1"
+          },
+          "byproducts": "formate (HCO₂⁻, formic acid after acidification), H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Dakin Oxidation (mechanism image: HOO⁻ addition to the carbonyl, aryl migration to O with loss of HO⁻ to the aryl ester, ester hydrolysis by HO⁻ to the phenoxide, protonation).",
+            "Organic Chemistry Portal, Dakin Reaction (the oxidation step is described as on its Baeyer–Villiger oxidation page).",
+            "H. D. Dakin. The oxidation of hydroxy derivatives of benzaldehyde, acetophenone and related substances. Am. Chem. J. 1909, 42, 477–498."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "H₂O₂",
+              "atom": 0
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "H₂O₂",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 2,
+            "sigmaBondEvents": 5,
+            "score": 6.5
+          }
+        }
+      ]
     }
   ]
 }
