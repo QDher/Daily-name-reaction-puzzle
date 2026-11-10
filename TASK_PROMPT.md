@@ -14,7 +14,7 @@ Backup of the Claude Code scheduled task that adds a daily question to this repo
 | Notifications | Push on |
 | GitHub Pages site | https://qdher.github.io/Daily-name-reaction-puzzle/ |
 
-The earlier Cowork task "Name Reaction Daily question" (disabled) read and published the claude.ai page, which was deleted on 2026-11-10; it no longer works and must not be re-enabled.
+The earlier Cowork task "Name Reaction Daily question" was deleted on 2026-11-10 (it used the claude.ai page, also deleted).
 
 Backed up on 2026-11-10 (the GitHub repository is the only copy of the site and its data; the claude.ai page was deleted; questions older than 32 days are archived in data/archive.json.gz).
 
