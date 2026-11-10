@@ -29,5 +29,4 @@ rm -rf ../ketcher && cp -r dist ../ketcher
 Then:
 
 1. Test the page locally: draw or load a structure, check it, and confirm there are no console errors. The page uses only `getMolfile('v2000')`, `setMolecule(smiles)`, `setMolecule('')` and `editor.struct().atoms.size`; check that an upgraded Ketcher still provides them.
-2. Publish the new `ketcher/` files to the claude.ai page with the Artifact tool (`files`: `ketcher/index.html` and each file in `ketcher/assets/`). File names contain content hashes, so remove the old asset paths by passing them as `null`.
-3. Commit `ketcher/` (and this folder, if it changed) in both repositories. The Pages workflow copies `ketcher/` to the site; this `ketcher-build/` folder is not published.
+2. Commit `ketcher/` (and this folder, if it changed) in both repositories. The Pages workflow copies `ketcher/` to the site; this `ketcher-build/` folder is not published. Asset file names contain content hashes, so remove the old files from `ketcher/assets/` (the `rm -rf ../ketcher` above does this).

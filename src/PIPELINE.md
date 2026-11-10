@@ -1,6 +1,6 @@
 # Name Reaction Daily: how a daily question is added
 
-The published artifact is the source of truth. It contains the page and everything needed to extend it:
+This repository (branch `main`) is the source of truth; GitHub Actions deploys it to https://qdher.github.io/Daily-name-reaction-puzzle/ on every push to `main`. It contains the page and everything needed to extend it:
 
 | Path | Content |
 |---|---|
@@ -12,13 +12,13 @@ The published artifact is the source of truth. It contains the page and everythi
 | `src/validate_problems.js` | checks before publishing |
 | `src/build.js` | builds `index.html` |
 | `src/test_chemkey.js` | unit tests of the key |
-| `rdkit/RDKit_minimal.wasm` | RDKit runtime (already published; never needs re-uploading) |
-| `ketcher/` | Ketcher structure editor (standalone build, loaded by the page in an iframe; already published; never needs re-uploading) |
+| `rdkit/RDKit_minimal.wasm` | RDKit runtime (never changes in a daily run) |
+| `ketcher/` | Ketcher structure editor (standalone build, loaded by the page in an iframe; rebuilt only as described in `ketcher-build/README.md`) |
 
 ## 1. Set up
 
 ```bash
-mkdir -p work && cd work            # artifact files here: index.html, data/, src/
+cd <repository clone>              # run everything from the repository root
 npm init -y >/dev/null && npm install @rdkit/rdkit@2026.9.1
 pip download --no-deps rdkit==2026.9.1 -d whl        # a plain `pip install rdkit` can stall
 pip install --break-system-packages --no-deps whl/rdkit-*.whl
@@ -73,20 +73,7 @@ node src/validate_problems.js data/problems.json     # must end with ALL OK
 node src/build.js                                    # writes index.html
 ```
 
-Publish to the same artifact URL with `file_path` = `index.html`, `root` = the work folder and `files`:
-
-```json
-{
-  "data/problems.json": "data/problems.json",
-  "src/index.src.html": { "from": "src/index.src.html", "contentType": "text/plain" },
-  "src/chemkey.js": "src/chemkey.js",
-  "src/curate.py": { "from": "src/curate.py", "contentType": "text/plain" },
-  "src/validate_problems.js": "src/validate_problems.js",
-  "src/build.js": "src/build.js",
-  "src/test_chemkey.js": "src/test_chemkey.js",
-  "src/PIPELINE.md": { "from": "src/PIPELINE.md", "contentType": "text/markdown" }
-}
-```
+Commit and push: `git add index.html data && git commit -m "Add daily question <date>" && git push origin main` (only `index.html` and `data/` change in a daily run). GitHub Pages deploys the pushed commit.
 
 ## Archive and date list
 
