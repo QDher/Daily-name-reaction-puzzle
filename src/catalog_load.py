@@ -54,6 +54,14 @@ EXAMPLE_STATUSES = ["unused", "used", "rejected"]
 # licences as Europe PMC reports them (lower case); same list as ALLOWED_LICENSES in src/validate_problems.js
 ALLOWED_LICENSES = ["cc0", "cc by", "cc by-sa", "cc by-nc", "cc by-nc-sa"]
 MAX_UNUSED = 10  # unused examples kept per reaction; more can be found again with the DOI-based search
+# class of a reaction (field "class" of the shard; also used by src/pick.py to avoid the class of the previous set)
+CLASSES = ["rearrangement", "olefination", "heterocycle synthesis", "oxidation", "reduction", "C-C bond formation",
+           "cycloaddition", "multicomponent", "substitution", "elimination", "addition", "condensation",
+           "functional group interconversion", "coupling", "other"]
+EXAMPLE_FIELDS = ["doi", "license", "citation", "substrate", "product", "status"]
+# licence pages (same mapping as LICENSE_PATH in src/validate_problems.js)
+LICENSE_PATH = {"cc0": "/publicdomain/zero/", "cc by": "/licenses/by/", "cc by-sa": "/licenses/by-sa/",
+                "cc by-nc": "/licenses/by-nc/", "cc by-nc-sa": "/licenses/by-nc-sa/"}
 
 QUERY = """
 SELECT ?item
@@ -225,6 +233,11 @@ def write_shard(directory, shard):
         f.write(json.dumps(shard, ensure_ascii=False, indent=1) + "\n")
 
 
+def read_meta(directory):
+    with open(os.path.join(directory, "index.json"), encoding="utf-8") as f:
+        return json.load(f).get("meta", {})
+
+
 # ---------- merge ----------
 def merge(old_entries, loaded, idx, shards):
     old = {e["id"]: e for e in old_entries}
@@ -260,6 +273,72 @@ def merge(old_entries, loaded, idx, shards):
     return ordered, added, changed, missing
 
 
+# ---------- offline refresh and edits of status and examples ----------
+def refresh_offline(directory, problems_path, archive_path):
+    """Recompute usedOn, lastUsed and the example counts from the problems and the shards (no network)."""
+    old = read_index(directory)
+    loaded = {e["id"]: {"name": e["name"], "aliases": e.get("aliases", []), "wikipedia": e.get("wikipedia"),
+                        "wikidataClasses": e.get("wikidataClasses", [])} for e in old if not e.get("wikidataMissing")}
+    idx = used_index(read_sets(problems_path, archive_path))
+    entries, added, changed, missing = merge(old, loaded, idx, read_shards(directory))
+    write_index(directory, entries, read_meta(directory).get("retrieved"))
+    return entries
+
+
+def _write_checked(directory, writer, problems_path, archive_path):
+    """Applies writer(), then checks the catalogue; on errors the files are restored and the errors returned."""
+    index_path = os.path.join(directory, "index.json")
+    snapshot = {fn: open(os.path.join(directory, fn), "rb").read() for fn in os.listdir(directory) if fn.endswith(".json")}
+    writer()
+    errors = check(directory, problems_path, archive_path)
+    if errors:
+        for fn in os.listdir(directory):
+            if fn.endswith(".json") and fn not in snapshot:
+                os.remove(os.path.join(directory, fn))
+        for fn, data in snapshot.items():
+            with open(os.path.join(directory, fn), "wb") as f:
+                f.write(data)
+    return errors
+
+
+def mark(directory, qid, status, today, problems_path=None, archive_path=None):
+    """Sets the status of a reaction and the date of the attempt; refused (files restored) if the check fails."""
+    if status not in STATUSES:
+        return [f"status {status!r} not in {STATUSES}"]
+    if qid not in {e["id"] for e in read_index(directory)}:
+        return [f"{qid} is not in the index"]
+    def writer():
+        entries = read_index(directory)
+        for e in entries:
+            if e["id"] == qid:
+                e["status"] = status
+                e["lastAttempt"] = today
+        write_index(directory, entries, read_meta(directory).get("retrieved"))
+    return _write_checked(directory, writer, problems_path, archive_path)
+
+
+def set_example(directory, qid, n, status, problem_id, note, problems_path=None, archive_path=None):
+    """Sets the status of example n (1-based) of a reaction (used / rejected / unused) and recomputes the counts."""
+    shard = read_shards(directory).get(qid)
+    if not shard or not (1 <= n <= len(shard.get("examples", []))):
+        return [f"{qid}: no example {n}"]
+    if status not in EXAMPLE_STATUSES:
+        return [f"example status {status!r} not in {EXAMPLE_STATUSES}"]
+    def writer():
+        ex = shard["examples"][n - 1]
+        ex["status"] = status
+        if status != "used":
+            ex.pop("problemId", None)
+        if problem_id:
+            ex["problemId"] = problem_id
+        if note:
+            ex["note"] = note
+        write_shard(directory, shard)
+        refresh_offline(directory, problems_path or os.path.join(ROOT, "data", "problems.json"),
+                        archive_path or os.path.join(ROOT, "data", "archive.json.gz"))
+    return _write_checked(directory, writer, problems_path, archive_path)
+
+
 # ---------- check ----------
 def check(directory, problems_path=None, archive_path=None):
     errors = []
@@ -290,14 +369,30 @@ def check(directory, problems_path=None, archive_path=None):
             continue
         if sh.get("id") != sid:
             errors.append(f"{sid}.json: id {sh.get('id')!r} differs from the file name")
+        if sh.get("class") not in CLASSES:
+            errors.append(f"{sid}.json: class {sh.get('class')!r} not in {CLASSES}")
+        repos = sh.get("repositories")
+        if not isinstance(repos, list) or not all(isinstance(r, dict) and r.get("site") and str(r.get("url", "")).startswith("https://") for r in repos):
+            errors.append(f"{sid}.json: repositories must be a list of {{site, url}} with https urls")
         for k, ex in enumerate(sh.get("examples", []), 1):
             w = f"{sid}.json example {k}"
+            for fld in EXAMPLE_FIELDS:
+                if fld not in ex:
+                    errors.append(f"{w}: missing field {fld}")
             if not re.match(r"^10\.\d{4,9}/", str(ex.get("doi", ""))):
                 errors.append(f"{w}: doi missing or malformed")
             if ex.get("license") not in ALLOWED_LICENSES:
                 errors.append(f"{w}: license {ex.get('license')!r} not in {ALLOWED_LICENSES}")
+            if ex.get("licenseUrl") is not None and not str(ex["licenseUrl"]).startswith("https://creativecommons.org" + LICENSE_PATH.get(ex.get("license"), "/?")):
+                errors.append(f"{w}: licenseUrl {ex.get('licenseUrl')!r} is not the creativecommons.org page of the licence")
             if ex.get("status") not in EXAMPLE_STATUSES:
                 errors.append(f"{w}: status {ex.get('status')!r} not in {EXAMPLE_STATUSES}")
+            if ex.get("status") == "unused":
+                for side in ("substrate", "product"):
+                    if not (isinstance(ex.get(side), dict) and ex[side].get("smiles")):
+                        errors.append(f"{w}: {side}.smiles missing")
+                if not isinstance(ex.get("reagents", []), list):
+                    errors.append(f"{w}: reagents must be a list")
             if ex.get("status") == "used":
                 if not ex.get("problemId"):
                     errors.append(f"{w}: used without problemId")
@@ -311,6 +406,8 @@ def check(directory, problems_path=None, archive_path=None):
             errors.append(f"{qid}: index counts {e.get('nExamples')}/{e.get('nUnused')} differ from the shard {n}/{unused}; run --offline")
         if e.get("status") == "complete" and n < 1:
             errors.append(f"{qid}: status complete without examples")
+        if e.get("status") == "complete" and not (shards.get(qid) or {}).get("repositories"):
+            errors.append(f"{qid}: status complete without reaction pages (repositories)")
         if e.get("status") == "no-example" and n > 0:
             errors.append(f"{qid}: status no-example but the shard has examples")
     return errors
@@ -337,8 +434,11 @@ def self_test():
     assert loaded["Q4"]["wikipedia"].endswith("Wolff%E2%80%93Kishner_reduction")
     sets = [{"date": "2026-01-01", "problems": [{"id": "p-claisen", "reaction": "Claisen condensation", "names": ["Claisen condensation", "Claisen reaction"]}]}]
     idx = used_index(sets)
-    shard2 = {"id": "Q2", "examples": [{"doi": "10.1000/a", "license": "cc by", "status": "unused"},
-                                       {"doi": "10.1000/b", "license": "cc0", "status": "used", "problemId": "p-claisen"}]}
+    def ex(doi, lic, status, **kw):
+        return {"doi": doi, "license": lic, "status": status, "citation": "A. Author. Title. J. 2020, 1, 1.",
+                "substrate": {"label": "s", "smiles": "CC(=O)C"}, "reagents": [], "conditions": "", "product": {"label": "p", "smiles": "CC(O)C"}, **kw}
+    shard2 = {"id": "Q2", "class": "rearrangement", "repositories": [{"site": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Claisen_rearrangement"}],
+              "examples": [ex("10.1000/a", "cc by", "unused"), ex("10.1000/b", "cc0", "used", problemId="p-claisen")]}
     old = [{"id": "Q2", "name": "Claisen rearrangement", "status": "complete", "extra": 1},
            {"id": "Q9", "name": "Gone reaction", "status": "skip"}]
     entries, added, changed, missing = merge(old, loaded, idx, {"Q2": shard2})
@@ -361,7 +461,7 @@ def self_test():
         legacy = os.path.join(tmp, "legacy.json")
         with open(legacy, "w", encoding="utf-8") as f:
             json.dump({"entries": [dict(e, completion=None) for e in by.values() if e["id"] != "Q2"] +
-                       [dict(by["Q2"], completion={"examples": shard2["examples"], "note": "kept"})]}, f)
+                       [dict(by["Q2"], completion={**{k: v for k, v in shard2.items() if k != "id"}, "note": "kept"})]}, f)
         old_entries, shards = from_legacy(legacy)
         assert set(shards) == {"Q2"} and shards["Q2"]["note"] == "kept" and "completion" not in old_entries[0]
         entries3, *_ = merge(old_entries, loaded, idx, shards)
@@ -369,15 +469,34 @@ def self_test():
         write_shard(d, shards["Q2"])
         assert read_index(d) == entries3 and read_shards(d)["Q2"]["note"] == "kept"
         assert check(d, prob) == [], check(d, prob)
+        # status and example edits: allowed changes are written, refused ones restore the files
+        before = open(os.path.join(d, "index.json"), "rb").read()
+        assert mark(d, "Q2", "complete", "2026-01-03", prob) == []
+        assert next(e for e in read_index(d) if e["id"] == "Q2")["lastAttempt"] == "2026-01-03"
+        errs = mark(d, "Q1", "complete", "2026-01-03", prob)            # Q1 has no shard: refused
+        assert errs and next(e for e in read_index(d) if e["id"] == "Q1")["status"] == "pending", errs
+        assert mark(d, "Q1", "no-example", "2026-01-03", prob) == []
+        assert set_example(d, "Q2", 1, "used", "p-claisen", "n", prob) == []
+        assert next(e for e in read_index(d) if e["id"] == "Q2")["nUnused"] == 0
+        assert set_example(d, "Q2", 1, "unused", None, None, prob) == []      # back to unused: problemId cleared
+        assert "problemId" not in read_shards(d)["Q2"]["examples"][0]
+        assert set_example(d, "Q2", 1, "used", None, None, prob)               # used without problemId: refused, restored
+        assert read_shards(d)["Q2"]["examples"][0]["status"] == "unused"
+        assert set_example(d, "Q2", 1, "used", "p-claisen", None, prob) == []
+        assert set_example(d, "Q2", 5, "used", "x", None, prob) == ["Q2: no example 5"]
+        assert mark(d, "Q2", "bogus", "2026-01-03", prob)
         # check finds mistakes
         bad = dict(shards["Q2"])
-        bad["examples"] = [{"doi": "10.1000/a", "license": "cc by-nd", "status": "unused"},
-                           {"doi": "nodoi", "license": "cc by", "status": "used", "problemId": "unknown-id"},
-                           {"doi": "10.1000/c", "license": "cc by", "status": "unused"}]   # 3 examples, 2 unused: index says 2/1
+        bad["examples"] = [ex("10.1000/a", "cc by-nd", "unused"),
+                           ex("nodoi", "cc by", "used", problemId="unknown-id"),
+                           ex("10.1000/c", "cc by", "unused", licenseUrl="https://creativecommons.org/licenses/by-nc/4.0/"),
+                           dict(ex("10.1000/d", "cc by", "unused"), substrate={"label": "s"})]   # 4 examples, 3 unused: index says 2/1
+        bad["class"] = "bogus"
         write_shard(d, bad)
         write_shard(d, {"id": "Q77", "examples": []})
         msgs = " | ".join(check(d, prob))
-        for part in ("license 'cc by-nd'", "doi missing or malformed", "problemId unknown-id", "Q77.json: no index entry", "index counts"):
+        for part in ("license 'cc by-nd'", "doi missing or malformed", "problemId unknown-id", "Q77.json: no index entry", "index counts",
+                     "class 'bogus'", "creativecommons.org page of the licence", "substrate.smiles missing"):
             assert part in msgs, (part, msgs)
     print("self-test OK")
 
@@ -390,6 +509,10 @@ def main():
     ap.add_argument("--from-file", help="saved SPARQL JSON result instead of querying Wikidata")
     ap.add_argument("--offline", action="store_true", help="no network: recompute usedOn, lastUsed and the example counts")
     ap.add_argument("--check", action="store_true", help="validate index and shards")
+    ap.add_argument("--mark", nargs=2, metavar=("ID", "STATUS"), help="set the status of a reaction (and lastAttempt = today)")
+    ap.add_argument("--example", nargs=3, metavar=("ID", "N", "STATUS"), help="set the status of example N (1-based): used, rejected or unused")
+    ap.add_argument("--problem-id", help="with --example ... used: id of the problem that uses the example")
+    ap.add_argument("--note", help="with --example: short note (for example why it was rejected)")
     ap.add_argument("--force", action="store_true", help="write even if the result has far fewer items than the catalogue")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
@@ -402,6 +525,16 @@ def main():
             sys.exit(1)
         n = len(read_index(a.dir) or [])
         print(f"catalogue OK: {n} entries, {len(read_shards(a.dir))} shard file(s)")
+        return
+    if a.mark or a.example:
+        if a.mark:
+            errors = mark(a.dir, a.mark[0], a.mark[1], datetime.now(timezone.utc).strftime("%Y-%m-%d"), a.problems, a.archive)
+        else:
+            errors = set_example(a.dir, a.example[0], int(a.example[1]), a.example[2], a.problem_id, a.note, a.problems, a.archive)
+        if errors:
+            print("REFUSED (files restored)\n- " + "\n- ".join(errors))
+            sys.exit(1)
+        print("done")
         return
     old = read_index(a.dir)
     legacy_shards = {}
