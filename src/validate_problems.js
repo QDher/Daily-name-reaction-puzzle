@@ -10,8 +10,16 @@ const file = process.argv[2] || path.join(__dirname, '..', 'data', 'problems.jso
 const data = JSON.parse(fs.readFileSync(file, 'utf8'));
 
 const MAX_HINTS = 5;
-const REPEAT_WINDOW = 90;          // a reaction may not come back within this many sets
-const REPO_HOSTS = ['say-my-name.net', 'www.organic-chemistry.org', 'www.tcichemicals.com'];
+// A reaction may come back after this many sets (one set per day), with another example. The same substrate
+// and product never come back. REPEAT_WINDOW in the environment overrides the window (used by test_validate.js).
+const REPEAT_WINDOW = Number(process.env.REPEAT_WINDOW) || 14;
+const REPO_HOSTS = ['say-my-name.net', 'www.organic-chemistry.org', 'www.tcichemicals.com', 'en.wikipedia.org'];
+// Example taken from an open-access article: source.repository = ARTICLE_SOURCE, with source.doi, source.license
+// (as Europe PMC reports it, lower case; no-derivatives licences are not accepted; same list in src/catalog_load.py),
+// optional source.pmcid and source.entry (compound or entry number, so that one article can give several examples).
+const ARTICLE_SOURCE = 'Open-access article';
+const ALLOWED_LICENSES = ['cc0', 'cc by', 'cc by-sa', 'cc by-nc', 'cc by-nc-sa'];
+const exampleKey = P => { const s = P.source || {}; return (s.doi || s.url) + (s.entry ? ' #' + s.entry : '') + ' | ' + P.reaction; };
 const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
   .replace(/[‐-―−-]/g, ' ').replace(/[^a-z0-9 ]/g, ' ')
   .split(/\s+/).filter(w => w && !['reaction', 'the', 'rxn'].includes(w)).join(' ');
@@ -42,11 +50,13 @@ init().then(R => {
   const ids = new Map(), steps = new Map(), lastSeen = new Map();
   // archived sets (data/archive.json.gz) count for ids, examples and the repeat window (negative set indices)
   const archived = readArchive();
+  const prior = [];   // substrate and product of every earlier problem: the same pair never comes back
   archived.forEach((day, k) => { for (const P of day.problems) {
     const tag = day.date + ' (archived)';
     ids.set(P.id, tag);
-    steps.set((P.source && (P.source.doi || P.source.url)) + ' | ' + P.reaction, tag);
+    steps.set(exampleKey(P), tag);
     lastSeen.set(norm(P.reaction), { i: k - archived.length, date: tag });
+    try { const fp = substrateFingerprint(R, P.substrate.smiles); prior.push({ where: `${P.id} on ${tag}`, sub: speciesInfo(R, P.substrate.smiles, fp), prod: speciesInfo(R, P.product.smiles, fp) }); } catch (e) { /* unreadable archived structure: not compared */ }
   } });
   const archivedDates = new Set(archived.map(s => s.date));
   for (const d of dates) if (archivedDates.has(d)) err(d, 'date also present in data/archive.json.gz');
@@ -56,7 +66,7 @@ init().then(R => {
     for (const P of day.problems) {
       const w = `${day.date} ${P.id}`;
       if (ids.has(P.id)) err(w, `id already used on ${ids.get(P.id)}`); else ids.set(P.id, day.date);
-      const stepKey = (P.source && (P.source.doi || P.source.url)) + ' | ' + P.reaction;
+      const stepKey = exampleKey(P);
       if (steps.has(stepKey)) err(w, `same example and reaction already used on ${steps.get(stepKey)}`); else steps.set(stepKey, day.date);
       for (const k of ['reaction', 'names', 'repositories', 'source', 'substrate', 'steps', 'product', 'mechanismRefs', 'hints', 'difficulty'])
         if (!(k in P)) err(w, `missing field "${k}"`);
@@ -67,6 +77,12 @@ init().then(R => {
       if (!src.doi) {
         if (src.repository !== 'Named Reactions Explorer') err(w, 'source.doi is required unless the example is the equation of a Named Reactions Explorer page');
         else if (!/^https:\/\/say-my-name\.net\/reaction\/[a-z0-9-]+\/$/.test(src.url || '')) err(w, 'source.url must be the say-my-name.net reaction page (https://say-my-name.net/reaction/<slug>/)');
+      }
+      const articleSource = src.repository === ARTICLE_SOURCE;
+      if (articleSource) {
+        if (!ALLOWED_LICENSES.includes(String(src.license || ''))) err(w, `source.license must be one of ${ALLOWED_LICENSES.join(', ')} (as Europe PMC reports it; no-derivatives licences are not accepted), found "${src.license}"`);
+        if (!src.citation) err(w, 'source.citation (authors, title, journal, year) is required for an article example');
+        if (src.pmcid && !/^PMC\d+$/.test(src.pmcid)) err(w, 'source.pmcid malformed');
       }
 
       // names and repositories
@@ -87,7 +103,7 @@ init().then(R => {
         if (!REPO_HOSTS.includes(host)) err(w, `repository host ${host} not in ${REPO_HOSTS.join(', ')}`);
         if (!r.site) err(w, 'repository entry without "site"');
       }
-      if (!P.source || !repos.some(r => r.site === P.source.repository)) err(w, 'source.repository must name the repository page the example was taken from (one of the "repositories" sites)');
+      if (!articleSource && (!P.source || !repos.some(r => r.site === P.source.repository))) err(w, 'source.repository must name the repository page the example was taken from (one of the "repositories" sites)');
 
       // structures
       let fp;
@@ -98,6 +114,11 @@ init().then(R => {
       if (!sub.key) err(w, 'substrate SMILES unreadable');
       if (!prod.key) err(w, 'product SMILES unreadable');
       if (matches(sub, prod)) err(w, 'product is the same species as the substrate');
+      if (sub.key && prod.key) {
+        const same = prior.find(o => matches(o.sub, sub) && matches(o.prod, prod));
+        if (same) err(w, `same substrate and product as ${same.where}`);
+        prior.push({ where: `${P.id} on ${day.date}`, sub, prod });
+      }
       for (const st of P.steps) for (const r of st.reagents)
         if (r.smiles) { const m = R.get_mol(r.smiles); if (!m || !m.is_valid()) err(w, `reagent ${r.text}: SMILES unreadable`); if (m) m.delete(); }
       const seen = [{ label: 'substrate', infos: [sub] }, { label: 'product', infos: [prod] }];

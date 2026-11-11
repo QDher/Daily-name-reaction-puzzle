@@ -44,7 +44,7 @@ One question per day, shown from 10:00 America/New_York (`schedule`). Add one se
 - The mechanism follows the repository page(s) and the established mechanism of the named reaction (give references).
 - At least 2 distinct intermediates after the key is applied.
 - The product can be deduced from substrate + reagents.
-- Not used in the previous 90 questions (validator). Vary the reaction class (rearrangement, olefination, heterocycle synthesis, oxidation, reduction, C–C bond formation, etc.) over the week.
+- A reaction may come back after 14 sets (validator; the scheduled prompt still says 90) with another example; the same example (DOI or page, plus `source.entry`) and the same substrate and product never come back. Vary the reaction class (rearrangement, olefination, heterocycle synthesis, oxidation, reduction, C–C bond formation, etc.) over the week.
 - There are no levels on this page: no `level` or `textbookLevel` fields.
 
 ## 4. Writing an entry
@@ -59,6 +59,8 @@ Copy the shape of an existing entry in `data/problems.json`. Fields beyond One-P
                   { "site": "TCI name reactions", "url": "https://www.tcichemicals.com/product/name_reaction/..." } ],
 "source": { "repository": "TCI name reactions", "citation": "...", "doi": "10.xxxx/...", "context": "where the example is on the page; conditions and yield" }
 // Named Reactions Explorer equation: { "repository": "Named Reactions Explorer", "citation": "Named Reactions Explorer, <Reaction> (general equation, R = Me, R′ = H)", "url": "https://say-my-name.net/reaction/<slug>/", "context": "..." }
+// Open-access article (not used by the scheduled prompt yet): { "repository": "Open-access article", "citation": "authors, title, journal, year", "doi": "10.xxxx/...", "pmcid": "PMC...", "entry": "compound or entry number", "license": "cc by", "context": "where the example is; conditions and yield; structures redrawn" }
+// "repositories" then lists reaction pages (Wikipedia, Named Reactions Explorer, ...); source.repository need not be one of them.
 ```
 
 `names` lists the usual names and variants (with and without "reaction", "synthesis", "rearrangement", "olefination", common alternative names). Matching on the page ignores case, accents, hyphens and the word "reaction", and tolerates 1 typo (2 for names of 14+ characters); do not add names of other reactions.
@@ -77,7 +79,11 @@ Commit and push: `git add index.html data && git commit -m "Add daily question <
 
 ## Reaction catalogue (not part of a daily run yet)
 
-`data/reaction_catalog.json` lists the named reactions of Wikidata (instances of "eponymous chemical reaction", Q1049494; CC0): `id` (Wikidata item), `name`, `aliases`, `wikidata` and `wikipedia` links, `wikidataClasses`, `usedOn` and the check fields `status` (`pending`, `complete`, `no-example`, `skip`) and `completion` (`null` until checked). `src/catalog_load.py` creates and refreshes the Wikidata fields with one SPARQL query and keeps `status`, `completion` and any other added field.
+`data/catalog/index.json` lists the named reactions of Wikidata (instances of "eponymous chemical reaction", Q1049494; CC0), one line per reaction: `id` (Wikidata item), `name`, `aliases`, `wikidata` and `wikipedia` links, `wikidataClasses`, `usedOn`, `lastUsed`, `status` (`pending`, `complete`, `no-example`, `skip`), `nExamples` and `nUnused`. A selection step reads only this file. `data/catalog/<id>.json` exists only for a reaction that has been checked: `repositories` (reaction pages), `class`, `template` (general mechanism), `examples` (open-access articles: `doi`, `pmcid`, `license`, `entry`, `conditions`, `substrate`, `product`, `status` = `unused` / `used` / `rejected`, `problemId` once used, `note`; at most 10 unused) and `note`. Only pointers are stored (no article text, supplementary files or images). One shard per reaction keeps each daily commit to one small file.
+
+`src/catalog_load.py` creates and refreshes the Wikidata fields of the index with one SPARQL query and keeps `status`, the shards and any added field; `--offline` recomputes `usedOn`, `lastUsed` and the counts from the shards without network; `--check` validates the layout (licences in the allowed list, statuses, counts, `problemId` present in `data/problems.json` or the archive). Allowed licences (as Europe PMC reports them): cc0, cc by, cc by-sa, cc by-nc, cc by-nc-sa (same list in `src/validate_problems.js`).
+
+`usedOn` compares the normalized name and aliases with the reaction names of `data/problems.json` and the archive: `exact` = same name, `core` = same name once words such as "synthesis" or "rearrangement" are removed (can be a different reaction, e.g. Claisen condensation and Claisen rearrangement). It is a hint; the validator still applies the cooldown. Items without an English label are not loaded. Wikipedia is used for titles and links only; no Wikipedia text is copied.
 
 `usedOn` compares the normalized name and aliases with the reaction names of `data/problems.json` and the archive: `exact` = same name, `core` = same name once words such as "synthesis" or "rearrangement" are removed (can be a different reaction, e.g. Claisen condensation and Claisen rearrangement). It is a hint; the 90-set rule of `validate_problems.js` still applies. Items without an English label are not loaded. Wikipedia is used for titles and links only; no Wikipedia text is copied.
 
