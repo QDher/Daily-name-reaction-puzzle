@@ -1485,6 +1485,147 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-11",
+      "problems": [
+        {
+          "id": "smn-hell-volhard-zelinsky-bromoacetic-acid",
+          "reaction": "Hell–Volhard–Zelinsky reaction",
+          "names": [
+            "Hell–Volhard–Zelinsky reaction",
+            "Hell-Volhard-Zelinsky reaction",
+            "Hell–Volhard–Zelinsky bromination",
+            "Hell-Volhard-Zelinsky halogenation",
+            "Hell–Volhard–Zelinskii reaction",
+            "Hell-Volhard-Zelinskii reaction",
+            "HVZ reaction",
+            "HVZ bromination",
+            "HVZ",
+            "Hell–Volhard–Zelinsky",
+            "Hell-Volhard-Zelinsky"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/hell-volhard-zelinsky-reaction/"
+            },
+            {
+              "site": "Organic Chemistry Portal",
+              "url": "https://www.organic-chemistry.org/namedreactions/hell-volhard-zelinsky-reaction.shtm"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Hell−Volhard−Zelinsky Reaction (general equation, R = H).",
+            "url": "https://say-my-name.net/reaction/hell-volhard-zelinsky-reaction/",
+            "context": "General equation of the say-my-name.net page (carboxylic acid RCH₂CO₂H; 1) Br₂, PBr₃; 2) H₂O → α-bromo acid RCHBrCO₂H) with R = H (allowed by the equation): acetic acid → bromoacetic acid. The intermediates follow the page's mechanism image: O-acyl dibromophosphite (acid + PBr₃, − Br⁻), tetrahedral adduct of Br⁻ at the carbonyl, acyl bromide (expulsion of the phosphorus fragment), its enol, α-bromination of the enol by Br₂ to the α-bromo acyl bromide, and hydrolysis by H₂O (− HBr) to the α-bromo acid. The page gives no conditions beyond the reagents."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution R = H chosen here (the equation allows any R on the CH₂). The Organic Chemistry Portal Hell-Volhard-Zelinsky Reaction page was read (mechanism text: acyl bromide from PBr₃, enol, α-bromination; catalytic cycle by bromide exchange with the acid); TCI pages refused requests (HTTP 403) during this run, so TCI could not be checked or linked; no reference article was read. PubChem (connectivity layer of the InChIKey): acetic acid CID 176, bromine CID 24408, phosphorus tribromide CID 24614, water CID 962 and bromoacetic acid CID 6227 matched; the intermediates acetyl bromide (CID 10482), bromoacetyl bromide (CID 61147) and 1-bromoethenol (CID 89734755) also matched; the acyl dibromophosphite and the tetrahedral adduct have no PubChem entry. Structures a chemist should check: the O-acetyl dibromophosphite and the tetrahedral bromide adduct (drawn as on the page, the alkoxide; the neutral form is accepted). The enol of acetyl bromide drawn on the page is the same species as acetyl bromide for the comparison key, so it is accepted as a form of that intermediate and not asked separately. The tetrahedral intermediate of the hydrolysis (step 2) is not drawn on the page and is not asked.",
+          "substrate": {
+            "label": "acetic acid",
+            "smiles": "CC(=O)O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "Br₂",
+                  "smiles": "BrBr"
+                },
+                {
+                  "text": "PBr₃",
+                  "smiles": "BrP(Br)Br"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "O-Acetyl dibromophosphite: the carboxylic acid O has substituted one Br of PBr₃ (− Br⁻, − H⁺), activating the carbonyl",
+                  "forms": [
+                    "CC(=O)OP(Br)Br"
+                  ]
+                },
+                {
+                  "label": "Tetrahedral adduct: Br⁻ has added to the carbonyl C of the activated acyl derivative (alkoxide or its neutral form)",
+                  "forms": [
+                    "CC([O-])(Br)OP(Br)Br",
+                    "CC(O)(Br)OP(Br)Br"
+                  ]
+                },
+                {
+                  "label": "Acetyl bromide: the alkoxide has re-formed C=O and expelled the phosphorus fragment (OPBr₂⁻); its enol (1-bromoethenol) is the nucleophile toward Br₂",
+                  "forms": [
+                    "CC(=O)Br",
+                    "C=C(O)Br"
+                  ]
+                },
+                {
+                  "label": "Bromoacetyl bromide: the enol of the acyl bromide has attacked Br₂ at its α-carbon (− Br⁻, − H⁺)",
+                  "forms": [
+                    "BrCC(=O)Br"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H₂O",
+                  "smiles": "O"
+                }
+              ],
+              "conditions": "",
+              "intermediates": []
+            }
+          ],
+          "product": {
+            "label": "bromoacetic acid",
+            "smiles": "OC(=O)CBr"
+          },
+          "byproducts": "HBr, phosphorous acid / HOPBr₂-derived species",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Hell−Volhard−Zelinsky Reaction (mechanism image: acid + PBr₃ → O-acyl dibromophosphite, Br⁻ addition to the carbonyl, acyl bromide, enol, α-bromination by Br₂, hydrolysis by H₂O − HBr).",
+            "Organic Chemistry Portal, Hell-Volhard-Zelinsky Reaction (acyl bromide formation, enolization, α-bromination; bromide exchange with the acid keeps PBr₃ catalytic).",
+            "C. Hell. Ueber eine neue Bromirungsmethode organischer Säuren. Ber. Dtsch. Chem. Ges. 1881, 14, 891–893.",
+            "J. Volhard. Ueber Darstellung α-bromirter Säuren. Liebigs Ann. Chem. 1887, 242, 141–163.",
+            "N. Zelinsky. Ueber eine bequeme Darstellungsweise von α-Brompropionsäureester. Ber. Dtsch. Chem. Ges. 1887, 20, 2026."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 3
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 4",
+              "mol": "substrate",
+              "atom": 0
+            },
+            {
+              "transition": "product",
+              "mol": "reagent",
+              "step": 2,
+              "reagent": "H₂O",
+              "atom": 0
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 4,
+            "sigmaBondEvents": 7,
+            "score": 9.5
+          }
+        }
+      ]
     }
   ]
 }

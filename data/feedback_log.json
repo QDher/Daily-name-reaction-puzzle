@@ -45,6 +45,17 @@
       "newObservations": [],
       "updated": [],
       "newProposals": []
+    },
+    {
+      "date": "2026-11-10",
+      "targetDate": "2026-11-11",
+      "supabase": "ok",
+      "results": 7,
+      "ratings": 5,
+      "remarks": 2,
+      "newObservations": [],
+      "updated": [],
+      "newProposals": []
     }
   ]
 }
