@@ -746,7 +746,7 @@ function renderGoals() {
 
 function renderAll() {
   $('schemeTitle').textContent = nameShown() ? P.reaction : state.solved ? 'Product found. Which named reaction is it?' : 'Predict the product and name the reaction';
-  $('caseTag').textContent = stepsText(P) + ' · example from ' + P.source.repository;
+  $('caseTag').textContent = stepsText(P) + ' · example from ' + P.source.repository + (P.source.license ? ' (' + licenseLabel(P.source.license) + ')' : '');
   renderGoals(); renderScheme(); renderReagents(); renderName(); renderHints(); renderSteps(); renderAbout(); fbRender();
 }
 
@@ -808,6 +808,10 @@ function renderHints() {
   if (hb) hb.onclick = () => { state.hints = shown.length + 1; save(); renderScheme(); renderReagents(); renderHints(); updateAttempts(); };
 }
 
+// Licence of an open-access article example (source.license as Europe PMC reports it, e.g. "cc by-sa" -> "CC BY-SA").
+// The credit (authors, title, DOI) is shown with the answer, because article titles can name the reaction.
+const licenseLabel = l => String(l).toUpperCase();
+
 function renderAbout() {
   const show = nameShown(), s = P.source;
   $('about').hidden = !show;
@@ -817,6 +821,7 @@ function renderAbout() {
     `<span><span class="eyebrow">Mechanism pages</span></span>` +
     `<div class="links">${P.repositories.map(r => `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.site)} ↗</a>`).join('')}</div>` +
     `<span><span class="eyebrow">Example (${esc(s.repository)})</span> ${esc(s.citation)} ` + (s.doi ? `<a href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">doi:${esc(s.doi)}</a>` : `<a href="${esc(s.url)}" target="_blank" rel="noopener">page ↗</a>`) + `</span>` +
+    (s.license ? `<span><span class="eyebrow">Licence</span> ${esc(licenseLabel(s.license))}` + (s.licenseUrl ? ` <a href="${esc(s.licenseUrl)}" target="_blank" rel="noopener">licence text ↗</a>` : '') + `. Adapted from the cited article: structures redrawn; the mechanism steps and hints are added here.</span>` : '') +
     `<span>${esc(s.context)}</span>` +
     (P.verified ? '' : `<span class="flag">Unverified: ${esc(P.verificationNote)}</span>`) +
     `<span><span class="eyebrow">Mechanism references</span><br>${P.mechanismRefs.map(esc).join('<br>')}</span>` +

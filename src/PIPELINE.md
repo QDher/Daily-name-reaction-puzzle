@@ -59,7 +59,7 @@ Copy the shape of an existing entry in `data/problems.json`. Fields beyond One-P
                   { "site": "TCI name reactions", "url": "https://www.tcichemicals.com/product/name_reaction/..." } ],
 "source": { "repository": "TCI name reactions", "citation": "...", "doi": "10.xxxx/...", "context": "where the example is on the page; conditions and yield" }
 // Named Reactions Explorer equation: { "repository": "Named Reactions Explorer", "citation": "Named Reactions Explorer, <Reaction> (general equation, R = Me, R′ = H)", "url": "https://say-my-name.net/reaction/<slug>/", "context": "..." }
-// Open-access article (not used by the scheduled prompt yet): { "repository": "Open-access article", "citation": "authors, title, journal, year", "doi": "10.xxxx/...", "pmcid": "PMC...", "entry": "compound or entry number", "license": "cc by", "context": "where the example is; conditions and yield; structures redrawn" }
+// Open-access article (not used by the scheduled prompt yet): { "repository": "Open-access article", "citation": "authors, title, journal, year", "doi": "10.xxxx/...", "pmcid": "PMC...", "entry": "compound or entry number", "license": "cc by", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/" (optional, as given by the article), "context": "where the example is; conditions and yield; structures redrawn" }
 // "repositories" then lists reaction pages (Wikipedia, Named Reactions Explorer, ...); source.repository need not be one of them.
 ```
 

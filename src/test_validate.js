@@ -45,6 +45,9 @@ check('article example with licence cc by passes', [article(p0), p1], { ok: true
 check('article example with licence cc by-nc-sa passes', [article(p0, { license: 'cc by-nc-sa' }), p1], { ok: true });
 check('article example without licence fails', [article(p0, { license: undefined }), p1], { ok: false, msg: 'source.license' });
 check('article example with no-derivatives licence fails', [article(p0, { license: 'cc by-nd' }), p1], { ok: false, msg: 'source.license' });
+check('article example with a matching licenseUrl passes', [article(p0, { licenseUrl: 'https://creativecommons.org/licenses/by/4.0/' }), p1], { ok: true });
+check('article example with a licenseUrl of another licence fails', [article(p0, { licenseUrl: 'https://creativecommons.org/licenses/by-nc/4.0/' }), p1], { ok: false, msg: 'source.licenseUrl' });
+check('article example with a licenseUrl outside creativecommons.org fails', [article(p0, { licenseUrl: 'https://example.org/licenses/by/4.0/' }), p1], { ok: false, msg: 'source.licenseUrl' });
 check('article example without DOI fails', [article(p0, { doi: undefined }), p1], { ok: false, msg: 'source.doi is required' });
 check('article example without citation fails', [article(p0, { citation: '' }), p1], { ok: false, msg: 'source.citation' });
 check('same substrate and product fails', [p0, Object.assign(article(p0, { doi: '10.1000/other' }), { id: 'dup-id', reaction: 'Zzyzx reaction', names: ['Zzyzx reaction'] })], { ok: false, msg: 'same substrate and product as' });

@@ -19,6 +19,8 @@ const REPO_HOSTS = ['say-my-name.net', 'www.organic-chemistry.org', 'www.tcichem
 // optional source.pmcid and source.entry (compound or entry number, so that one article can give several examples).
 const ARTICLE_SOURCE = 'Open-access article';
 const ALLOWED_LICENSES = ['cc0', 'cc by', 'cc by-sa', 'cc by-nc', 'cc by-nc-sa'];
+// optional source.licenseUrl (the licence link given by the article, shown on the page) must be the Creative Commons page of that licence
+const LICENSE_PATH = { 'cc0': '/publicdomain/zero/', 'cc by': '/licenses/by/', 'cc by-sa': '/licenses/by-sa/', 'cc by-nc': '/licenses/by-nc/', 'cc by-nc-sa': '/licenses/by-nc-sa/' };
 const exampleKey = P => { const s = P.source || {}; return (s.doi || s.url) + (s.entry ? ' #' + s.entry : '') + ' | ' + P.reaction; };
 const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
   .replace(/[‐-―−-]/g, ' ').replace(/[^a-z0-9 ]/g, ' ')
@@ -83,6 +85,8 @@ init().then(R => {
         if (!ALLOWED_LICENSES.includes(String(src.license || ''))) err(w, `source.license must be one of ${ALLOWED_LICENSES.join(', ')} (as Europe PMC reports it; no-derivatives licences are not accepted), found "${src.license}"`);
         if (!src.citation) err(w, 'source.citation (authors, title, journal, year) is required for an article example');
         if (src.pmcid && !/^PMC\d+$/.test(src.pmcid)) err(w, 'source.pmcid malformed');
+        if (src.licenseUrl !== undefined && !(LICENSE_PATH[src.license] && String(src.licenseUrl).startsWith('https://creativecommons.org' + LICENSE_PATH[src.license])))
+          err(w, `source.licenseUrl must be a https://creativecommons.org${LICENSE_PATH[src.license] || '/...'} page (the licence "${src.license}"), found "${src.licenseUrl}"`);
       }
 
       // names and repositories
