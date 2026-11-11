@@ -75,6 +75,12 @@ node src/build.js                                    # writes index.html
 
 Commit and push: `git add index.html data && git commit -m "Add daily question <date>" && git push origin main` (only `index.html` and `data/` change in a daily run). GitHub Pages deploys the pushed commit.
 
+## Reaction catalogue (not part of a daily run yet)
+
+`data/reaction_catalog.json` lists the named reactions of Wikidata (instances of "eponymous chemical reaction", Q1049494; CC0): `id` (Wikidata item), `name`, `aliases`, `wikidata` and `wikipedia` links, `wikidataClasses`, `usedOn` and the check fields `status` (`pending`, `complete`, `no-example`, `skip`) and `completion` (`null` until checked). `src/catalog_load.py` creates and refreshes the Wikidata fields with one SPARQL query and keeps `status`, `completion` and any other added field.
+
+`usedOn` compares the normalized name and aliases with the reaction names of `data/problems.json` and the archive: `exact` = same name, `core` = same name once words such as "synthesis" or "rearrangement" are removed (can be a different reaction, e.g. Claisen condensation and Claisen rearrangement). It is a hint; the 90-set rule of `validate_problems.js` still applies. Items without an English label are not loaded. Wikipedia is used for titles and links only; no Wikipedia text is copied.
+
 ## Archive and date list
 
 `src/build.js` first calls `src/archive.js`: sets dated more than 32 days before today (schedule time zone) are moved from `data/problems.json` into `data/archive.json.gz` (gzip of `{"sets": [...]}`), then the page is built from what remains. The page lists the last 31 days that have a set in a drop-down, with the visitor's progress for each day (stored in the browser). Archived sets are not shown on the page; `validate_problems.js` still reads them for ids, paper + reaction pairs and repeated reactions. Read the archive with `zcat data/archive.json.gz`. Results and ratings of archived problems stay in Supabase.
