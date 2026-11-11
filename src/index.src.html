@@ -178,7 +178,7 @@ button, input { font: inherit; }
 .flag { color: var(--warn); }
 .loading { padding: 40px 0; text-align: center; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .meter > i { transition: none; } }
-/* Results and ratings (shared Supabase store) */
+/* Results and ratings (shared store: feedback Worker) */
 .fb { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (max-width: 860px) { .fb { grid-template-columns: minmax(0, 1fr); } }
 .fb[hidden] { display: none; }
@@ -375,10 +375,11 @@ const store = {
 };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-/* ---- results and ratings, shared through Supabase (see supabase/schema.sql) ---- */
-const FB_CFG = { url: 'https://gevbctklqelyumhynfnq.supabase.co', key: 'sb_publishable_uVp44kl4elFfJ3AeUvzFzQ_yzkjwRT1' };
+/* ---- results and ratings, shared through the feedback Worker (Cloudflare Workers + D1;
+   see feedback-worker/ in QDher/Daily-organic-chemistry-puzzles) ---- */
+const FB_CFG = { url: 'https://__FEEDBACK_WORKER_URL__' };
 const FB_SITE = 'namerxn';
-const fbOn = /^https:\/\//.test(FB_CFG.url) && FB_CFG.key.length > 20 && !FB_CFG.key.startsWith('__');
+const fbOn = /^https:\/\/[^\s_]+$/.test(FB_CFG.url);
 const hintPenalty = h => h * (h + 1) / 2;
 const fbStatsCache = new Map();
 let fbStars = 0;
@@ -391,14 +392,12 @@ function fbClient() {
   }
   return id;
 }
-async function fbPost(path, body, minimal) {
-  const headers = { apikey: FB_CFG.key, 'Content-Type': 'application/json' };
-  if (FB_CFG.key.startsWith('eyJ')) headers.Authorization = 'Bearer ' + FB_CFG.key;
-  if (minimal) headers.Prefer = 'return=minimal';
-  const r = await fetch(FB_CFG.url.replace(/\/$/, '') + '/rest/v1/' + path, { method: 'POST', headers, body: JSON.stringify(body) });
+async function fbPost(path, body) {
+  const r = await fetch(FB_CFG.url.replace(/\/$/, '') + '/' + path,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (r.status === 409) return { duplicate: true };
   if (!r.ok) throw new Error('HTTP ' + r.status);
-  return r.status === 204 || minimal ? {} : r.json();
+  return r.json();
 }
 /* Called by the page when the problem is finished: product found (revealed = false) or answer shown first (revealed = true). */
 function finishProblem(revealed) {
@@ -411,7 +410,7 @@ async function fbSendResult(p, f) {
   if (!fbOn || !f || store.get(k)) return;
   try {
     await fbPost('results', { site: FB_SITE, problem_id: p.id, client_id: fbClient(),
-      checks: f.checks, hints: f.hints, score: f.score, revealed: f.revealed }, true);
+      checks: f.checks, hints: f.hints, score: f.score, revealed: f.revealed });
     store.set(k, true);
     fbStatsCache.delete(p.id);
   } catch (e) { console.warn('result not sent', e); }
@@ -525,7 +524,7 @@ async function fbSubmitRating(ev) {
   const remark = $('fbRemark').value.trim().slice(0, 200) || null;
   $('fbSend').disabled = true; $('fbFormMsg').className = 'fb-msg'; $('fbFormMsg').textContent = 'Sending…';
   try {
-    await fbPost('ratings', { site: FB_SITE, problem_id: p.id, client_id: fbClient(), stars: fbStars, remark }, true);
+    await fbPost('ratings', { site: FB_SITE, problem_id: p.id, client_id: fbClient(), stars: fbStars, remark });
     store.set(k, { stars: fbStars });
     fbStatsCache.delete(p.id);
     if (p === P) fbRender();
