@@ -223,6 +223,15 @@ body { padding-block: 14px 40px; }
 .arrow { min-width: 150px; font-size: 12.5px; }
 .reagent { padding: 4px 8px; font-size: 11px; }
 @media (max-width: 600px) { .unknown { width: 120px; height: 90px; } }
+
+/* Level question (asked once, before the first check) */
+.lvl { display: grid; gap: 6px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; }
+.lvl[hidden], .lvl-note[hidden] { display: none; }
+.lvl-q { font-size: 14px; }
+.lvl-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.lvl-opt { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; }
+.lvl-opt:hover, .lvl-opt[aria-checked="true"] { border-color: var(--accent); color: var(--accent); }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; font-size: inherit; }
 </style>
 
 <div class="wrap">
@@ -279,6 +288,11 @@ body { padding-block: 14px 40px; }
         <button class="btn primary" id="checkBtn" type="button">Check structure</button>
         <span class="hint mono" id="attempts"></span>
       </div>
+      <div class="lvl" id="lvlBox" role="group" aria-labelledby="lvlQ" hidden>
+        <span class="lvl-q" id="lvlQ">Before your first answer: what is your level?</span>
+        <div class="lvl-opts" id="lvlOpts" role="radiogroup" aria-labelledby="lvlQ"></div>
+        <span class="hint">Asked once. Undergraduate: bachelor's student; graduate: master's or PhD student; postgraduate: PhD obtained (postdoc, faculty, industry). Stored anonymously with your results to analyse difficulty; never shown, and it does not change your score.</span>
+      </div>
       <div class="verdict info" id="verdict" aria-live="polite">
         <span class="pill">Ready</span>
         <span id="verdictText">Draw the product or any intermediate, then check it.</span>
@@ -292,6 +306,7 @@ body { padding-block: 14px 40px; }
         </ul>
         Draw metal alkoxides and enolates as O⁻. Charges: the <b>A⁺</b> / <b>A⁻</b> tools in the left toolbar, then click the atom. Radicals: double-click the atom to open Atom Properties and set Radical. Structure editor: <a href="https://lifescience.opensource.epam.com/ketcher/" target="_blank" rel="noopener">Ketcher</a> (EPAM, Apache 2.0).
       </div>
+      <div class="hint lvl-note" id="lvlNote" hidden><span id="lvlNoteText"></span><button class="linkbtn" id="lvlChange" type="button">Change</button></div>
     </section>
 
     <section class="card" aria-labelledby="mechTitle">
@@ -322,7 +337,7 @@ body { padding-block: 14px 40px; }
       </div>
       <div class="fb-chart" id="fbChart"></div>
       <div class="fb-sub" id="fbSummary"></div>
-      <div class="hint">Score = different structures checked until the product is found + hint penalty (hint 1 adds 1, hint 2 adds 2, hint 3 adds 3, …). Lower is better. Users who revealed the answer are shown as a separate bar.</div>
+      <div class="hint">Score = different structures checked until the product is found (correct intermediates are not counted) + hint penalty (hint 1 adds 1, hint 2 adds 2, hint 3 adds 3, …). Lower is better. Users who revealed the answer are shown as a separate bar.</div>
     </section>
     <section class="card" aria-labelledby="fbRateTitle">
       <h3 id="fbRateTitle">Rate this problem</h3>
@@ -399,18 +414,41 @@ async function fbPost(path, body) {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
+/* ---- level declared by the visitor: asked once before the first answer (shared by both sites, same origin);
+   sent with results, ratings and answers, never shown, not used in the score ---- */
+const USER_LEVELS = [['undergraduate', 'Undergraduate'], ['graduate', 'Graduate'], ['postgraduate', 'Postgraduate']];
+const userLevel = () => { const v = store.get('puzzles:level'); return USER_LEVELS.some(l => l[0] === v) ? v : null; };
+let lvlWait = null;
+function askLevel() {            // resolves true once a level is stored; the pending answer is then checked
+  if (!fbOn || userLevel()) return Promise.resolve(true);
+  if (lvlWait) return Promise.resolve(false);
+  renderLevel(true);
+  $('lvlBox').scrollIntoView({ block: 'nearest' });
+  return new Promise(res => { lvlWait = res; });
+}
+function renderLevel(open) {
+  const lv = userLevel();
+  $('lvlBox').hidden = !open;
+  $('lvlOpts').innerHTML = USER_LEVELS.map(([v, t]) => `<button type="button" class="lvl-opt" role="radio" aria-checked="${v === lv}" data-v="${v}">${t}</button>`).join('');
+  $('lvlOpts').querySelectorAll('.lvl-opt').forEach(b => b.onclick = () => {
+    store.set('puzzles:level', b.dataset.v); renderLevel(false);
+    if (lvlWait) { const r = lvlWait; lvlWait = null; r(true); }
+  });
+  $('lvlNote').hidden = !fbOn || !lv || open;
+  if (lv) $('lvlNoteText').textContent = `Level you declared: ${USER_LEVELS.find(l => l[0] === lv)[1]} (anonymous, not used in the score). `;
+}
 /* Called by the page when the problem is finished: product found (revealed = false) or answer shown first (revealed = true). */
 function finishProblem(revealed) {
   if (state.final) return;
   const hints = state.hints || 0;
-  state.final = { checks: state.attempts, hints, score: state.attempts + hintPenalty(hints), revealed };
+  state.final = { checks: state.attempts, hints, score: state.attempts + hintPenalty(hints), revealed, rule: state.rule || 1 };
 }
 async function fbSendResult(p, f) {
   const k = `fbsent:${FB_SITE}:${p.id}`;
   if (!fbOn || !f || store.get(k)) return;
   try {
     await fbPost('results', { site: FB_SITE, problem_id: p.id, client_id: fbClient(),
-      checks: f.checks, hints: f.hints, score: f.score, revealed: f.revealed });
+      checks: f.checks, hints: f.hints, score: f.score, revealed: f.revealed, score_rule: f.rule || 1, user_level: userLevel() || undefined });
     store.set(k, true);
     fbStatsCache.delete(p.id);
   } catch (e) { console.warn('result not sent', e); }
@@ -434,7 +472,7 @@ function fbRender() {
   if (!done) return;
   $('fbScore').textContent = !f ? 'Score not recorded' : f.revealed ? 'Answer shown' : `Your score: ${f.score}`;
   $('fbScoreSub').textContent = !f ? 'This problem was solved before scoring was added.'
-    : `${f.checks} structure check${f.checks === 1 ? '' : 's'} + hint penalty ${hintPenalty(f.hints)} (${f.hints} hint${f.hints === 1 ? '' : 's'})` + (f.revealed ? ', then the answer was shown.' : '.');
+    : `${f.checks} structure check${f.checks === 1 ? '' : 's'}${f.rule === 2 ? ' (correct intermediates not counted)' : ''} + hint penalty ${hintPenalty(f.hints)} (${f.hints} hint${f.hints === 1 ? '' : 's'})` + (f.revealed ? ', then the answer was shown.' : '.');
   fbRenderRating(p);
   if (!fbOn) { $('fbChart').innerHTML = ''; $('fbSummary').textContent = 'Shared statistics are not available on this copy of the page.'; return; }
   $('fbSummary').textContent = 'Loading results of other users…';
@@ -524,7 +562,7 @@ async function fbSubmitRating(ev) {
   const remark = $('fbRemark').value.trim().slice(0, 200) || null;
   $('fbSend').disabled = true; $('fbFormMsg').className = 'fb-msg'; $('fbFormMsg').textContent = 'Sending…';
   try {
-    await fbPost('ratings', { site: FB_SITE, problem_id: p.id, client_id: fbClient(), stars: fbStars, remark });
+    await fbPost('ratings', { site: FB_SITE, problem_id: p.id, client_id: fbClient(), stars: fbStars, remark, user_level: userLevel() || undefined });
     store.set(k, { stars: fbStars });
     fbStatsCache.delete(p.id);
     if (p === P) fbRender();
@@ -622,7 +660,13 @@ function buildContext(p) {
   return { fp, species, total, sub: speciesInfo(R, p.substrate.smiles, fp), prod: speciesInfo(R, p.product.smiles, fp) };
 }
 const blank = () => ({ found: [], solved: false, named: false, revealed: false, attempts: 0, nameTries: 0, hints: 0 });
-const stateOf = p => Object.assign(blank(), store.get('namerxn:' + p.id) || {});
+// rule 2: correct intermediates are not counted; problems started before 2026-11-11 keep rule 1 (every distinct structure counted)
+const SCORE_RULE = 2;
+const stateOf = p => {
+  const s = store.get('namerxn:' + p.id), x = Object.assign(blank(), s || {});
+  if (!x.rule) x.rule = s && (x.attempts || x.found.length || x.hints || x.solved || x.revealed || x.final || x.named || x.nameTries) ? 1 : SCORE_RULE;
+  return x;
+};
 const stepsText = p => p.steps.length === 1 ? 'one step' : `${p.steps.length} steps, one pot`;
 const nameShown = () => state.named || state.revealed;
 
@@ -723,10 +767,11 @@ function renderName() {
   else { m.className = 'name-msg'; m.textContent = state.nameTries ? `${state.nameTries} ${state.nameTries > 1 ? 'tries' : 'try'} so far.` : ''; }
 }
 
-function checkName(ev) {
+async function checkName(ev) {
   ev.preventDefault();
   const guess = $('nameInput').value.trim();
   if (!guess || nameShown()) return;
+  if (!await askLevel() || nameShown()) return;
   state.nameTries++;
   if (nameMatches(guess, P.names)) { state.named = true; save(); renderAll(); return; }
   save(); renderGoals();
@@ -799,23 +844,27 @@ function save() { store.set('namerxn:' + P.id, state); renderDayList(); }
 
 async function check() {
   if (editor.isEmpty()) { setVerdict('info', 'Empty', 'Draw a structure first.'); return; }
+  if (!await askLevel()) return;
   let molfile;
   try { molfile = await editor.getMolfile(); } catch (e) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
   const drawn = speciesInfo(R, molfile, ctx.fp);
   if (!drawn.key) { setVerdict('bad', 'Unreadable', 'The structure could not be read. Check valences and charges.'); return; }
-  // the same structure checked again is not counted again (score = distinct structures checked + hint penalty)
+  // score = distinct structures checked + hint penalty: the same structure checked again is not counted again, and
+  // (scoring rule 2, problems started from 2026-11-11) a correct intermediate is not counted
+  const isProduct = matches(drawn, ctx.prod);
+  const hit = isProduct ? null : (ctx.species.find(x => matches(drawn, x.info)) || {}).hit;
+  const free = !!hit && state.rule === 2;
   state.checked = state.checked || [];
-  const repeat = state.checked.includes(drawn.key);
-  if (!repeat) { state.checked.push(drawn.key); state.attempts++; save(); }
+  const repeat = !free && state.checked.includes(drawn.key);
+  if (!repeat && !free) { state.checked.push(drawn.key); state.attempts++; save(); }
   updateAttempts();
-  const say = (kind, pill, text) => setVerdict(kind, pill, text + (repeat ? ' Already checked: not counted again.' : ''));
-  if (matches(drawn, ctx.prod)) {
+  const say = (kind, pill, text) => setVerdict(kind, pill, text + (repeat ? ' Already checked: not counted again.' : free ? ' Not counted in the score.' : ''));
+  if (isProduct) {
     const first = !state.solved; state.solved = true; if (first) finishProblem(false); save(); updateAttempts();
     say('ok', 'Product', first ? 'Correct. This is the product of the repository example.' : 'Correct. Product already found.');
     renderAll();
     return;
   }
-  const hit = (ctx.species.find(x => matches(drawn, x.info)) || {}).hit;
   if (hit) {
     const st = P.steps[hit.si], it = st.intermediates[hit.k], id = hit.si + '.' + hit.k;
     const where = `step ${st.n} (${reagentTexts(st).join(', ')}), intermediate ${hit.k + 1} of ${st.intermediates.length}`;
@@ -843,6 +892,8 @@ async function main() {
   window.__puzzle = { editor, R, check: () => check(), nameMatches, dayIndex, changeInstant,
     get state() { return state; }, get problem() { return P; }, loadDay: i => loadDay(i) };
   $('checkBtn').onclick = check;
+  $('lvlChange').onclick = () => renderLevel(true);
+  renderLevel(false);
   $('fbForm').onsubmit = fbSubmitRating;
   $('nameForm').onsubmit = checkName;
   $('clearBtn').onclick = () => editor.clearAll();
