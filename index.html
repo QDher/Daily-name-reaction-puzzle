@@ -587,7 +587,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 
 /* ---- results and ratings, shared through the feedback Worker (Cloudflare Workers + D1;
    see feedback-worker/ in QDher/Daily-organic-chemistry-puzzles) ---- */
-const FB_CFG = { url: 'https://__FEEDBACK_WORKER_URL__' };
+const FB_CFG = { url: 'https://puzzle-feedback.dailyorgchem.workers.dev' };
 const FB_SITE = 'namerxn';
 const fbOn = /^https:\/\/[^\s_]+$/.test(FB_CFG.url);
 const hintPenalty = h => h * (h + 1) / 2;

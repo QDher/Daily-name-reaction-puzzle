@@ -13,7 +13,7 @@ Scheduled runs: the scheduled-task prompt is authoritative; this file does not c
 | Problems | `data/problems.json` (last 32 days and later; built into `index.html` by `src/build.js`) |
 | Archive | `data/archive.json.gz` (older sets, moved by `src/build.js` via `src/archive.js`; read with `zcat`); the page shows the last month only |
 | Feedback log | `data/feedback_log.json` (written by the scheduled runs, step 3b) |
-| Results and ratings | Cloudflare Worker `puzzle-feedback` (https://__FEEDBACK_WORKER_URL__) and D1 database `puzzle-feedback`, site key `namerxn`; code, schema and deployment in `feedback-worker/` of QDher/Daily-organic-chemistry-puzzles (deployed by its `.github/workflows/feedback-worker.yml`). `supabase/schema.sql` describes the former Supabase store |
+| Results and ratings | Cloudflare Worker `puzzle-feedback` (https://puzzle-feedback.dailyorgchem.workers.dev) and D1 database `puzzle-feedback`, site key `namerxn`; code, schema and deployment in `feedback-worker/` of QDher/Daily-organic-chemistry-puzzles (deployed by its `.github/workflows/feedback-worker.yml`). `supabase/schema.sql` describes the former Supabase store |
 
 ## Working conventions
 
