@@ -16,7 +16,7 @@ Backup of the Claude Code scheduled task that adds a daily question to this repo
 
 The earlier Cowork task "Name Reaction Daily question" was deleted on 2026-11-10 (it used the claude.ai page, also deleted).
 
-Prompt text updated on 2026-11-11 (step 3b: scoring rule that does not count correct intermediates, feedback reaches selection only through a model the user activates; step 3c: Tier A additions of resonance forms, at most 3 per run); the scheduled task receives this text when the change is merged to main. Previous backup: backed up on 2026-11-10, step 3b updated for the Cloudflare feedback store (the GitHub repository is the only copy of the site and its data; the claude.ai page was deleted; questions older than 32 days are archived in data/archive.json.gz).
+Backed up on 2026-11-11, after the merge of the changes (step 3b: scoring rule that does not count correct intermediates, feedback reaches selection only through a model the user activates; step 3c: Tier A additions of resonance forms, at most 3 per run); the scheduled task holds this prompt text (compared character by character after the update). Previous backup: 2026-11-10, step 3b updated for the Cloudflare feedback store (the GitHub repository is the only copy of the site and its data; the claude.ai page was deleted; questions older than 32 days are archived in data/archive.json.gz).
 
 ## Prompt
 
