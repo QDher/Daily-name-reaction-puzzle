@@ -56,6 +56,21 @@
       "newObservations": [],
       "updated": [],
       "newProposals": []
+    },
+    {
+      "date": "2026-11-11",
+      "targetDate": "2026-11-12",
+      "store": "ok",
+      "results": 7,
+      "ratings": 5,
+      "remarks": 2,
+      "newObservations": [],
+      "updated": [],
+      "newProposals": [],
+      "tierA": {
+        "applied": [],
+        "skipped": 0
+      }
     }
   ]
 }

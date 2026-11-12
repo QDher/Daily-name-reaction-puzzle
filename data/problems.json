@@ -1626,6 +1626,122 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-12",
+      "problems": [
+        {
+          "id": "smn-favorskii-cyclohexanecarboxylic-acid",
+          "reaction": "Favorskii rearrangement",
+          "names": [
+            "Favorskii rearrangement",
+            "Favorskii reaction",
+            "Favorskii ring contraction",
+            "Favorsky rearrangement",
+            "Favorsky reaction",
+            "Favorskii",
+            "Favorsky",
+            "Faworski rearrangement"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/favorskii-rearrangement/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Favorskii Rearrangement (general equation, X = Br, Nuc⁻ = HO⁻).",
+            "url": "https://say-my-name.net/reaction/favorskii-rearrangement/",
+            "context": "General equation of the say-my-name.net page (2-halocycloheptanone + Nuc⁻ (OH, OR, NR₂) → cyclohexanecarbonyl–Nuc, ring contraction) with X = Br (halide) and Nuc⁻ = HO⁻ (the simplest nucleophile listed): 2-bromocycloheptanone → cyclohexanecarboxylic acid. The intermediates follow the page's mechanism image: enol, intramolecular displacement of X⁻ to the bicyclic cyclopropanone, addition of Nuc⁻ to its carbonyl (tetrahedral alkoxide), ring opening to the ring-contracted carbanion and protonation (H⁺). The page gives no conditions; aqueous NaOH and an acidic work-up (to obtain the free acid from its carboxylate) are chosen here."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: X = Br, Nuc⁻ = HO⁻ (aqueous NaOH), with an acidic work-up added to give the free acid; the page gives no conditions. TCI and Organic Chemistry Portal pages refused requests (HTTP 403) during this run, so they could not be checked or linked; no reference article was read. PubChem (connectivity layer of the InChIKey): 2-bromocycloheptanone CID 544279, cyclohexanecarboxylic acid CID 7413 and sodium hydroxide CID 14798 matched; the intermediate bicyclo[4.1.0]heptan-7-one is CID 73446562; the tetrahedral adduct has no PubChem entry. Structures a chemist should check: the bicyclic cyclopropanone and the tetrahedral adduct (alkoxide as drawn on the page; the neutral hydrate is accepted). The enol drawn first on the page is a tautomer of the substrate and the ring-opened carbanion is the product in another protonation state for the comparison key, so neither is asked.",
+          "substrate": {
+            "label": "2-bromocycloheptanone",
+            "smiles": "O=C1CCCCCC1Br"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "NaOH",
+                  "smiles": "[Na+].[OH-]"
+                },
+                {
+                  "text": "H₂O"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Bicyclo[4.1.0]heptan-7-one (cyclopropanone): the enol(ate) α′-carbon has displaced Br⁻ intramolecularly at the α-carbon, closing a three-membered ring",
+                  "forms": [
+                    "O=C1C2CCCCC12"
+                  ]
+                },
+                {
+                  "label": "Tetrahedral adduct: HO⁻ has added to the strained cyclopropanone carbonyl (alkoxide or its neutral hydrate)",
+                  "forms": [
+                    "[O-]C1(O)C2CCCCC12",
+                    "OC1(O)C2CCCCC12"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H⁺ (acidic work-up)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": []
+            }
+          ],
+          "product": {
+            "label": "cyclohexanecarboxylic acid",
+            "smiles": "OC(=O)C1CCCCC1"
+          },
+          "byproducts": "NaBr, H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Favorskii Rearrangement (mechanism image: enol of the α-halo ketone, intramolecular displacement of X⁻ to a cyclopropanone, addition of Nuc⁻ to the carbonyl, ring opening to the more stable carbanion, protonation).",
+            "A. E. Favorskii. J. Russ. Phys. Chem. Soc. 1894, 26, 559; J. Prakt. Chem. 1913, 88, 641.",
+            "R. B. Loftfield. The Mechanism of the Favorskii Rearrangement of Alpha Halo Ketones. J. Am. Chem. Soc. 1951, 73, 4707–4714 (cyclopropanone intermediate, ¹⁴C labelling).",
+            "A. S. Kende. The Favorskii Rearrangement of Haloketones. Org. React. 1960, 11, 261–316."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 7
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 8
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 2,
+            "sigmaBondEvents": 4,
+            "score": 6.0
+          }
+        }
+      ]
     }
   ]
 }
