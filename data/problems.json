@@ -1742,6 +1742,118 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-13",
+      "problems": [
+        {
+          "id": "smn-stobbe-condensation-ethoxycarbonyl-methylpentenoic-acid",
+          "reaction": "Stobbe condensation",
+          "names": [
+            "Stobbe condensation",
+            "Stobbe reaction",
+            "Stobbe",
+            "Stobbe condensation reaction"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/stobbe-condensation/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Stobbe Condensation (general equation, R = R′ = Me; base = NaOEt).",
+            "url": "https://say-my-name.net/reaction/stobbe-condensation/",
+            "context": "General equation of the say-my-name.net page (RC(O)R′ + diethyl succinate, base → R(R′)C=C(CO₂Et)CH₂CO₂H) with R = R′ = Me (the equation draws a ketone, so the simplest ketone, acetone, was used) and the unspecified base given as sodium ethoxide (chosen here to match the ethyl esters): diethyl succinate + acetone → 3-(ethoxycarbonyl)-4-methylpent-3-enoic acid. The intermediates follow the page's mechanism image: deprotonation of diethyl succinate (ester enolate); addition of the enolate to the ketone C=O (alkoxide); attack of the alkoxide on the distal ester with loss of EtO⁻ (γ-lactone, ethyl 2,2-dimethyl-5-oxooxolane-3-carboxylate); base-induced ring opening by removal of the α-H (carboxylate of the half-ester). An acidic work-up, not drawn on the page, gives the acid drawn in the equation. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution R = R′ = Me and the base (NaOEt) chosen here; the acidic work-up step was added to reach the acid drawn in the equation. The TCI and Organic Chemistry Portal sites refused requests (HTTP 403) during this run, so whether they have a page for this reaction could not be checked; no reference article was read. PubChem (connectivity layer of the InChIKey): diethyl succinate CID 31249, acetone CID 180, sodium ethoxide CID 2723922 and the product 3-ethoxycarbonyl-4-methylpent-3-enoic acid CID 12252003 matched; the lactone intermediate (ethyl 2,2-dimethyl-5-oxooxolane-3-carboxylate, CID 12694782) also matched. The carboxylate formed on ring opening is the same species as the product for the comparison key, so it is not asked; likewise the ester enolate drawn first on the page is the same species as the substrate for the key (protonation state ignored) and is described in the label of the alkoxide adduct. Structures a chemist should check: the alkoxide adduct and the γ-lactone.",
+          "substrate": {
+            "label": "diethyl succinate",
+            "smiles": "CCOC(=O)CCC(=O)OCC"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "acetone",
+                  "smiles": "CC(C)=O"
+                },
+                {
+                  "text": "NaOEt (sodium ethoxide)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Alkoxide adduct: the ester enolate of diethyl succinate (formed by the base) has added through its α-carbon to the acetone C=O",
+                  "forms": [
+                    "CCOC(=O)C(CC(=O)OCC)C(C)(C)[O-]"
+                  ]
+                },
+                {
+                  "label": "γ-Lactone (ethyl 2,2-dimethyl-5-oxooxolane-3-carboxylate): the alkoxide has attacked the distal ester C=O with loss of EtO⁻; the base then removes the H next to the ester and opens the ring to the carboxylate",
+                  "forms": [
+                    "CCOC(=O)C1CC(=O)OC1(C)C"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H⁺ (acidic work-up)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": []
+            }
+          ],
+          "product": {
+            "label": "3-(ethoxycarbonyl)-4-methylpent-3-enoic acid",
+            "smiles": "CCOC(=O)C(=C(C)C)CC(=O)O"
+          },
+          "byproducts": "EtOH (from EtO⁻ released on lactone formation)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Stobbe Condensation (mechanism image: ester enolate formation, addition to the carbonyl, lactonization with loss of EtO⁻, base-induced ring opening to the carboxylate of the half-ester).",
+            "H. Stobbe. Eine neue Synthese der Teraconsäure. Ber. Dtsch. Chem. Ges. 1893, 26, 2312–2319 (doi:10.1002/cber.18930260306).",
+            "W. S. Johnson, G. H. Daub. The Stobbe Condensation. Org. React. 1951, 6, 1–73 (doi:10.1002/0471264180.or006.01)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 5
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "acetone",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 7
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 9
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 2,
+            "sigmaBondEvents": 4,
+            "score": 6.0
+          }
+        }
+      ]
     }
   ]
 }
