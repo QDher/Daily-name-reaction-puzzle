@@ -1854,6 +1854,106 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-14",
+      "problems": [
+        {
+          "id": "smn-pictet-spengler-6-methoxy-tetrahydroisoquinoline",
+          "reaction": "Pictet–Spengler reaction",
+          "names": [
+            "Pictet–Spengler reaction",
+            "Pictet-Spengler reaction",
+            "Pictet–Spengler synthesis",
+            "Pictet-Spengler synthesis",
+            "Pictet–Spengler cyclization",
+            "Pictet-Spengler cyclization",
+            "Pictet–Spengler condensation",
+            "Pictet-Spengler condensation",
+            "Pictet Spengler reaction",
+            "Pictet–Spengler",
+            "Pictet-Spengler"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/pictet-spengler-synthesis/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Pictet−Spengler Synthesis (general equation, EDG = OMe meta to the side chain, R = H).",
+            "url": "https://say-my-name.net/reaction/pictet-spengler-synthesis/",
+            "context": "General equation of the say-my-name.net page (2-arylethylamine with an electron-donating group EDG on the ring + RCHO, H⁺ → 1-R-1,2,3,4-tetrahydroisoquinoline) with EDG = OMe, placed meta to the aminoethyl chain (the page draws the EDG at an unspecified ring position; meta places it para to the ring carbon that is attacked), and R = H (formaldehyde, allowed by the equation): 3-methoxyphenethylamine → 6-methoxy-1,2,3,4-tetrahydroisoquinoline. The intermediates follow the page's mechanism image: condensation of the amine with the aldehyde (− H₂O) to the iminium ion; attack of the ring carbon ortho to the chain on the iminium carbon (6-endo ring closure) to the arenium ion; loss of H⁺ to restore the aromatic ring. The page gives no conditions; aqueous HCl is given here as the acid H⁺."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution EDG = OMe (meta to the side chain) and R = H chosen here; the acid (aqueous HCl) is given as the page's H⁺. The TCI and Organic Chemistry Portal sites refused all requests (HTTP 403) during this run, so whether they have a page for this reaction could not be checked or linked; no reference article was read beyond Crossref metadata for the references. PubChem (connectivity layer of the InChIKey): 3-methoxyphenethylamine CID 74866, formaldehyde CID 712 and 6-methoxy-1,2,3,4-tetrahydroisoquinoline CID 39356 matched. Structures a chemist should check: the iminium ion (the neutral imine is accepted, same species for the comparison key) and the arenium ion after ring closure (cation on the ring carbon bearing the CH₂ chain as drawn on the page, plus the other ring resonance form and the oxocarbenium form at the methoxy carbon). Ring closure ortho to OMe (8-methoxy isomer) is not considered. The hemiaminal before the iminium ion is not drawn on the page and is not asked.",
+          "substrate": {
+            "label": "3-methoxyphenethylamine",
+            "smiles": "COc1cccc(CCN)c1"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "HCHO (formaldehyde, aqueous)",
+                  "smiles": "C=O"
+                },
+                {
+                  "text": "HCl (aqueous)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Iminium ion (protonated N-methylidene amine), formed by condensation of the amine with formaldehyde and loss of H₂O",
+                  "forms": [
+                    "COc1cccc(CC[NH+]=C)c1",
+                    "COc1cccc(CCN=C)c1"
+                  ]
+                },
+                {
+                  "label": "Arenium ion: the ring carbon ortho to the chain (para to OMe) has attacked the iminium carbon, closing the six-membered ring; the positive charge is delocalized over the ring and onto the methoxy oxygen; loss of H⁺ then restores the aromatic ring",
+                  "forms": [
+                    "COC1=C[C+]2CCNCC2C=C1",
+                    "COC1=C[CH+]C2CNCCC2=C1",
+                    "C[O+]=C1C=CC2CNCCC2=C1"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "6-methoxy-1,2,3,4-tetrahydroisoquinoline",
+            "smiles": "COc1ccc2CNCCc2c1"
+          },
+          "byproducts": "H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Pictet−Spengler Synthesis (mechanism image: condensation to the iminium ion, ring closure by attack of the arene to the arenium ion, loss of H⁺).",
+            "A. Pictet, T. Spengler. Über die Bildung von Isochinolin-derivaten durch Einwirkung von Methylal auf Phenyl-äthylamin, Phenyl-alanin und Tyrosin. Ber. Dtsch. Chem. Ges. 1911, 44, 2030–2036 (doi:10.1002/cber.19110440309).",
+            "E. D. Cox, J. M. Cook. The Pictet-Spengler condensation: a new direction for an old reaction. Chem. Rev. 1995, 95, 1797–1842 (doi:10.1021/cr00038a004)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 9
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 5
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 2,
+            "sigmaBondEvents": 2,
+            "score": 3.0
+          }
+        }
+      ]
     }
   ]
 }
