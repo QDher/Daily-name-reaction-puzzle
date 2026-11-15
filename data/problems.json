@@ -1954,6 +1954,108 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-15",
+      "problems": [
+        {
+          "id": "smn-hunsdiecker-borodin-bromoethane",
+          "reaction": "Hunsdiecker–Borodin reaction",
+          "names": [
+            "Hunsdiecker–Borodin reaction",
+            "Hunsdiecker-Borodin reaction",
+            "Hunsdiecker reaction",
+            "Hunsdiecker Borodin reaction",
+            "Borodin–Hunsdiecker reaction",
+            "Borodin-Hunsdiecker reaction",
+            "Borodin reaction",
+            "Hunsdiecker decarboxylation",
+            "Hunsdiecker–Borodin decarboxylation",
+            "Hunsdiecker-Borodin decarboxylation",
+            "Hunsdiecker–Borodin",
+            "Hunsdiecker-Borodin",
+            "Hunsdiecker"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/hunsdiecker-borodin-reaction/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Hunsdiecker−Borodin Reaction (general equation, R = Et).",
+            "url": "https://say-my-name.net/reaction/hunsdiecker-borodin-reaction/",
+            "context": "General equation of the say-my-name.net page (silver carboxylate RCO₂⁻ Ag⁺ + Br₂ → R–Br) with R = Et: silver propanoate → bromoethane. R = H would give HBr from silver formate (no alkyl bromide); R = Me (silver acetate → bromomethane) was not used because the one-carbon methyl radical and bromomethane cannot be atom-mapped by the site's curation script (src/curate.py does not terminate when consecutive structures share only one heavy atom), so the next simplest alkyl group is used. The intermediates follow the page's mechanism image: attack of the carboxylate oxygen on Br₂ (Ag⁺ coordinated to Br, loss of AgBr) to the acyl hypobromite; homolysis of the O–Br bond (− Br•) to the carboxyl radical; loss of CO₂ to the alkyl radical; bromine-atom abstraction by the alkyl radical from another acyl hypobromite to R–Br, which regenerates the carboxyl radical (chain). The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution R = Et chosen here (R = Me not usable with the curation script, see source.context); the page gives no conditions (none are stated). The TCI and Organic Chemistry Portal sites refused all requests (HTTP 403) during this run, so whether they have a page for this reaction could not be checked or linked. References checked by Crossref metadata only (titles, volumes, pages); not read in full. PubChem (connectivity layer of the InChIKey): silver propionate CID 10176380, bromine CID 24408 and bromoethane CID 6332 matched. Structures a chemist should check: propanoyl hypobromite (C₂H₅CO₂Br), the propanoyloxyl radical (C₂H₅CO₂•) and the ethyl radical, in the order drawn on the page; the Ag⁺–Br₂ complex of the first arrow is not asked as an intermediate.",
+          "substrate": {
+            "label": "silver propanoate",
+            "smiles": "CCC(=O)[O-].[Ag+]"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "Br₂ (bromine)",
+                  "smiles": "BrBr"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Propanoyl hypobromite (acyl hypobromite), formed by attack of the carboxylate oxygen on Br₂ with precipitation of AgBr",
+                  "forms": [
+                    "CCC(=O)OBr"
+                  ]
+                },
+                {
+                  "label": "Propanoyloxyl radical (carboxyl radical), formed by homolysis of the O–Br bond of the acyl hypobromite",
+                  "forms": [
+                    "CCC(=O)[O]"
+                  ]
+                },
+                {
+                  "label": "Ethyl radical, formed by loss of CO₂ from the carboxyl radical; it abstracts Br from another acyl hypobromite to give the product and a new carboxyl radical (chain)",
+                  "forms": [
+                    "[CH2]C"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "bromoethane",
+            "smiles": "CCBr"
+          },
+          "byproducts": "AgBr, CO₂",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Hunsdiecker−Borodin Reaction (mechanism image: acyl hypobromite from the silver carboxylate and Br₂ with loss of AgBr, O–Br homolysis to the carboxyl radical, loss of CO₂ to the alkyl radical, Br transfer from the acyl hypobromite to R–Br in a radical chain).",
+            "H. Hunsdiecker, C. Hunsdiecker. Über den Abbau der Salze aliphatischer Säuren durch Brom. Ber. Dtsch. Chem. Ges. B 1942, 75, 291–297 (doi:10.1002/cber.19420750309).",
+            "R. G. Johnson, R. K. Ingham. The Degradation of Carboxylic Acid Salts by Means of Halogen—The Hunsdiecker Reaction. Chem. Rev. 1956, 56, 219–269 (doi:10.1021/cr50008a002)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 2
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 3,
+            "sigmaBondEvents": 4,
+            "score": 5.0
+          }
+        }
+      ]
     }
   ]
 }
