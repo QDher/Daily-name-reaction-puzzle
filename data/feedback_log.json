@@ -116,6 +116,21 @@
         "applied": [],
         "skipped": 0
       }
+    },
+    {
+      "date": "2026-11-15",
+      "targetDate": "2026-11-16",
+      "store": "ok",
+      "results": 11,
+      "ratings": 7,
+      "remarks": 2,
+      "newObservations": [],
+      "updated": [],
+      "newProposals": [],
+      "tierA": {
+        "applied": [],
+        "skipped": 0
+      }
     }
   ]
 }

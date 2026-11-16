@@ -2056,6 +2056,153 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-16",
+      "problems": [
+        {
+          "id": "smn-arndt-eistert-propanoic-acid",
+          "reaction": "Arndt–Eistert synthesis",
+          "names": [
+            "Arndt–Eistert synthesis",
+            "Arndt-Eistert synthesis",
+            "Arndt–Eistert reaction",
+            "Arndt-Eistert reaction",
+            "Arndt–Eistert homologation",
+            "Arndt-Eistert homologation",
+            "Arndt Eistert synthesis",
+            "Arndt Eistert reaction",
+            "Arndt Eistert homologation",
+            "Arndt–Eistert",
+            "Arndt-Eistert",
+            "Arndt Eistert"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/arndt-eistert-synthesis/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Arndt−Eistert Synthesis (general equation, R = Me).",
+            "url": "https://say-my-name.net/reaction/arndt-eistert-synthesis/",
+            "context": "General equation of the say-my-name.net page (RCO₂H; 1) SOCl₂; 2) CH₂N₂; 3) Ag(I), H₂O, Δ or hν → RCH₂CO₂H) with R = Me: acetic acid → propanoic acid. R = H was not used because it would require formyl chloride, which is not a stable compound; Me is the next simplest group. The intermediates follow the page's mechanism image: acid chloride from SOCl₂ (− SO₂, − HCl); acylation of diazomethane to the acyldiazonium ion, deprotonated by base to the α-diazoketone (drawn on the page as two resonance forms); loss of N₂ to the α-ketocarbene; Ag(I)-promoted (or thermal/photochemical) 1,2-shift (Wolff rearrangement) to the ketene; addition of water to the ketene (ene-diol, a tautomer of the acid and therefore not asked as an intermediate) and tautomerisation to the homologated acid. The page gives no conditions beyond the reagents and Δ or hν."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution R = Me chosen here (R = H would need formyl chloride, see source.context); the page gives no amounts, solvents or times, only the reagents and Δ or hν for step 3. The TCI and Organic Chemistry Portal sites refused all requests (HTTP 403) during this run, so whether they have a page for this reaction could not be checked or linked. References checked by Crossref metadata only (titles, volumes, pages); not read in full. PubChem (connectivity layer of the InChIKey): acetic acid CID 176, thionyl chloride CID 24386, diazomethane CID 9550, water CID 962 and propanoic acid CID 1032 matched. Structures a chemist should check: acetyl chloride, 1-diazopropan-2-one (the acyldiazonium ion before deprotonation is matched by the comparison key as the same species), acetylcarbene (drawn as the free singlet carbene of the page) and methylketene; the ene-diol (1,1-dihydroxypropene) drawn on the page is a tautomer of the product and is not asked as an intermediate.",
+          "substrate": {
+            "label": "acetic acid",
+            "smiles": "CC(=O)O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "SOCl₂ (thionyl chloride)",
+                  "smiles": "O=S(Cl)Cl"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Acetyl chloride (acid chloride), formed from the acid and SOCl₂ with loss of SO₂ and HCl",
+                  "forms": [
+                    "CC(=O)Cl"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "CH₂N₂ (diazomethane)",
+                  "smiles": "C=[N+]=[N-]"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "1-Diazopropan-2-one (α-diazoketone), formed by acylation of diazomethane at carbon (acyldiazonium ion, loss of Cl⁻) and deprotonation of the CH₂ next to N₂⁺",
+                  "forms": [
+                    "CC(=O)C=[N+]=[N-]",
+                    "CC(=O)[CH-][N+]#N"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 3,
+              "reagents": [
+                {
+                  "text": "silver(I) salt (Ag⁺)"
+                },
+                {
+                  "text": "H₂O",
+                  "smiles": "O"
+                }
+              ],
+              "conditions": "heat (Δ) or irradiation (hν)",
+              "intermediates": [
+                {
+                  "label": "Acetylcarbene (α-ketocarbene), formed by loss of N₂ from the diazoketone",
+                  "forms": [
+                    "CC(=O)[CH]"
+                  ]
+                },
+                {
+                  "label": "Methylketene, formed by 1,2-shift of the methyl group from the carbonyl carbon to the carbene carbon (Wolff rearrangement); water then adds to the C=O of the ketene (ene-diol) and tautomerisation gives the acid",
+                  "forms": [
+                    "O=C=CC"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "propanoic acid",
+            "smiles": "CCC(=O)O"
+          },
+          "byproducts": "SO₂, HCl, N₂ (and CH₃Cl or ammonium salt from the base that removes HCl in step 2)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Arndt−Eistert Synthesis (mechanism image: acid chloride from SOCl₂; acylation of diazomethane and deprotonation to the α-diazoketone, two resonance forms; loss of N₂ to the α-ketocarbene; Ag(I)/Δ/hν Wolff rearrangement to the ketene; addition of water to the ene-diol and tautomerisation to the homologated acid).",
+            "F. Arndt, B. Eistert. Ein Verfahren zur Überführung von Carbonsäuren in ihre höheren Homologen bzw. deren Derivate. Ber. Dtsch. Chem. Ges. A/B 1935, 68, 200–208 (doi:10.1002/cber.19350680142).",
+            "W. Kirmse. 100 Years of the Wolff Rearrangement. Eur. J. Org. Chem. 2002, 2193–2256 (doi:10.1002/1099-0690(200207)2002:14<2193::AID-EJOC2193>3.0.CO;2-D)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 3
+            },
+            {
+              "transition": "step 3 int 2",
+              "mol": "substrate",
+              "atom": 0
+            },
+            {
+              "transition": "product",
+              "mol": "reagent",
+              "step": 3,
+              "reagent": "H₂O",
+              "atom": 0
+            }
+          ],
+          "difficulty": {
+            "steps": 3,
+            "intermediates": 4,
+            "sigmaBondEvents": 8,
+            "score": 12.0
+          }
+        }
+      ]
     }
   ]
 }
