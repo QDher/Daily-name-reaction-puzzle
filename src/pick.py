@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Selection from the reaction catalogue (data/catalog/, see src/catalog_load.py and src/PIPELINE.md).
 
-  python3 src/pick.py next [--min-complete 30]   the reaction and the example for the next question
+  python3 src/pick.py next [--min-complete 30] [--exclude ID ...]   the reaction and the example for the next question
   python3 src/pick.py check [--n 1]              the next reaction(s) whose example is to be looked up
   python3 src/pick.py --self-test
 
@@ -15,7 +15,7 @@ back after COOLDOWN sets; same value as REPEAT_WINDOW in src/validate_problems.j
   4. has the most unused examples, then by name.
 Cooldown and use are counted from data/problems.json and data/archive.json.gz by name and alias (exact match, or
 "core" match when words such as "synthesis" are removed, which is conservative). The index is not trusted for this:
-usedOn is recomputed here. With fewer than --min-complete complete reactions, or no eligible one, the answer is
+usedOn is recomputed here. --exclude ID (repeatable) leaves a reaction out, for the next best one. With fewer than --min-complete complete reactions, or no eligible one, the answer is
 {"mode": "procedure"} and the run uses the repository-page procedure of the prompt.
 
 check: among reactions with status "pending", the ones not attempted yet first (then the oldest attempt), those with an
@@ -62,7 +62,7 @@ def previous_class(sets, entries, shards, usage):
     return None
 
 
-def pick_next(directory, problems_path, archive_path, min_complete=MIN_COMPLETE):
+def pick_next(directory, problems_path, archive_path, min_complete=MIN_COMPLETE, exclude=()):
     sets, entries, shards, usage = load(directory, problems_path, archive_path)
     complete = [e for e in entries if e.get("status") == "complete"]
     prev = previous_class(sets, entries, shards, usage)
@@ -72,7 +72,7 @@ def pick_next(directory, problems_path, archive_path, min_complete=MIN_COMPLETE)
         unused = [i for i, x in enumerate(sh.get("examples", []), 1) if x.get("status") == "unused"]
         u = usage[e["id"]]
         since = None if u["last"] is None else len(sets) - u["last"]
-        if not unused or (since is not None and since < COOLDOWN):
+        if not unused or (since is not None and since < COOLDOWN) or e["id"] in exclude:
             continue
         same = bool(prev) and sh.get("class") == prev
         ranked.append(((same, u["timesUsed"], -1 if u["last"] is None else u["last"], -len(unused), e["name"].casefold(), e["id"]),
@@ -149,6 +149,10 @@ def self_test():
         assert [x["name"] for x in r["ranking"]] == ["Gamma reaction", "Zeta reaction", "Epsilon reaction", "Alpha reaction"], r["ranking"]
         assert r["reaction"]["id"] == "QC" and r["exampleNumber"] == 1 and r["example"]["doi"] == "10.1/c1"
         assert pick_next(d, prob, none, min_complete=1) == r                       # deterministic
+        # --exclude leaves a reaction out: without Gamma the best is Zeta (example number 2, number 1 is used)
+        x = pick_next(d, prob, none, min_complete=1, exclude=("QC",))
+        assert x["reaction"]["id"] == "QF" and x["exampleNumber"] == 2 and x["example"]["doi"] == "10.1/f2", x
+        assert pick_next(d, prob, none, min_complete=1, exclude=("QC", "QF", "QE", "QA"))["mode"] == "procedure"
         # the second unused example of Zeta is number 2 (number 1 is used)
         z = pick_next(d, prob, none, min_complete=1)["ranking"]
         assert next(x for x in z if x["id"] == "QF")["unusedExamples"] == 1
@@ -185,6 +189,7 @@ def main():
     ap.add_argument("--problems", default=os.path.join(cl.ROOT, "data", "problems.json"))
     ap.add_argument("--archive", default=os.path.join(cl.ROOT, "data", "archive.json.gz"))
     ap.add_argument("--min-complete", type=int, default=MIN_COMPLETE)
+    ap.add_argument("--exclude", action="append", default=[], metavar="ID", help="next: leave this reaction out (repeatable)")
     ap.add_argument("--n", type=int, default=1, help="check: number of reactions")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
@@ -194,7 +199,7 @@ def main():
         ap.error("command (next or check) or --self-test required")
     if cl.read_index(a.dir) is None:
         sys.exit(f"{a.dir}/index.json is missing")
-    out = pick_next(a.dir, a.problems, a.archive, a.min_complete) if a.command == "next" else pick_check(a.dir, a.problems, a.archive, a.n)
+    out = pick_next(a.dir, a.problems, a.archive, a.min_complete, a.exclude) if a.command == "next" else pick_check(a.dir, a.problems, a.archive, a.n)
     print(json.dumps(out, ensure_ascii=False, indent=1))
 
 

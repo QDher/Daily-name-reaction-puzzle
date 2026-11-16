@@ -27,7 +27,9 @@ The first run migrates the earlier single file data/reaction_catalog.json (statu
 Wikimedia asks for a descriptive User-Agent; set CATALOG_USER_AGENT to override the default.
 """
 import argparse
+import contextlib
 import gzip
+import io
 import json
 import os
 import re
@@ -485,6 +487,27 @@ def self_test():
         assert set_example(d, "Q2", 1, "used", "p-claisen", None, prob) == []
         assert set_example(d, "Q2", 5, "used", "x", None, prob) == ["Q2: no example 5"]
         assert mark(d, "Q2", "bogus", "2026-01-03", prob)
+        # --offline keeps meta.retrieved; a failed Wikidata query writes nothing and ends with a one-line message
+        no_archive = os.path.join(tmp, "no-archive.json.gz")
+        saved_argv, saved_sparql = sys.argv, globals()["run_sparql"]
+        try:
+            sys.argv = ["catalog_load.py", "--offline", "--dir", d, "--problems", prob, "--archive", no_archive]
+            with contextlib.redirect_stdout(io.StringIO()):
+                main()
+            assert read_meta(d)["retrieved"] == "2026-01-02", read_meta(d)
+            def refused(query, tries=5):
+                raise urllib.error.HTTPError("https://query.wikidata.org/sparql", 429, "Too Many Requests", {}, None)
+            globals()["run_sparql"] = refused
+            before_index = open(os.path.join(d, "index.json"), "rb").read()
+            sys.argv = ["catalog_load.py", "--dir", d, "--problems", prob, "--archive", no_archive]
+            try:
+                main()
+                raise AssertionError("expected SystemExit")
+            except SystemExit as e:
+                assert "query to Wikidata failed" in str(e.code) and "nothing written" in str(e.code), e.code
+            assert open(os.path.join(d, "index.json"), "rb").read() == before_index
+        finally:
+            sys.argv, globals()["run_sparql"] = saved_argv, saved_sparql
         # check finds mistakes
         bad = dict(shards["Q2"])
         bad["examples"] = [ex("10.1000/a", "cc by-nd", "unused"),
@@ -552,7 +575,10 @@ def main():
             with open(a.from_file, encoding="utf-8") as f:
                 result = json.load(f)
         else:
-            result = run_sparql(QUERY)
+            try:
+                result = run_sparql(QUERY)
+            except (urllib.error.URLError, TimeoutError, OSError) as e:
+                sys.exit(f"query to Wikidata failed: {e}; nothing written")
         loaded = parse_result(result)
         live_old = [e for e in old if not e.get("wikidataMissing")]
         if live_old and len(loaded) < 0.8 * len(live_old) and not a.force:
@@ -562,11 +588,14 @@ def main():
     shards = {**read_shards(a.dir), **legacy_shards}
     idx = used_index(read_sets(a.problems, a.archive))
     entries, added, changed, missing = merge(old, loaded, idx, shards)
-    write_index(a.dir, entries, datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+    retrieved = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    if a.offline and os.path.exists(os.path.join(a.dir, "index.json")):
+        retrieved = read_meta(a.dir).get("retrieved") or retrieved   # --offline does not query Wikidata: keep the date of the last retrieval
+    write_index(a.dir, entries, retrieved)
     for sid, sh in legacy_shards.items():
         write_shard(a.dir, sh)
     with_wp = sum(1 for e in entries if e.get("wikipedia"))
-    used = sum(1 for e in entries if e["usedOn"])
+    used = sum(1 for e in entries if e.get("usedOn"))
     print(f"{len(entries)} entries ({with_wp} with an English Wikipedia article); added {added}, changed {changed}, "
           f"not in Wikidata result {missing}; {used} match a used reaction; {len(shards)} shard file(s)")
 
