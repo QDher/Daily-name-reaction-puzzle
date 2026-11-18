@@ -2305,6 +2305,107 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-18",
+      "problems": [
+        {
+          "id": "smn-benzoin-condensation-benzoin",
+          "reaction": "Benzoin condensation",
+          "names": [
+            "Benzoin condensation",
+            "Benzoin reaction",
+            "Benzoin addition",
+            "Benzoin synthesis",
+            "Benzoin condensation reaction",
+            "Benzoin coupling",
+            "Lapworth benzoin condensation"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/benzoin-condensation/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Benzoin Condensation (general equation, Ar = Ph).",
+            "url": "https://say-my-name.net/reaction/benzoin-condensation/",
+            "context": "General equation of the say-my-name.net page (2 ArCHO, KCN → ArC(O)CH(OH)Ar) with Ar = Ph (the simplest aryl group): benzaldehyde (two molecules) + KCN → benzoin (2-hydroxy-1,2-diphenylethan-1-one). The second benzaldehyde molecule is listed as a reagent so that both aryl units are drawn. The intermediates follow the page's mechanism image: addition of cyanide to the carbonyl carbon (cyanohydrin alkoxide), proton transfer to the alpha-hydroxy carbanion, addition of this carbanion to the carbonyl carbon of a second benzaldehyde (alkoxide adduct), proton transfer, and loss of cyanide to give the ketone. Species that differ only by the position of the O–H proton (alkoxide/carbanion; the two adduct alkoxides) are the same species for the page's comparison and are listed as forms of one intermediate. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution Ar = Ph chosen here (see source.context); the page gives no amounts, solvents, temperatures or times, so conditions are left empty. The TCI and Organic Chemistry Portal sites refused all requests (HTTP 403) during this run, so whether they have a page for this reaction could not be checked or linked. References checked by Crossref metadata only (titles, volumes, pages); not read in full. PubChem (connectivity layer of the InChIKey): benzaldehyde CID 240, potassium cyanide CID 9032 and benzoin CID 8400 matched. Structures a chemist should check: the cyanohydrin anion of benzaldehyde (alkoxide and C-carbanion forms) and the adduct 3-hydroxy-2-hydroxy-2,3-diphenylpropanenitrile alkoxide (2-cyano-1,2-diphenylethane-1,2-diolate).",
+          "substrate": {
+            "label": "benzaldehyde",
+            "smiles": "O=Cc1ccccc1"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "KCN (potassium cyanide, catalytic)",
+                  "smiles": "[K+].[C-]#N"
+                },
+                {
+                  "text": "benzaldehyde (second molecule)",
+                  "smiles": "O=Cc1ccccc1"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Cyanohydrin anion of benzaldehyde (mandelonitrile alkoxide), formed by addition of cyanide to the carbonyl carbon; proton transfer from C to O gives the alpha-hydroxy carbanion stabilised by the nitrile",
+                  "forms": [
+                    "[O-]C(C#N)c1ccccc1",
+                    "O[C-](C#N)c1ccccc1",
+                    "OC(=C=[N-])c1ccccc1",
+                    "OC(C#N)c1ccccc1"
+                  ]
+                },
+                {
+                  "label": "Alkoxide adduct (2-cyano-1,2-diphenylethane-1,2-diolate), formed by addition of the carbanion to the carbonyl carbon of the second benzaldehyde (new C–C bond); proton transfer moves the negative charge to the cyanohydrin oxygen before cyanide is released",
+                  "forms": [
+                    "N#CC(O)(c1ccccc1)C([O-])c1ccccc1",
+                    "N#CC([O-])(c1ccccc1)C(O)c1ccccc1",
+                    "N#CC(O)(c1ccccc1)C(O)c1ccccc1"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "benzoin (2-hydroxy-1,2-diphenylethan-1-one)",
+            "smiles": "O=C(c1ccccc1)C(O)c1ccccc1"
+          },
+          "byproducts": "none (CN⁻ is released and acts again)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Benzoin Condensation (mechanism image: addition of cyanide to the aldehyde; proton transfer to the alpha-hydroxy carbanion; addition to a second aldehyde; proton transfer; loss of cyanide to benzoin).",
+            "F. Wöhler, J. Liebig. Untersuchungen über das Radikal der Benzoesäure. Ann. Pharm. 1832, 3, 249–282 (doi:10.1002/jlac.18320030302).",
+            "A. Lapworth. XCVI.—Reactions involving the addition of hydrogen cyanide to carbon compounds. J. Chem. Soc., Trans. 1903, 83, 995–1005 (doi:10.1039/CT9038300995)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "benzaldehyde (second molecule)",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 2,
+            "sigmaBondEvents": 3,
+            "score": 3.5
+          }
+        }
+      ]
     }
   ]
 }
