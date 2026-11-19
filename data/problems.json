@@ -2406,6 +2406,109 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-19",
+      "problems": [
+        {
+          "id": "smn-ritter-reaction-n-tert-butylacetamide",
+          "reaction": "Ritter reaction",
+          "names": [
+            "Ritter reaction",
+            "Ritter",
+            "Ritter amide synthesis",
+            "Ritter amidation"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/ritter-reaction/"
+            },
+            {
+              "site": "Organic Chemistry Portal",
+              "url": "https://www.organic-chemistry.org/namedreactions/ritter-reaction.shtm"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Ritter Reaction (general equation, R = tert-butyl, R′ = Me; H⁺ = H₂SO₄).",
+            "url": "https://say-my-name.net/reaction/ritter-reaction/",
+            "context": "General equation of the say-my-name.net page (R–OH + R′–CN, H⁺ → R′C(O)NHR) with R′ = Me (acetonitrile) and R = tert-butyl: R must give a stable carbocation (the Organic Chemistry Portal page notes that primary alcohols other than benzylic ones do not react), so the simplest such group was used instead of Me; the unspecified acid is given as sulfuric acid. tert-Butanol + acetonitrile → N-tert-butylacetamide. The intermediates follow the page's mechanism image: protonation of the alcohol (oxonium ion), loss of water (carbocation), attack of the nitrile N on the carbocation (nitrilium ion), addition of water to the nitrilium carbon and deprotonation (imidic acid), tautomerization to the amide. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG; the Organic Chemistry Portal Ritter page (mechanism text and Recent Literature list) read as text. An Organic Chemistry Portal literature example was considered first, but its scheme images, the abstract pages and the publishers' sites (Thieme, ScienceDirect) could not be reached, so no reference article was read and the example is the say-my-name general equation. Substitution chosen here: R = tert-butyl (R must form a stable carbocation, so Me was not used), R′ = Me, acid = H₂SO₄. TCI refused requests (HTTP 403), so whether it has a page for this reaction could not be checked. PubChem could not be queried (PUG-REST answered ServerBusy on repeated requests); SMILES were checked with RDKit only (tert-butanol C4H10O, InChIKey DKGAVHZHDRPRBM; acetonitrile C2H3N, WEVYAHXRMPXWCK; N-tert-butylacetamide C6H13NO, ACYFWRHALJTSCF). The protonated alcohol and the imidic acid (and its O-protonated precursor) drawn on the page are the same species as the substrate and the product for the comparison key (protonation state and N/O tautomers ignored), so they are not asked and are described in the labels. Structures a chemist should check: the tert-butyl cation and the nitrilium ion (with its iminium-carbocation resonance form).",
+          "substrate": {
+            "label": "tert-butanol (2-methylpropan-2-ol)",
+            "smiles": "CC(C)(C)O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "acetonitrile",
+                  "smiles": "CC#N"
+                },
+                {
+                  "text": "H₂SO₄ (sulfuric acid)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "tert-Butyl cation: the alcohol O was protonated by the acid and the oxonium ion lost water",
+                  "forms": [
+                    "C[C+](C)C"
+                  ]
+                },
+                {
+                  "label": "Nitrilium ion: the nitrile N has attacked the carbocation; water then adds to the nitrilium carbon and, after loss of a proton, gives the imidic acid, which tautomerizes to the amide",
+                  "forms": [
+                    "CC#[N+]C(C)(C)C",
+                    "C[C+]=NC(C)(C)C"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "N-tert-butylacetamide",
+            "smiles": "CC(=O)NC(C)(C)C"
+          },
+          "byproducts": "none (the water lost from the protonated alcohol is taken up again in the hydrolysis of the nitrilium ion)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Ritter Reaction (mechanism image: protonation of the alcohol, loss of water to the carbocation, attack of the nitrile N to give the nitrilium ion, addition of water, imidic acid–amide tautomerization).",
+            "Organic Chemistry Portal, Ritter Reaction (mechanism: carbenium ion, nitrilium ion, hydrolysis to the amide on aqueous work-up).",
+            "J. J. Ritter, P. P. Minieri. A New Reaction of Nitriles. I. Amides from Alkenes and Mono-olefins. J. Am. Chem. Soc. 1948, 70, 4045–4048 (doi:10.1021/ja01192a022).",
+            "L. I. Krimen, D. J. Cota. The Ritter Reaction. Org. React. 1969, 17, 213–325 (doi:10.1002/0471264180.or017.03)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 4
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "acetonitrile",
+              "atom": 2
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 2,
+            "sigmaBondEvents": 3,
+            "score": 3.5
+          }
+        }
+      ]
     }
   ]
 }
