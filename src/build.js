@@ -4,7 +4,7 @@
 // Sets older than 32 days are first moved to data/archive.json.gz (src/archive.js); the page embeds the rest.
 // The template is wrapped in a complete HTML document (doctype, charset, viewport), so the page renders
 // in standards mode and at device width on phones.
-// Usage: node src/build.js            (run from the project root)
+// Usage: node src/build.js            (run from the project root; also writes data/features.json, see src/features.js)
 const fs = require('fs');
 const path = require('path');
 const { archiveOldSets, ARCHIVE_AFTER_DAYS } = require('./archive.js');
@@ -27,3 +27,15 @@ const problems = JSON.stringify(JSON.parse(fs.readFileSync(problemsFile, 'utf8')
 const html = HEAD + tpl.replace('/*CHEMKEY*/', () => chemkey).replace('/*PROBLEMS*/', () => problems) + TAIL;
 fs.writeFileSync(path.join(root, 'index.html'), html);
 console.log('built', path.join(root, 'index.html'), (html.length / 1024).toFixed(0) + ' KB');
+
+// Problem features for the selection models (src/features.js, data/features.json). Needs @rdkit/rdkit; without it
+// the page is still built and the features file is left as it was.
+let featuresModule = null;
+try { featuresModule = require('./features.js'); require.resolve('@rdkit/rdkit'); } catch (e) { featuresModule = null; }
+if (featuresModule) {
+  featuresModule.writeFeatures(root)
+    .then(n => console.log(`features: ${n} problems -> data/features.json`))
+    .catch(e => console.warn('features not written:', e.message));
+} else {
+  console.warn('features not written: @rdkit/rdkit is not installed');
+}
