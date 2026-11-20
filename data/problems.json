@@ -2509,6 +2509,125 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-20",
+      "problems": [
+        {
+          "id": "smn-hofmann-loffler-freytag-n-methylpyrrolidine",
+          "reaction": "Hofmann–Löffler–Freytag reaction",
+          "names": [
+            "Hofmann–Löffler–Freytag reaction",
+            "Hofmann-Löffler-Freytag reaction",
+            "Hofmann-Loffler-Freytag reaction",
+            "Hofmann-Loeffler-Freytag reaction",
+            "Hofmann–Löffler–Freytag",
+            "Hofmann-Loffler-Freytag",
+            "Hofmann-Loeffler-Freytag",
+            "Hofmann–Löffler reaction",
+            "Hofmann-Loffler reaction",
+            "Hofmann-Loeffler reaction",
+            "Löffler–Freytag reaction",
+            "Loffler-Freytag reaction",
+            "HLF reaction"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/hofmann-loffler-freytag-reaction/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Hofmann−Löffler−Freytag Reaction (general equation, chain without the optional CH₂ (pyrrolidine), R = H, R′ = Me; H⁺ = conc. H₂SO₄, base = NaOH).",
+            "url": "https://say-my-name.net/reaction/hofmann-loffler-freytag-reaction/",
+            "context": "General equation of the say-my-name.net page (N-chloroamine R–(CH₂)₃₋₄–N(Cl)R′; 1) H⁺, Δ; 2) base → 2-R-pyrrolidine or piperidine) with the five-membered ring, R = H and R′ = Me: N-chloro-N-methylbutan-1-amine → 1-methylpyrrolidine. R′ = Me rather than H because the reaction is run on N-chloro secondary amines (N-chloro-N-methylalkylamines are the usual substrates); the unspecified acid is given as concentrated sulfuric acid and the base as sodium hydroxide. The intermediates follow the page's mechanism image: N-protonation, homolysis of the N–Cl bond (aminium radical cation), 1,5-hydrogen atom transfer (carbon radical), chlorine transfer to carbon (4-chloroammonium ion), and, after addition of base, intramolecular N-alkylation. The page gives no other conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: five-membered ring, R = H, R′ = Me, H⁺ = conc. H₂SO₄ with heating, base = NaOH. TCI and the Organic Chemistry Portal refused requests (HTTP 403), so whether they have a page for this reaction could not be checked, and no reference article was read (titles and DOIs of the references in mechanismRefs checked on Crossref only). PubChem (structure search): substrate N-chloro-N-methylbutan-1-amine matched CID 14143519 (InChIKey SUMWTVOCDBVHJG; not found by name); product 1-methylpyrrolidine matched CID 8454 by name (AVFZOVWCLRSYKC). The N-protonated chloroammonium ion drawn on the page is the same species as the substrate for the comparison key (protonation state ignored), so it is not asked and is described in the first label. Structures a chemist should check: the aminium radical cation, the primary carbon radical after 1,5-H transfer and the 4-chlorobutyl(methyl)ammonium ion.",
+          "substrate": {
+            "label": "N-chloro-N-methylbutan-1-amine",
+            "smiles": "CCCCN(C)Cl"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "H₂SO₄ (sulfuric acid), concentrated"
+                }
+              ],
+              "conditions": "heat",
+              "intermediates": [
+                {
+                  "label": "Aminium radical cation: the N-chloroamine is protonated on N and the N–Cl bond breaks homolytically (Cl• released)",
+                  "forms": [
+                    "CCCC[NH+]C"
+                  ]
+                },
+                {
+                  "label": "Primary carbon radical: the aminium radical has abstracted a hydrogen atom from C4 through a six-membered transition state (1,5-H transfer)",
+                  "forms": [
+                    "[CH2]CCC[NH2+]C",
+                    "[CH2]CCCNC"
+                  ]
+                },
+                {
+                  "label": "4-Chlorobutyl(methyl)ammonium ion: the carbon radical has taken a chlorine atom (from Cl• or another protonated N-chloroamine, chain)",
+                  "forms": [
+                    "ClCCCC[NH2+]C",
+                    "ClCCCCNC"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "NaOH (sodium hydroxide)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": []
+            }
+          ],
+          "product": {
+            "label": "1-methylpyrrolidine (N-methylpyrrolidine)",
+            "smiles": "CN1CCCC1"
+          },
+          "byproducts": "HCl (as NaCl after addition of base)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Hofmann−Löffler−Freytag Reaction (mechanism image: N-protonation, N–Cl homolysis to the aminium radical cation, 1,5-hydrogen atom transfer, chlorine transfer to the carbon radical, base-mediated cyclization).",
+            "K. Löffler, C. Freytag. Über eine neue Bildungsweise von N-alkylierten Pyrrolidinen. Ber. Dtsch. Chem. Ges. 1909, 42, 3427–3431 (doi:10.1002/cber.19090420377).",
+            "G. H. Coleman, G. E. Goheen. Preparation of Pyrrolidines. J. Am. Chem. Soc. 1938, 60, 730 (doi:10.1021/ja01270a511).",
+            "M. E. Wolff. Cyclization of N-Halogenated Amines (The Hofmann-Löffler Reaction). Chem. Rev. 1963, 63, 55–64 (doi:10.1021/cr60221a004)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 4
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 6
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 0
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 3,
+            "sigmaBondEvents": 4,
+            "score": 7.0
+          }
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "problems": {
+  "smn-arndt-eistert-propanoic-acid": {
+   "rejected": 1,
+   "visitors": 1,
+   "categories": {
+    "fragment_difference": 1
+   },
+   "examples": []
+  },
+  "smn-favorskii-cyclohexanecarboxylic-acid": {
+   "rejected": 3,
+   "visitors": 4,
+   "categories": {
+    "fragment_difference": 4
+   },
+   "examples": [
+    {
+     "smiles": "O=C1CCCCCC1O",
+     "visitors": 2,
+     "category": "fragment_difference (+H2O)",
+     "nearest": "step 1 intermediate 1",
+     "similarity": 0.52
+    }
+   ]
+  },
+  "smn-knorr-pyrazole-3-5-dimethylpyrazole": {
+   "rejected": 1,
+   "visitors": 1,
+   "categories": {
+    "fragment_difference": 1
+   },
+   "examples": []
+  },
+  "smn-pictet-spengler-6-methoxy-tetrahydroisoquinoline": {
+   "rejected": 4,
+   "visitors": 4,
+   "categories": {
+    "same_skeleton": 1,
+    "fragment_difference": 3
+   },
+   "examples": []
+  }
+ }
+}
