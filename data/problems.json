@@ -2628,6 +2628,144 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-21",
+      "problems": [
+        {
+          "id": "smn-woodward-cis-dihydroxylation-ethane-1-2-diol",
+          "reaction": "Woodward cis-dihydroxylation",
+          "names": [
+            "Woodward cis-dihydroxylation",
+            "Woodward cis dihydroxylation",
+            "Woodward cis-hydroxylation",
+            "Woodward cis hydroxylation",
+            "Woodward dihydroxylation",
+            "Woodward hydroxylation",
+            "Woodward cis-dihydroxylation reaction",
+            "Woodward dihydroxylation reaction",
+            "Woodward hydroxylation reaction",
+            "Woodward reaction"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/woodward-cis-dihydroxylation/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Woodward Cis-Dihydroxylation (general equation, R = R′ = H; 1) I₂, AgOAc; 2) H₃O⁺).",
+            "url": "https://say-my-name.net/reaction/woodward-cis-dihydroxylation/",
+            "context": "General equation of the say-my-name.net page (cis-alkene RCH=CHR′; 1) I₂, AgOAc; 2) H₃O⁺ → cis-1,2-diol) with R = R′ = H, the simplest groups the equation allows: ethene → ethane-1,2-diol (the cis relationship of the two OH groups is not visible without substituents; stereochemistry is not asked). The intermediates follow the page's mechanism image: iodonium ion, trans-opening by acetate (2-iodoethyl acetate), neighbouring-group displacement of iodide (1,3-dioxolan-2-ylium ion), addition of water (2-hydroxy-2-methyl-1,3-dioxolane), ring opening to the hydroxy acetate, and acid hydrolysis of the ester. The page shows water adding after the dioxolanylium ion and gives no solvent or temperature; here water is introduced with the aqueous acid of step 2 (the original procedure uses wet acetic acid in one operation)."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: R = R′ = H; reagents as written on the page (I₂, AgOAc; then H₃O⁺, given here as water/dilute acid); the page gives no conditions. TCI and the Organic Chemistry Portal refused requests (HTTP 403), so whether they have a page for this reaction could not be checked. No reference article was read (titles, authors and DOIs in mechanismRefs checked on Crossref only). PubChem (by name): substrate ethene CID 6325, iodine CID 807, silver acetate CID 11246, water CID 962 and product ethane-1,2-diol CID 174 all matched (InChIKey connectivity layer). Structures a chemist should check: the iodiranium (iodonium) ion, 2-iodoethyl acetate, the 2-methyl-1,3-dioxolan-2-ylium ion, 2-hydroxy-2-methyl-1,3-dioxolane and 2-hydroxyethyl acetate; and whether placing the water addition in step 2 (aqueous acid) rather than in step 1 (wet acetic acid of the original procedure) is acceptable.",
+          "substrate": {
+            "label": "ethene (ethylene)",
+            "smiles": "C=C"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "I₂ (iodine)",
+                  "smiles": "II"
+                },
+                {
+                  "text": "AgOAc (silver acetate)",
+                  "smiles": "CC(=O)[O-].[Ag+]"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Iodonium (iodiranium) ion: iodine has added to both carbons of the C=C bond (iodide released)",
+                  "forms": [
+                    "C1C[I+]1"
+                  ]
+                },
+                {
+                  "label": "2-Iodoethyl acetate: acetate has opened the iodonium ion from the face opposite to iodine (anti addition; AgI precipitates later)",
+                  "forms": [
+                    "ICCOC(C)=O"
+                  ]
+                },
+                {
+                  "label": "2-Methyl-1,3-dioxolan-2-ylium (acetoxonium) ion: the carbonyl oxygen of the neighbouring acetate has displaced iodide (inversion; AgI precipitates)",
+                  "forms": [
+                    "CC1=[O+]CCO1",
+                    "C[C+]1OCCO1"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "H₂O, dilute acid (H₃O⁺)",
+                  "smiles": "O"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "2-Hydroxy-2-methyl-1,3-dioxolane (hemi-orthoester): water has added to the cationic carbon of the dioxolanylium ion",
+                  "forms": [
+                    "CC1(O)OCCO1"
+                  ]
+                },
+                {
+                  "label": "2-Hydroxyethyl acetate: the hemi-orthoester ring has opened to the monoacetate of the cis-diol (both C–O bonds of the ring kept)",
+                  "forms": [
+                    "OCCOC(C)=O"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "ethane-1,2-diol (ethylene glycol; the cis-diol for a substituted alkene)",
+            "smiles": "OCCO"
+          },
+          "byproducts": "AgI, acetic acid (from hydrolysis of the monoacetate)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Woodward Cis-Dihydroxylation (mechanism image: iodonium ion, anti opening by acetate, neighbouring-group participation to the 1,3-dioxolan-2-ylium ion, addition of water, ring opening to the cis hydroxy acetate, acid hydrolysis).",
+            "R. B. Woodward, F. V. Brutcher. cis-Hydroxylation of a Synthetic Steroid Intermediate with Iodine, Silver Acetate and Wet Acetic Acid. J. Am. Chem. Soc. 1958, 80, 209–211 (doi:10.1021/ja01534a053).",
+            "C. A. Bunton, M. D. Carr. The hydroxylation of cyclic olefins by iodine and silver acetate. J. Chem. Soc. 1963, 770 (doi:10.1039/jr9630000770).",
+            "Z. Wang. Woodward Cis-Hydroxylation. Comprehensive Organic Name Reactions and Reagents, Wiley, 2010, 3090–3093 (doi:10.1002/9780470638859.conrr684)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 0
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "AgOAc (silver acetate)",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "AgOAc (silver acetate)",
+              "atom": 3
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 5,
+            "sigmaBondEvents": 9,
+            "score": 11.5
+          }
+        }
+      ]
     }
   ]
 }
