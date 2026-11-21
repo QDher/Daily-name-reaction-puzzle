@@ -10,12 +10,12 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: true
+# Two jobs (2026-11-21): the deploy job starts only after the build job has finished, so GitHub has listed the
+# uploaded site before it is published; a failed deploy can be re-run alone ("Re-run failed jobs") without a second
+# upload.
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - name: Assemble site
@@ -27,5 +27,12 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
