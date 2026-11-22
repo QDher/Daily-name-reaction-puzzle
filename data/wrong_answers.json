@@ -41,6 +41,15 @@
     "fragment_difference": 3
    },
    "examples": []
+  },
+  "smn-woodward-cis-dihydroxylation-ethane-1-2-diol": {
+   "rejected": 2,
+   "visitors": 2,
+   "categories": {
+    "fragment_difference": 1,
+    "other": 1
+   },
+   "examples": []
   }
  }
 }

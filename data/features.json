@@ -982,6 +982,48 @@
    "heavyAtomChange": 2,
    "ringChange": 0,
    "verified": false
+  },
+  {
+   "id": "smn-mannich-4-dimethylaminobutan-2-one",
+   "date": "2026-11-22",
+   "level": null,
+   "textbookLevel": null,
+   "reaction": "Mannich reaction",
+   "source": "Named Reactions Explorer",
+   "sourceYear": null,
+   "steps": 1,
+   "intermediates": 2,
+   "forms": 3,
+   "stepLevels": [
+    null
+   ],
+   "reagents": 3,
+   "reagentsWithSmiles": 2,
+   "uncommonReagents": 0,
+   "hints": 3,
+   "difficultyScore": 3.5,
+   "sigmaBondEvents": 3,
+   "substrate": {
+    "heavyAtoms": 2,
+    "rings": 0,
+    "aromaticRings": 0,
+    "heteroatoms": 1,
+    "stereocentres": 0,
+    "fsp3": 0,
+    "mw": 30
+   },
+   "product": {
+    "heavyAtoms": 8,
+    "rings": 0,
+    "aromaticRings": 0,
+    "heteroatoms": 2,
+    "stereocentres": 0,
+    "fsp3": 0.83,
+    "mw": 115.1
+   },
+   "heavyAtomChange": 6,
+   "ringChange": 0,
+   "verified": false
   }
  ]
 }
