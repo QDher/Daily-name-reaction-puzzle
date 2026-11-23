@@ -1024,6 +1024,48 @@
    "heavyAtomChange": 6,
    "ringChange": 0,
    "verified": false
+  },
+  {
+   "id": "smn-wolff-kishner-propane",
+   "date": "2026-11-23",
+   "level": null,
+   "textbookLevel": null,
+   "reaction": "Wolff–Kishner reduction",
+   "source": "Named Reactions Explorer",
+   "sourceYear": null,
+   "steps": 1,
+   "intermediates": 2,
+   "forms": 3,
+   "stepLevels": [
+    null
+   ],
+   "reagents": 2,
+   "reagentsWithSmiles": 1,
+   "uncommonReagents": 0,
+   "hints": 2,
+   "difficultyScore": 3.5,
+   "sigmaBondEvents": 3,
+   "substrate": {
+    "heavyAtoms": 4,
+    "rings": 0,
+    "aromaticRings": 0,
+    "heteroatoms": 1,
+    "stereocentres": 0,
+    "fsp3": 0.67,
+    "mw": 58
+   },
+   "product": {
+    "heavyAtoms": 3,
+    "rings": 0,
+    "aromaticRings": 0,
+    "heteroatoms": 0,
+    "stereocentres": 0,
+    "fsp3": 1,
+    "mw": 44.1
+   },
+   "heavyAtomChange": -1,
+   "ringChange": 0,
+   "verified": false
   }
  ]
 }

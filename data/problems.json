@@ -2872,6 +2872,110 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-23",
+      "problems": [
+        {
+          "id": "smn-wolff-kishner-propane",
+          "reaction": "Wolff–Kishner reduction",
+          "names": [
+            "Wolff–Kishner reduction",
+            "Wolff-Kishner reduction",
+            "Wolff Kishner reduction",
+            "Wolff–Kishner reaction",
+            "Wolff-Kishner reaction",
+            "Wolff Kishner reaction",
+            "Wolff–Kishner",
+            "Wolff-Kishner",
+            "Kishner–Wolff reduction",
+            "Kishner-Wolff reduction",
+            "Wolff–Kishner–Huang Minlon reduction",
+            "Huang Minlon reduction",
+            "Huang-Minlon reduction",
+            "Huang Minlon modification"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/wolff-kishner-reduction/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Wolff−Kishner Reduction (general equation, R = R′ = Me; ROH/ROM = EtOH/NaOEt).",
+            "url": "https://say-my-name.net/reaction/wolff-kishner-reduction/",
+            "context": "General equation of the say-my-name.net page (R–C(O)–R′ + N₂H₄, ROH/ROM, Δ → R–CH₂–R′) with R = R′ = Me (with R = R′ = H the substrate would be formaldehyde and the product methane) and ROH/ROM = ethanol/sodium ethoxide, the alcohol/alkoxide of the original procedure: acetone → propane. The intermediates follow the page's mechanism image: hydrazone formed with loss of water, deprotonation of N–H and protonation of carbon to the alkyldiazene, loss of N₂ to the carbanion, protonation by the alcohol. The hemiaminal before the hydrazone is not drawn on the page and was added from the established mechanism. The alkyldiazene is a proton-shift form of the hydrazone (proton moved from N), and the carbanion differs from the product only by a proton, so both count as the hydrazone and the product on this page and are described in the labels. The page gives no conditions other than heating."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: R = R′ = Me, ROH/ROM = EtOH/NaOEt; the page gives only heating (Δ). TCI and the Organic Chemistry Portal refused requests (HTTP 403), so whether they have a page for this reaction could not be checked. No reference article was read (titles, journals and pages in mechanismRefs checked on Crossref; the Kishner 1911 paper has no DOI and was not checked). PubChem (by name, InChIKey connectivity layer): acetone CID 180, hydrazine CID 9321 and propane CID 6334 matched (sodium ethoxide CID 2723922 also matched; given as text only). The hemiaminal (2-hydrazinylpropan-2-ol) is not drawn on the page and was added from the established mechanism. Structures a chemist should check: 2-hydrazinylpropan-2-ol and the acetone hydrazone (with the isopropyldiazene drawing accepted as the same species).",
+          "substrate": {
+            "label": "acetone",
+            "smiles": "CC(C)=O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "hydrazine (N₂H₄)",
+                  "smiles": "NN"
+                },
+                {
+                  "text": "NaOEt (sodium ethoxide)"
+                }
+              ],
+              "conditions": "EtOH, heated",
+              "intermediates": [
+                {
+                  "label": "Hemiaminal (2-hydrazinylpropan-2-ol), from addition of a hydrazine N to the C=O",
+                  "forms": [
+                    "CC(C)(O)NN"
+                  ]
+                },
+                {
+                  "label": "Acetone hydrazone, after loss of water; the base then moves an N–H proton to carbon (isopropyldiazene, the same species here), and loss of N₂ gives the isopropyl carbanion, protonated by ethanol",
+                  "forms": [
+                    "CC(C)=NN",
+                    "CC(C)N=N"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "propane",
+            "smiles": "CCC"
+          },
+          "byproducts": "N₂, H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Wolff−Kishner Reduction (mechanism image: hydrazone formation with loss of water, alkoxide-mediated proton shift from N to C giving the alkyldiazene, loss of N₂ to the carbanion, protonation by the alcohol).",
+            "N. Kishner. J. Russ. Phys. Chem. Soc. 1911, 43, 582.",
+            "L. Wolff. Methode zum Ersatz des Sauerstoffatoms der Ketone und Aldehyde durch Wasserstoff. Justus Liebigs Ann. Chem. 1912, 394, 86–108 (doi:10.1002/jlac.19123940107).",
+            "Huang-Minlon. A Simple Modification of the Wolff-Kishner Reduction. J. Am. Chem. Soc. 1946, 68, 2487–2488 (doi:10.1021/ja01216a013)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "hydrazine (N₂H₄)",
+              "atom": 0
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 2,
+            "sigmaBondEvents": 3,
+            "score": 3.5
+          }
+        }
+      ]
     }
   ]
 }
