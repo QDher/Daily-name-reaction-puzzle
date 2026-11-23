@@ -1,10 +1,10 @@
-# Scheduled task backup: Name Reaction Daily question
+# Scheduled task backup: Daily name reaction (Name Reaction Daily)
 
 Backup of the Claude Code scheduled task that adds a daily question to this repository and pushes it to `main` (GitHub Pages site). Use it to recreate the task if it is deleted, and update this file whenever the task is edited.
 
 | Setting | Value |
 |---|---|
-| Name | Name Reaction Daily question (Claude Code) |
+| Name | Daily name reaction (renamed on 2026-11-23; before: Name Reaction Daily question (Claude Code)) |
 | Where | Claude Code scheduled tasks: https://claude.ai/code/routines |
 | Schedule | Daily at 20:31, America/New_York (Ottawa time) — cron `CRON_TZ=America/New_York 31 20 * * *` |
 | Model | Opus 5.5 |
@@ -16,7 +16,7 @@ Backup of the Claude Code scheduled task that adds a daily question to this repo
 
 The earlier Cowork task "Name Reaction Daily question" was deleted on 2026-11-10 (it used the claude.ai page, also deleted).
 
-Backed up on 2026-11-19, after the merge of the changes (step 3c: classification of rejected structures into data/wrong_answers.json; data/features.json written by src/build.js); the scheduled task holds this prompt text (compared character by character after the update). Previous backup: backed up on 2026-11-11, after the merge of the changes (step 3b: scoring rule that does not count correct intermediates, feedback reaches selection only through a model the user activates; step 3c: Tier A additions of resonance forms, at most 3 per run); the scheduled task holds this prompt text (compared character by character after the update). Previous backup: 2026-11-10, step 3b updated for the Cloudflare feedback store (the GitHub repository is the only copy of the site and its data; the claude.ai page was deleted; questions older than 32 days are archived in data/archive.json.gz).
+Backed up on 2026-11-23: renamed "Daily name reaction"; step 3 computes tomorrow's date in America/New_York with an explicit command (a question every day, Saturday and Sunday included); the scheduled task holds this prompt text. Previous backup: backed up on 2026-11-19, after the merge of the changes (step 3c: classification of rejected structures into data/wrong_answers.json; data/features.json written by src/build.js); the scheduled task holds this prompt text (compared character by character after the update). Previous backup: backed up on 2026-11-11, after the merge of the changes (step 3b: scoring rule that does not count correct intermediates, feedback reaches selection only through a model the user activates; step 3c: Tier A additions of resonance forms, at most 3 per run); the scheduled task holds this prompt text (compared character by character after the update). Previous backup: 2026-11-10, step 3b updated for the Cloudflare feedback store (the GitHub repository is the only copy of the site and its data; the claude.ai page was deleted; questions older than 32 days are archived in data/archive.json.gz).
 
 ## Prompt
 
@@ -47,7 +47,7 @@ In the clone: git fetch origin main && git checkout -B main origin/main. Work in
   node src/test_chemkey.js                            (every case must pass: the last line reads N/N as expected)
 
 3. WHICH DATE
-A question appears every day at 10:00 America/New_York. Let "tomorrow" be tomorrow's date in America/New_York. Target date = the earliest date >= tomorrow with no entry in data/problems.json "sets". If tomorrow and the day after both already have sets, do not change anything: report "queue already full until <date>" and stop.
+A question appears every day at 10:00 America/New_York, Saturday and Sunday included. Dates are in America/New_York, never UTC: tomorrow = output of `TZ=America/New_York date -d tomorrow +%F`. Target date = the earliest date >= tomorrow with no entry in data/problems.json "sets". If tomorrow and the day after both already have sets, do not change anything: report "queue already full until <date>" and stop.
 
 3b. READ USER FEEDBACK AND UPDATE THE FEEDBACK LOG (observation only; skip this step when step 3 found the queue full)
 Visitors' results and ratings are stored in a Cloudflare D1 database behind the Worker https://puzzle-feedback.dailyorgchem.workers.dev (code, schema and deployment in feedback-worker/ of the GitHub repository QDher/Daily-organic-chemistry-puzzles). Fetch with curl, POST, header "Content-Type: application/json" (no key):

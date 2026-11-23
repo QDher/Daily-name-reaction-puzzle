@@ -8,7 +8,7 @@ Scheduled runs: the scheduled-task prompt is authoritative; this file does not c
 |---|---|
 | Source of truth | this repository, branch `main` (the claude.ai page was deleted on 2026-11-10) |
 | Site | GitHub Pages https://qdher.github.io/Daily-name-reaction-puzzle/ (deployed from `main` by `.github/workflows/pages.yml`) |
-| Daily generation | Claude Code scheduled task "Name Reaction Daily question (Claude Code)" (`trig_01Ke7KmM7zYWFMFeXDzg5bHT`), daily at 20:31 America/New_York |
+| Daily generation | Claude Code scheduled task "Daily name reaction" (`trig_01Ke7KmM7zYWFMFeXDzg5bHT`; before 2026-11-23 "Name Reaction Daily question (Claude Code)"), daily at 20:31 America/New_York; a question every day, Saturday and Sunday included (the other daily tasks publish Monday to Friday) |
 | Scheduled-task prompt backup | `TASK_PROMPT.md` |
 | Problems | `data/problems.json` (last 32 days and later; built into `index.html` by `src/build.js`) |
 | Archive | `data/archive.json.gz` (older sets, moved by `src/build.js` via `src/archive.js`; read with `zcat`); the page shows the last month only |
