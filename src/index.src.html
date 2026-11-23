@@ -117,6 +117,9 @@ button, input { font: inherit; }
 
 /* Name box */
 .namebox { display: grid; gap: 4px; border-top: 1px solid var(--line); padding-top: 8px; }
+.name-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.name-head .btn[aria-expanded="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.name-panel { display: grid; gap: 6px; }
 .namebox form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0; }
 .namebox label { font-size: 11px; }
 .namebox input { flex: 0 1 380px; min-width: 0; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 6px; padding: 3px 8px; font-size: 13px; }
@@ -255,7 +258,7 @@ body { padding-block: 14px 40px; }
   <header class="top">
     <div class="brand">
       <h1>Moran's lab daily name reaction puzzle</h1>
-      <p>One named reaction every day at 10:00 Eastern time, taken from Named Reactions Explorer, the Organic Chemistry Portal and the TCI name-reaction pages, using the example shown on the repository page. Name the reaction (5 tries), draw the product, and find the intermediates of its mechanism.</p>
+      <p>One named reaction every day at 10:00 Eastern time, taken from Named Reactions Explorer, the Organic Chemistry Portal and the TCI name-reaction pages, using the example shown on the repository page. Draw the product and find the intermediates of its mechanism; once the product is found, name the reaction (5 tries).</p>
     </div>
     <div class="clock">
       <span class="eyebrow" id="setText">Today's question</span>
@@ -280,16 +283,21 @@ body { padding-block: 14px 40px; }
       <div class="scheme-scroll"><div class="scheme" id="scheme"><div class="loading">Loading the chemistry engine…</div></div></div>
       <div class="reagents" id="reagents"></div>
     </div>
-    <div class="namebox">
-      <form id="nameForm" autocomplete="off">
-        <label for="nameInput" class="eyebrow">Name the reaction</label>
-        <input id="nameInput" type="text" spellcheck="false" autocapitalize="characters">
-        <button class="btn" id="nameBtn" type="submit">Check name</button>
-      </form>
-      <div class="ngrid" id="nameGrid"></div>
-      <div class="nkeys" id="nameKeys" aria-hidden="true"></div>
-      <div class="name-msg" id="nameMsg" aria-live="polite"></div>
-      <div class="hint">5 tries. Spaces and hyphens are given: type the letters only (accents ignored; the word “reaction” is not part of the name). Green: right letter, right place. Yellow: in the name, elsewhere. Grey: not in the name.</div>
+    <div class="namebox" id="nameBox" hidden>
+      <div class="name-head">
+        <button class="btn" id="nameToggle" type="button" aria-expanded="false" aria-controls="namePanel">Name the reaction (5 tries)</button>
+        <div class="name-msg" id="nameMsg" aria-live="polite"></div>
+      </div>
+      <div class="name-panel" id="namePanel" hidden>
+        <form id="nameForm" autocomplete="off">
+          <label for="nameInput" class="eyebrow">Reaction name</label>
+          <input id="nameInput" type="text" spellcheck="false" autocapitalize="characters">
+          <button class="btn" id="nameBtn" type="submit">Check name</button>
+        </form>
+        <div class="ngrid" id="nameGrid"></div>
+        <div class="nkeys" id="nameKeys" aria-hidden="true"></div>
+        <div class="hint">5 tries. Spaces and hyphens are given: type the letters only (accents ignored; the word “reaction” is not part of the name). Green: right letter, right place. Yellow: in the name, elsewhere. Grey: not in the name.</div>
+      </div>
     </div>
     <div class="hints" id="hints"></div>
   </section>
@@ -832,7 +840,7 @@ function renderGoals() {
 }
 
 function renderAll() {
-  $('schemeTitle').textContent = nameShown() ? P.reaction : state.solved ? 'Product found. Which named reaction is it?' : 'Predict the product and name the reaction';
+  $('schemeTitle').textContent = nameShown() ? P.reaction : state.solved ? 'Product found. Which named reaction is it?' : 'Predict the product';
   $('caseTag').textContent = stepsText(P) + ' · example from ' + P.source.repository + (P.source.license ? ' (' + licenseLabel(P.source.license) + ')' : '');
   renderGoals(); renderScheme(); renderReagents(); renderName(); renderHints(); renderSteps(); renderAbout(); fbRender();
 }
@@ -864,6 +872,12 @@ function renderReagents() {
 
 function renderName() {
   const done = nameShown(), target = nameTarget(P), answer = nameLetters(target), guesses = state.nameGuesses || [];
+  // the name game is offered only once the product is found, behind a toggle (closed until opened; the choice is kept per problem)
+  $('nameBox').hidden = !state.solved;
+  const open = !!state.nameOpen;
+  $('namePanel').hidden = !open;
+  $('nameToggle').setAttribute('aria-expanded', String(open));
+  $('nameToggle').textContent = open ? 'Hide name game' : done ? 'Show name game' : 'Name the reaction (5 tries)';
   $('nameInput').disabled = done; $('nameBtn').disabled = done;
   $('nameInput').placeholder = `${answer.length} letters`;
   const rows = [];
@@ -890,7 +904,7 @@ function renderName() {
 async function checkName(ev) {
   ev.preventDefault();
   const raw = $('nameInput').value;
-  if (!raw.trim() || nameShown()) return;
+  if (!raw.trim() || nameShown() || !state.solved) return;
   const answer = nameLetters(nameTarget(P)), g = nameLetters(foldLetters(raw)), m = $('nameMsg');
   if (g.length !== answer.length) {
     m.className = 'name-msg bad';
@@ -1033,6 +1047,7 @@ async function main() {
   renderLevel(false);
   $('fbForm').onsubmit = fbSubmitRating;
   $('nameForm').onsubmit = checkName;
+  $('nameToggle').onclick = () => { state.nameOpen = !state.nameOpen; save(); renderName(); if (state.nameOpen && !nameShown()) $('nameInput').focus(); };
   $('clearBtn').onclick = () => editor.clearAll();
   $('loadSubBtn').onclick = () => editor.setSmiles(P.substrate.smiles);
   $('revealBtn').onclick = () => { $('confirmBox').hidden = false; };
