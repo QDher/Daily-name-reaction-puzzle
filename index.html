@@ -124,6 +124,23 @@ button, input { font: inherit; }
 .namebox .btn { font-size: 13px; padding: 3px 10px; border-radius: 6px; }
 .namebox input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px var(--accent-soft); }
 .name-msg { font-size: 12.5px; color: var(--muted); }
+/* Name game: one row per try, letters coloured as in a word game */
+:root { --ng: #4f8a4a; --ny: #c9b458; --nx: #787c7e; }
+.ngrid { display: grid; gap: 10px; margin: 2px 0; }
+.nrow { display: flex; flex-wrap: wrap; align-items: center; row-gap: 3px; }
+.nw { display: inline-flex; gap: 2px; }
+.nsp { display: inline-block; width: 10px; }
+.nc { display: inline-grid; place-items: center; width: clamp(15px, 4.4vw, 26px); height: clamp(20px, 5.4vw, 30px); border: 1px solid var(--line); border-radius: 3px; font: 600 clamp(11px, 3vw, 15px)/1 var(--font-mono); background: var(--bg); color: var(--ink); }
+.nc.sep { border: 0; background: none; width: auto; min-width: 7px; color: var(--muted); }
+.nc.g { background: var(--ng); border-color: var(--ng); color: #fff; }
+.nc.y { background: var(--ny); border-color: var(--ny); color: #1b1b1b; }
+.nc.x { background: var(--nx); border-color: var(--nx); color: #fff; }
+.nkeys { display: flex; flex-wrap: wrap; gap: 3px; }
+.nkeys:empty { display: none; }
+.nkeys span { font: 600 11px/1 var(--font-mono); padding: 3px 4px; border-radius: 3px; border: 1px solid var(--line); color: var(--muted); }
+.nkeys span.g { background: var(--ng); border-color: var(--ng); color: #fff; }
+.nkeys span.y { background: var(--ny); border-color: var(--ny); color: #1b1b1b; }
+.nkeys span.x { background: var(--nx); border-color: var(--nx); color: #fff; opacity: .55; }
 .name-msg:empty { display: none; }
 .name-msg.ok { color: var(--ok); } .name-msg.bad { color: var(--bad); }
 
@@ -239,7 +256,7 @@ body { padding-block: 14px 40px; }
   <header class="top">
     <div class="brand">
       <h1>Moran's lab daily name reaction puzzle</h1>
-      <p>One named reaction every day at 10:00 Eastern time, taken from Named Reactions Explorer, the Organic Chemistry Portal and the TCI name-reaction pages, using the example shown on the repository page. Name the reaction, draw the product, and find the intermediates of its mechanism.</p>
+      <p>One named reaction every day at 10:00 Eastern time, taken from Named Reactions Explorer, the Organic Chemistry Portal and the TCI name-reaction pages, using the example shown on the repository page. Name the reaction (5 tries), draw the product, and find the intermediates of its mechanism.</p>
     </div>
     <div class="clock">
       <span class="eyebrow" id="setText">Today's question</span>
@@ -267,10 +284,13 @@ body { padding-block: 14px 40px; }
     <div class="namebox">
       <form id="nameForm" autocomplete="off">
         <label for="nameInput" class="eyebrow">Name the reaction</label>
-        <input id="nameInput" type="text" placeholder="Spelling, hyphens and accents are tolerated" spellcheck="false">
+        <input id="nameInput" type="text" spellcheck="false" autocapitalize="characters">
         <button class="btn" id="nameBtn" type="submit">Check name</button>
       </form>
-      <div class="name-msg" id="nameMsg"></div>
+      <div class="ngrid" id="nameGrid"></div>
+      <div class="nkeys" id="nameKeys" aria-hidden="true"></div>
+      <div class="name-msg" id="nameMsg" aria-live="polite"></div>
+      <div class="hint">5 tries. Spaces and hyphens are given: type the letters only (accents ignored; the word “reaction” is not part of the name). Green: right letter, right place. Yellow: in the name, elsewhere. Grey: not in the name.</div>
     </div>
     <div class="hints" id="hints"></div>
   </section>
@@ -921,7 +941,7 @@ function buildContext(p) {
   const total = p.steps.reduce((a, s) => a + s.intermediates.length, 0);
   return { fp, species, total, sub: speciesInfo(R, p.substrate.smiles, fp), prod: speciesInfo(R, p.product.smiles, fp) };
 }
-const blank = () => ({ found: [], solved: false, named: false, revealed: false, attempts: 0, nameTries: 0, hints: 0 });
+const blank = () => ({ found: [], solved: false, named: false, revealed: false, attempts: 0, nameTries: 0, hints: 0, nameGuesses: [], nameLost: false });
 // rule 2: correct intermediates are not counted; problems started before 2026-11-11 keep rule 1 (every distinct structure counted)
 const SCORE_RULE = 2;
 const stateOf = p => {
@@ -931,7 +951,36 @@ const stateOf = p => {
   return x;
 };
 const stepsText = p => p.steps.length === 1 ? 'one step' : `${p.steps.length} steps, one pot`;
-const nameShown = () => state.named || state.revealed;
+const nameShown = () => state.named || state.revealed || state.nameLost;
+
+/* ---- name game: the reaction name is guessed in NAME_TRIES tries; each letter is coloured green (right place),
+   yellow (in the name elsewhere) or grey (not in the name). Spaces, hyphens and other non-letters are given. ---- */
+const NAME_TRIES = 5;
+const foldLetters = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+// the name to guess: the display name (or an optional "guessName") without the word "reaction"
+function nameTarget(p) {
+  const raw = p.guessName || p.reaction;
+  const t = foldLetters(raw.replace(/\breaction\b/gi, ' ')).replace(/[\u2010-\u2015\u2212]/g, '-').replace(/\s+/g, ' ').trim();
+  return /[A-Z]/.test(t) ? t : foldLetters(raw).trim();
+}
+const nameLetters = t => t.replace(/[^A-Z]/g, '');
+function scoreGuess(guess, answer) {      // 'g' | 'y' | 'x' per letter; repeated letters as in the word game
+  const res = Array(answer.length).fill('x'), left = {};
+  for (let i = 0; i < answer.length; i++) {
+    if (guess[i] === answer[i]) res[i] = 'g'; else left[answer[i]] = (left[answer[i]] || 0) + 1;
+  }
+  for (let i = 0; i < answer.length; i++) if (res[i] !== 'g' && left[guess[i]] > 0) { res[i] = 'y'; left[guess[i]]--; }
+  return res.join('');
+}
+function nameRow(target, letters, marks, label) {
+  let i = 0;
+  const cells = target.split(' ').map(w => '<span class="nw">' + [...w].map(c => {
+    if (!/[A-Z]/.test(c)) return `<span class="nc sep">${esc(c)}</span>`;
+    const L = letters[i] || '', m = marks[i] || ''; i++;
+    return `<span class="nc ${m}">${esc(L)}</span>`;
+  }).join('') + '</span>').join('<span class="nsp"></span>');
+  return `<div class="nrow" role="img" aria-label="${esc(label)}">${cells}</div>`;
+}
 
 
 /* ---- date list: the last WINDOW_DAYS days that have a question (older sets are archived by build.js) ---- */
@@ -986,7 +1035,7 @@ function renderGoals() {
   const dots = Array.from({ length: ctx.total }, (_, k) => `<i class="${k < state.found.length ? 'on' : ''}"></i>`).join('');
   const g = (done, shown, k, v) => `<div class="goal${done ? ' done' : shown ? ' shown' : ''}"><span class="k">${k}</span><span class="v">${v}</span></div>`;
   $('goals').innerHTML =
-    g(state.named, state.revealed, 'Name', state.named ? 'Named' : state.revealed ? 'Shown' : 'Open') +
+    g(state.named, state.revealed || state.nameLost, 'Name', state.named ? 'Named' : (state.revealed || state.nameLost) ? 'Shown' : 'Open') +
     g(state.solved, state.revealed, 'Product', state.solved ? 'Found' : state.revealed ? 'Shown' : 'Open') +
     g(state.found.length === ctx.total, state.revealed, 'Intermediates',
       `<span class="dots" aria-hidden="true">${dots}</span>${state.found.length} / ${ctx.total}`);
@@ -1024,25 +1073,49 @@ function renderReagents() {
 }
 
 function renderName() {
-  const done = nameShown();
+  const done = nameShown(), target = nameTarget(P), answer = nameLetters(target), guesses = state.nameGuesses || [];
   $('nameInput').disabled = done; $('nameBtn').disabled = done;
-  const m = $('nameMsg');
-  if (state.named) { m.className = 'name-msg ok'; m.textContent = `Correct: ${P.reaction}` + (state.nameTries > 1 ? ` (${state.nameTries} tries).` : '.'); }
+  $('nameInput').placeholder = `${answer.length} letters`;
+  const rows = [];
+  for (let t = 0; t < NAME_TRIES; t++) {
+    const g = guesses[t];
+    if (g) {
+      const m = scoreGuess(g, answer), n = c => [...m].filter(x => x === c).length;
+      rows.push(nameRow(target, g, m, `Try ${t + 1}: ${g}: ${n('g')} letters in place, ${n('y')} elsewhere`));
+    } else if (!done) rows.push(nameRow(target, '', '', `Try ${t + 1}: empty, ${answer.length} letters`));
+  }
+  $('nameGrid').innerHTML = rows.join('');
+  const best = {};
+  guesses.forEach(g => { const m = scoreGuess(g, answer); [...g].forEach((c, i) => {
+    const r = { g: 3, y: 2, x: 1 }[m[i]]; if (!best[c] || r > best[c]) best[c] = r; }); });
+  $('nameKeys').innerHTML = guesses.length && !done
+    ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => `<span class="${({ 3: 'g', 2: 'y', 1: 'x' })[best[c]] || ''}">${c}</span>`).join('') : '';
+  const m = $('nameMsg'), left = NAME_TRIES - guesses.length;
+  if (state.named) { m.className = 'name-msg ok'; m.textContent = `Correct: ${P.reaction}` + (guesses.length > 1 ? ` (${guesses.length} tries).` : '.'); }
+  else if (state.nameLost) { m.className = 'name-msg bad'; m.textContent = `No tries left. The name was: ${P.reaction}.`; }
   else if (state.revealed) { m.className = 'name-msg'; m.textContent = `Answer: ${P.reaction}.`; }
-  else { m.className = 'name-msg'; m.textContent = state.nameTries ? `${state.nameTries} ${state.nameTries > 1 ? 'tries' : 'try'} so far.` : ''; }
+  else { m.className = 'name-msg'; m.textContent = guesses.length ? `${left} ${left > 1 ? 'tries' : 'try'} left.` : ''; }
 }
 
 async function checkName(ev) {
   ev.preventDefault();
-  const guess = $('nameInput').value.trim();
-  if (!guess || nameShown()) return;
+  const raw = $('nameInput').value;
+  if (!raw.trim() || nameShown()) return;
+  const answer = nameLetters(nameTarget(P)), g = nameLetters(foldLetters(raw)), m = $('nameMsg');
+  if (g.length !== answer.length) {
+    m.className = 'name-msg bad';
+    m.textContent = `${answer.length} letters expected (spaces and hyphens are given); “${raw.trim()}” has ${g.length}. This try is not counted.`;
+    return;
+  }
+  state.nameGuesses = state.nameGuesses || [];
+  if (state.nameGuesses.includes(g)) { m.className = 'name-msg'; m.textContent = 'Already tried; not counted again.'; return; }
   if (!await askLevel() || nameShown()) return;
-  state.nameTries++;
-  if (nameMatches(guess, P.names)) { state.named = true; save(); renderAll(); return; }
-  save(); renderGoals();
-  const m = $('nameMsg');
-  m.className = 'name-msg bad';
-  m.textContent = `“${guess}” is not the expected name (${state.nameTries} ${state.nameTries > 1 ? 'tries' : 'try'}).`;
+  state.nameGuesses.push(g);
+  state.nameTries = state.nameGuesses.length;
+  if (g === answer) state.named = true;
+  else if (state.nameGuesses.length >= NAME_TRIES) state.nameLost = true;
+  $('nameInput').value = '';
+  save(); renderAll();
 }
 
 function renderHints() {
@@ -1161,7 +1234,7 @@ function tick() {
 async function main() {
   R = await window.initRDKitModule({ locateFile: f => 'rdkit/' + f });
   editor = makeEditor(await ketcherReady);
-  window.__puzzle = { editor, R, check: () => check(), nameMatches, dayIndex, changeInstant,
+  window.__puzzle = { editor, R, check: () => check(), nameMatches, nameTarget, scoreGuess, dayIndex, changeInstant,
     get state() { return state; }, get problem() { return P; }, loadDay: i => loadDay(i) };
   $('checkBtn').onclick = check;
   $('lvlChange').onclick = () => renderLevel(true);
