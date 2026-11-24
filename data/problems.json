@@ -2976,6 +2976,107 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-24",
+      "problems": [
+        {
+          "id": "smn-pinacol-rearrangement-pinacolone",
+          "reaction": "Pinacol rearrangement",
+          "names": [
+            "Pinacol rearrangement",
+            "Pinacol–pinacolone rearrangement",
+            "Pinacol-pinacolone rearrangement",
+            "Pinacol pinacolone rearrangement",
+            "Pinacol reaction",
+            "Pinacol–pinacolone reaction",
+            "Pinacol-pinacolone reaction",
+            "Pinacolone rearrangement",
+            "Pinacol"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/pinacol-rearrangement/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Pinacol Rearrangement (general equation, R¹ = R² = R³ = R⁴ = Me; H⁺ = sulfuric acid).",
+            "url": "https://say-my-name.net/reaction/pinacol-rearrangement/",
+            "context": "General equation of the say-my-name.net page (R¹R²C(OH)–C(OH)R³R⁴, H⁺ → R¹C(O)–CR²R³R⁴) with R¹ = R² = R³ = R⁴ = Me: pinacol (2,3-dimethylbutane-2,3-diol) → pinacolone (3,3-dimethylbutan-2-one), the original example. With H in place of the R groups the diol would be unsymmetrical and the cation and migrating group would change, so Me was used for all four. The acid is given as sulfuric acid (the page shows only H⁺). The intermediates follow the page's mechanism image: protonation of one OH, loss of water to the tertiary carbocation, 1,2-shift of a methyl group to the oxocarbenium ion, loss of H⁺. The protonated diol is the substrate up to a proton and is described in the label of the carbocation. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: R¹ = R² = R³ = R⁴ = Me; acid given as sulfuric acid (page: H⁺ only, no conditions). TCI and the Organic Chemistry Portal refused requests (HTTP 403), so whether they have a page for this reaction could not be checked. No reference article was read (titles, journals and pages in mechanismRefs checked on Crossref). PubChem (by name, InChIKey connectivity layer): pinacol CID 6425 and pinacolone CID 6416 matched (sulfuric acid CID 1118, given as text only). The oxocarbenium ion is stored in its C⁺–OH drawing; the O-protonated ketone drawing is counted as the product by the comparison key. Structures a chemist should check: the 2,3-dimethyl-3-hydroxybutan-2-yl cation and the 3,3-dimethyl-2-hydroxybutan-2-yl cation (oxocarbenium ion).",
+          "substrate": {
+            "label": "2,3-dimethylbutane-2,3-diol",
+            "smiles": "CC(C)(O)C(C)(C)O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "H₂SO₄ (sulfuric acid)"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Tertiary carbocation (3-hydroxy-2,3-dimethylbutan-2-yl cation), from protonation of one OH and loss of water",
+                  "forms": [
+                    "CC(C)(O)[C+](C)C"
+                  ]
+                },
+                {
+                  "label": "Oxocarbenium ion (protonated pinacolone), after a 1,2-shift of a methyl group to the cationic carbon; loss of H⁺ from O gives the ketone",
+                  "forms": [
+                    "C[C+](O)C(C)(C)C"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "pinacolone (3,3-dimethylbutan-2-one)",
+            "smiles": "CC(=O)C(C)(C)C"
+          },
+          "byproducts": "H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Pinacol Rearrangement (mechanism image: protonation of an OH, loss of water to the carbocation, 1,2-alkyl shift to the oxocarbenium ion, loss of H⁺).",
+            "R. Fittig. Ueber einige Derivate des Acetons. Justus Liebigs Ann. Chem. 1860, 114, 54–63 (doi:10.1002/jlac.18601140107).",
+            "C. J. Collins. The pinacol rearrangement. Q. Rev. Chem. Soc. 1960, 14, 357–377 (doi:10.1039/QR9601400357)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 4
+            },
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 7
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "substrate",
+              "atom": 2
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 2,
+            "sigmaBondEvents": 3,
+            "score": 3.5
+          }
+        }
+      ]
     }
   ]
 }

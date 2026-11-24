@@ -1066,6 +1066,48 @@
    "heavyAtomChange": -1,
    "ringChange": 0,
    "verified": false
+  },
+  {
+   "id": "smn-pinacol-rearrangement-pinacolone",
+   "date": "2026-11-24",
+   "level": null,
+   "textbookLevel": null,
+   "reaction": "Pinacol rearrangement",
+   "source": "Named Reactions Explorer",
+   "sourceYear": null,
+   "steps": 1,
+   "intermediates": 2,
+   "forms": 2,
+   "stepLevels": [
+    null
+   ],
+   "reagents": 1,
+   "reagentsWithSmiles": 0,
+   "uncommonReagents": 0,
+   "hints": 4,
+   "difficultyScore": 3.5,
+   "sigmaBondEvents": 3,
+   "substrate": {
+    "heavyAtoms": 8,
+    "rings": 0,
+    "aromaticRings": 0,
+    "heteroatoms": 2,
+    "stereocentres": 0,
+    "fsp3": 1,
+    "mw": 118.1
+   },
+   "product": {
+    "heavyAtoms": 7,
+    "rings": 0,
+    "aromaticRings": 0,
+    "heteroatoms": 1,
+    "stereocentres": 0,
+    "fsp3": 0.83,
+    "mw": 100.1
+   },
+   "heavyAtomChange": -1,
+   "ringChange": 0,
+   "verified": false
   }
  ]
 }
