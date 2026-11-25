@@ -3077,6 +3077,113 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-25",
+      "problems": [
+        {
+          "id": "smn-hofmann-elimination-ethene",
+          "reaction": "Hofmann elimination",
+          "names": [
+            "Hofmann elimination",
+            "Hofmann elimination reaction",
+            "Hofmann exhaustive methylation",
+            "Hofmann exhaustive methylation and elimination",
+            "Exhaustive methylation"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/hofmann-elimination/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Hofmann Elimination (general equation, R = H).",
+            "url": "https://say-my-name.net/reaction/hofmann-elimination/",
+            "context": "General equation of the say-my-name.net page (RCH(NH₂)CH₃; 1) MeI; 2) Ag₂O, H₂O → RCH=CH₂) with R = H, the simplest group the equation allows: ethylamine → ethene. MeI is given in excess because three methyl groups are added. The intermediates follow the page's mechanism image (N-methylation by MeI with loss of I⁻ to the trimethylammonium ion; Ag₂O/H₂O exchanges iodide for hydroxide with precipitation of AgI; E2 elimination by hydroxide of a β-H with loss of trimethylamine). The page draws the three N-methylations as one arrow; the N-methyl and N,N-dimethyl amines formed by the successive SN2 methylations (each followed by loss of H⁺) are listed here as separate intermediates. The trimethylammonium hydroxide differs from the iodide only by its counterion and is described in the label. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: R = H; MeI stated as excess. The page draws the exhaustive methylation as a single arrow; the N-methyl- and N,N-dimethylethylamine intermediates were added from the established stepwise mechanism (Cope and Trumbull review, title and pages checked on Crossref, text not read). TCI and the Organic Chemistry Portal refused requests (HTTP 403), so whether they have a page for this reaction could not be checked. PubChem (by name, InChIKey connectivity layer): ethylamine CID 6341, iodomethane CID 6328 and ethylene CID 6325 matched (Ag₂O and H₂O given as text only). Structures a chemist should check: N-methylethylamine, N,N-dimethylethylamine and the ethyltrimethylammonium ion, and whether listing the two partially methylated amines as intermediates is acceptable.",
+          "substrate": {
+            "label": "ethylamine (ethanamine)",
+            "smiles": "CCN"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "CH₃I (iodomethane), excess",
+                  "smiles": "CI"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "N-Methylethylamine, from SN2 attack of the amine N on CH₃I (loss of I⁻) and loss of H⁺ from the ammonium ion",
+                  "forms": [
+                    "CCNC"
+                  ]
+                },
+                {
+                  "label": "N,N-Dimethylethylamine, from a second N-methylation by CH₃I and loss of H⁺",
+                  "forms": [
+                    "CCN(C)C"
+                  ]
+                },
+                {
+                  "label": "Ethyltrimethylammonium ion (as its iodide), from a third N-methylation; the quaternary ammonium salt has no N–H left",
+                  "forms": [
+                    "CC[N+](C)(C)C"
+                  ]
+                }
+              ]
+            },
+            {
+              "n": 2,
+              "reagents": [
+                {
+                  "text": "Ag₂O (silver(I) oxide)"
+                },
+                {
+                  "text": "H₂O"
+                }
+              ],
+              "conditions": "",
+              "intermediates": []
+            }
+          ],
+          "product": {
+            "label": "ethene (ethylene)",
+            "smiles": "C=C"
+          },
+          "byproducts": "HI (taken up as ammonium iodide salts), AgI, N(CH₃)₃ (trimethylamine), H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Hofmann Elimination (mechanism image: N-methylation by MeI with loss of I⁻ to the quaternary ammonium ion; Ag₂O, H₂O with loss of AgI; E2 elimination of a β-H with loss of trimethylamine).",
+            "A. W. von Hofmann. Beiträge zur Kenntniss der flüchtigen organischen Basen. Justus Liebigs Ann. Chem. 1851, 78, 253–286 (doi:10.1002/jlac.18510780302).",
+            "A. C. Cope, E. R. Trumbull. Olefins from Amines: The Hofmann Elimination Reaction and Amine Oxide Pyrolysis. Org. React. 1960, 11, 317–493 (doi:10.1002/0471264180.or011.05)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "product",
+              "mol": "substrate",
+              "atom": 1
+            }
+          ],
+          "difficulty": {
+            "steps": 2,
+            "intermediates": 3,
+            "sigmaBondEvents": 4,
+            "score": 7.0
+          }
+        }
+      ]
     }
   ]
 }
