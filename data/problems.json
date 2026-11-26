@@ -3184,6 +3184,139 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-26",
+      "problems": [
+        {
+          "id": "smn-bucherer-bergs-5-5-dimethylhydantoin",
+          "reaction": "Bucherer–Bergs reaction",
+          "names": [
+            "Bucherer–Bergs reaction",
+            "Bucherer-Bergs reaction",
+            "Bucherer–Bergs hydantoin synthesis",
+            "Bucherer-Bergs hydantoin synthesis",
+            "Bucherer–Bergs synthesis",
+            "Bucherer-Bergs synthesis",
+            "Bucherer–Bergs",
+            "Bucherer-Bergs",
+            "Bucherer–Lieb reaction"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/bucherer-bergs-reaction/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Bucherer−Bergs Reaction (general equation, R = R′ = Me).",
+            "url": "https://say-my-name.net/reaction/bucherer-bergs-reaction/",
+            "context": "General equation of the say-my-name.net page (RC(O)R′ + (NH₄)₂CO₃, KCN → 5,5-disubstituted hydantoin) with R = R′ = Me: acetone → 5,5-dimethylhydantoin (R = R′ = H would give the formaldehyde special case; Me is the simplest group giving the 5,5-disubstituted product drawn). The intermediates follow the page's mechanism image: imine from NH₃ (−H₂O), α-aminonitrile from cyanide addition, carbamic acid from addition of the amine to CO₂, intramolecular attack of the carbamic acid O on the nitrile to the 5-imino-oxazolidin-2-one, ring opening to the isocyanate amide, and ring closure of the amide N on the isocyanate to the hydantoin. (NH₄)₂CO₃ supplies NH₃ and CO₂. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: R = R′ = Me. TCI (index) and the Organic Chemistry Portal (bucherer-bergs-reaction page) refused requests (HTTP 403), so whether they have a page for this reaction could not be checked or linked. PubChem (by name, InChIKey connectivity layer): acetone CID 180, ammonium carbonate CID 517111, potassium cyanide CID 9032, 2-amino-2-methylpropanenitrile CID 88022 (intermediate, checked for information) and 5,5-dimethylhydantoin CID 6491 all matched. Structures a chemist should check: the carbamic acid (drawn also as its carbamate), the 4,4-dimethyl-5-imino-oxazolidin-2-one and the 2-isocyanato-2-methylpropanamide, as drawn on the page.",
+          "substrate": {
+            "label": "acetone (propan-2-one)",
+            "smiles": "CC(C)=O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "(NH₄)₂CO₃ (ammonium carbonate)",
+                  "smiles": "[NH4+].[NH4+].[O-]C([O-])=O"
+                },
+                {
+                  "text": "KCN (potassium cyanide)",
+                  "smiles": "[K+].[C-]#N"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Imine (propan-2-imine) / iminium ion, from NH₃ addition to the C=O and loss of H₂O",
+                  "forms": [
+                    "CC(C)=N",
+                    "CC(C)=[NH2+]"
+                  ]
+                },
+                {
+                  "label": "α-Aminonitrile (2-amino-2-methylpropanenitrile), from cyanide addition to the C=N",
+                  "forms": [
+                    "CC(C)(N)C#N",
+                    "CC(C)([NH3+])C#N"
+                  ]
+                },
+                {
+                  "label": "Carbamic acid (N-(2-cyanopropan-2-yl)carbamic acid), from addition of the amine N to CO₂",
+                  "forms": [
+                    "CC(C)(NC(=O)O)C#N",
+                    "CC(C)(NC(=O)[O-])C#N"
+                  ]
+                },
+                {
+                  "label": "4,4-Dimethyl-5-imino-oxazolidin-2-one, from intramolecular attack of the carbamic acid O on the nitrile carbon",
+                  "forms": [
+                    "CC1(C)NC(=O)OC1=N"
+                  ]
+                },
+                {
+                  "label": "Isocyanate amide (2-isocyanato-2-methylpropanamide), from ring opening of the oxazolidinone (the ring C–O bond to the former carbamic acid carbon breaks; the ring N–C(=O) becomes an isocyanate and the C=NH an amide)",
+                  "forms": [
+                    "CC(C)(N=C=O)C(N)=O"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "5,5-dimethylhydantoin (5,5-dimethylimidazolidine-2,4-dione)",
+            "smiles": "CC1(C)NC(=O)NC1=O"
+          },
+          "byproducts": "H₂O, K⁺/NH₄⁺ salts",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Bucherer−Bergs Reaction (mechanism image: imine formation with NH₃ (−H₂O), cyanide addition to the α-aminonitrile, addition to CO₂ to the carbamic acid, cyclisation to the 5-imino-oxazolidin-2-one, rearrangement through the isocyanate to the hydantoin).",
+            "H. T. Bucherer, V. A. Lieb. Über die Bildung substituierter Hydantoine aus Aldehyden und Ketonen. Synthese von Hydantoinen. J. Prakt. Chem. 1934, 141, 5–43 (doi:10.1002/prac.19341410102).",
+            "E. Ware. The Chemistry of the Hydantoins. Chem. Rev. 1950, 46, 403–470 (doi:10.1021/cr60145a001)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 2",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "KCN (potassium cyanide)",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "(NH₄)₂CO₃ (ammonium carbonate)",
+              "atom": 3
+            },
+            {
+              "transition": "step 1 int 4",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "(NH₄)₂CO₃ (ammonium carbonate)",
+              "atom": 4
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 5,
+            "sigmaBondEvents": 8,
+            "score": 9.0
+          }
+        }
+      ]
     }
   ]
 }

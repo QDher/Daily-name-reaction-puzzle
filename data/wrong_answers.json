@@ -25,6 +25,14 @@
     }
    ]
   },
+  "smn-hofmann-elimination-ethene": {
+   "rejected": 1,
+   "visitors": 1,
+   "categories": {
+    "fragment_difference": 1
+   },
+   "examples": []
+  },
   "smn-knorr-pyrazole-3-5-dimethylpyrazole": {
    "rejected": 1,
    "visitors": 1,

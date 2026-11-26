@@ -1151,6 +1151,48 @@
    "heavyAtomChange": -1,
    "ringChange": 0,
    "verified": false
+  },
+  {
+   "id": "smn-bucherer-bergs-5-5-dimethylhydantoin",
+   "date": "2026-11-26",
+   "level": null,
+   "textbookLevel": null,
+   "reaction": "Bucherer–Bergs reaction",
+   "source": "Named Reactions Explorer",
+   "sourceYear": null,
+   "steps": 1,
+   "intermediates": 5,
+   "forms": 8,
+   "stepLevels": [
+    null
+   ],
+   "reagents": 2,
+   "reagentsWithSmiles": 2,
+   "uncommonReagents": 0,
+   "hints": 4,
+   "difficultyScore": 9,
+   "sigmaBondEvents": 8,
+   "substrate": {
+    "heavyAtoms": 4,
+    "rings": 0,
+    "aromaticRings": 0,
+    "heteroatoms": 1,
+    "stereocentres": 0,
+    "fsp3": 0.67,
+    "mw": 58
+   },
+   "product": {
+    "heavyAtoms": 9,
+    "rings": 1,
+    "aromaticRings": 0,
+    "heteroatoms": 4,
+    "stereocentres": 0,
+    "fsp3": 0.6,
+    "mw": 128.1
+   },
+   "heavyAtomChange": 5,
+   "ringChange": 1,
+   "verified": false
   }
  ]
 }
