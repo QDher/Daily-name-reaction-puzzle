@@ -3317,6 +3317,124 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-27",
+      "problems": [
+        {
+          "id": "smn-demjanov-rearrangement-cyclopentanol",
+          "reaction": "Demjanov rearrangement",
+          "names": [
+            "Demjanov rearrangement",
+            "Demjanov reaction",
+            "Demjanov ring expansion",
+            "Demyanov rearrangement",
+            "Demyanov reaction",
+            "Demyanov ring expansion",
+            "Demjanov"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/demjanov-rearrangement/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Demjanov Rearrangement (general equation, product 1, R = H, x = 0).",
+            "url": "https://say-my-name.net/reaction/demjanov-rearrangement/",
+            "context": "General equation of the say-my-name.net page (1-R-cycloalkylmethylamine + HNO₂ → ring-expanded 1-R-cycloalkanol (1), or the unexpanded alcohols 2 and 3) with R = H and x = 0: cyclobutylmethanamine → cyclopentanol, the ring-expansion product 1. The intermediates follow pathway 1 of the page's mechanism image: N-nitrosation of the amine by N₂O₃ (formed from HNO₂), protonation and loss of water through the diazohydroxide to the diazonium ion, migration of a ring C–C bond with loss of N₂ to the ring-expanded carbocation, and capture by water. Cyclobutylmethanol and the other side products of pathways 2 and 3 are not part of the question. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: R = H, x = 0 (cyclobutane ring), ring-expansion product 1. TCI (index) and the Organic Chemistry Portal (index) refused requests (HTTP 403), so whether they have a page for this reaction could not be checked or linked. PubChem (by name, InChIKey connectivity layer): cyclobutylmethanamine CID 409746, nitrous acid CID 24529, water CID 962 and cyclopentanol CID 7298 all matched. Structures a chemist should check: the N-nitrosamine/diazohydroxide, the diazonium ion and the cyclopentyl cation (drawn by the page as formed directly from the diazonium ion by C–C migration, without a primary carbocation).",
+          "substrate": {
+            "label": "cyclobutylmethanamine (aminomethylcyclobutane)",
+            "smiles": "NCC1CCC1"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "HNO₂ (nitrous acid)",
+                  "smiles": "ON=O"
+                },
+                {
+                  "text": "H₂O",
+                  "smiles": "O"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "N-Nitrosamine (N-(cyclobutylmethyl)nitrous amide), from attack of the amine N on N₂O₃ (formed from HNO₂); its tautomer, the diazohydroxide (diazenol) formed on protonation, is the same species",
+                  "forms": [
+                    "O=NNCC1CCC1",
+                    "ON=NCC1CCC1"
+                  ]
+                },
+                {
+                  "label": "Cyclobutylmethyldiazonium ion, from loss of water from the protonated diazohydroxide",
+                  "forms": [
+                    "N#[N+]CC1CCC1"
+                  ]
+                },
+                {
+                  "label": "Cyclopentyl cation, from migration of a ring C–C bond to the CH₂ with loss of N₂ (ring expansion)",
+                  "forms": [
+                    "[CH+]1CCCC1"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "cyclopentanol",
+            "smiles": "C1C(O)CCC1"
+          },
+          "byproducts": "N₂, H₂O",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Demjanov Rearrangement (mechanism image, pathway 1: N-nitrosation by N₂O₃, protonation and loss of water to the diazonium ion, ring expansion with loss of N₂ to the carbocation, capture by water).",
+            "N. J. Demjanov, M. Lushnikov. J. Russ. Phys. Chem. Soc. 1903, 35, 26–42.",
+            "P. A. S. Smith, D. R. Baer. The Demjanov and Tiffeneau-Demjanov Ring Expansions. Org. React. 1960, 11, 157–188 (doi:10.1002/0471264180.or011.02)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 0
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 2
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "substrate",
+              "atom": 5
+            },
+            {
+              "transition": "product",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "H₂O",
+              "atom": 0
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 3,
+            "sigmaBondEvents": 7,
+            "score": 6.5
+          }
+        }
+      ]
     }
   ]
 }

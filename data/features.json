@@ -1193,6 +1193,48 @@
    "heavyAtomChange": 5,
    "ringChange": 1,
    "verified": false
+  },
+  {
+   "id": "smn-demjanov-rearrangement-cyclopentanol",
+   "date": "2026-11-27",
+   "level": null,
+   "textbookLevel": null,
+   "reaction": "Demjanov rearrangement",
+   "source": "Named Reactions Explorer",
+   "sourceYear": null,
+   "steps": 1,
+   "intermediates": 3,
+   "forms": 4,
+   "stepLevels": [
+    null
+   ],
+   "reagents": 2,
+   "reagentsWithSmiles": 2,
+   "uncommonReagents": 0,
+   "hints": 5,
+   "difficultyScore": 6.5,
+   "sigmaBondEvents": 7,
+   "substrate": {
+    "heavyAtoms": 6,
+    "rings": 1,
+    "aromaticRings": 0,
+    "heteroatoms": 1,
+    "stereocentres": 0,
+    "fsp3": 1,
+    "mw": 85.1
+   },
+   "product": {
+    "heavyAtoms": 6,
+    "rings": 1,
+    "aromaticRings": 0,
+    "heteroatoms": 1,
+    "stereocentres": 0,
+    "fsp3": 1,
+    "mw": 86.1
+   },
+   "heavyAtomChange": 0,
+   "ringChange": 0,
+   "verified": false
   }
  ]
 }
