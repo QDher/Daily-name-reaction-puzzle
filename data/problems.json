@@ -3435,6 +3435,108 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-28",
+      "problems": [
+        {
+          "id": "smn-knoevenagel-dimethyl-ethylidenemalonate",
+          "reaction": "Knoevenagel condensation",
+          "names": [
+            "Knoevenagel condensation",
+            "Knoevenagel reaction",
+            "Knoevenagel",
+            "Knoevenagel olefination",
+            "Knoevenagel condensation reaction"
+          ],
+          "repositories": [
+            {
+              "site": "Named Reactions Explorer",
+              "url": "https://say-my-name.net/reaction/knoevenagel-condensation/"
+            }
+          ],
+          "source": {
+            "repository": "Named Reactions Explorer",
+            "citation": "Named Reactions Explorer, Knoevenagel Condensation (general equation, R¹ = Me, R² = H, R³ = Me, R′ = Me).",
+            "url": "https://say-my-name.net/reaction/knoevenagel-condensation/",
+            "context": "General equation of the say-my-name.net page (R¹C(O)R² + CH₂(CO₂R³)₂, R′₂NH → R¹R²C=C(CO₂R³)₂) with R¹ = Me (the equation marks only R² as C or H; R¹ = R² = H would be the formaldehyde special case), R² = H, R³ = Me and R′ = Me (dimethylamine; the equation draws a secondary amine): acetaldehyde + dimethyl malonate → dimethyl 2-ethylidenemalonate. The intermediates follow the page's mechanism image: iminium ion from the carbonyl compound and the secondary amine, attack of the base-formed malonate anion on the iminium carbon to the β-ammonium adduct, elimination of the amine to the alkylidene malonate. The hemiaminal before the iminium ion is not drawn on the page and was added from the established mechanism. The page gives no conditions."
+          },
+          "verified": false,
+          "verificationNote": "Viewed: the Named Reactions Explorer page and its two SVG images (general equation and mechanism), downloaded and rendered to PNG. Substitution chosen here: R¹ = Me, R² = H, R³ = Me, R′ = Me. TCI (index) and the Organic Chemistry Portal (index and pages) refused requests (HTTP 403) during this run, so their pages could not be checked or linked. PubChem (InChIKey connectivity layer, by name and by structure): acetaldehyde CID 177, dimethylamine CID 674, dimethyl malonate CID 7943 and dimethyl 2-ethylidenepropanedioate CID 581096 all matched. The malonate anion drawn on the page is the deprotonated reagent and is not asked (described in the label of the adduct). Structures a chemist should check: the hemiaminal (1-(dimethylamino)ethanol, added from the established mechanism, not on the page), the N,N-dimethylethylideneiminium ion and the β-ammonium adduct (dimethyl 2-[1-(dimethylamino)ethyl]malonate, drawn as ammonium or free amine).",
+          "substrate": {
+            "label": "acetaldehyde (ethanal)",
+            "smiles": "CC=O"
+          },
+          "steps": [
+            {
+              "n": 1,
+              "reagents": [
+                {
+                  "text": "dimethyl malonate",
+                  "smiles": "COC(=O)CC(=O)OC"
+                },
+                {
+                  "text": "dimethylamine (Me₂NH, catalytic)",
+                  "smiles": "CNC"
+                }
+              ],
+              "conditions": "",
+              "intermediates": [
+                {
+                  "label": "Hemiaminal (1-(dimethylamino)ethanol), from addition of the amine N to the C=O (not drawn on the page; established mechanism)",
+                  "forms": [
+                    "CC(O)N(C)C"
+                  ]
+                },
+                {
+                  "label": "N,N-Dimethylethylideneiminium ion, after loss of water from the hemiaminal",
+                  "forms": [
+                    "CC=[N+](C)C",
+                    "C[CH+]N(C)C"
+                  ]
+                },
+                {
+                  "label": "β-Ammonium adduct (dimethyl 2-[1-(dimethylamino)ethyl]malonate), from attack of the malonate anion (formed by the amine) on the iminium carbon; elimination of the amine then gives the C=C",
+                  "forms": [
+                    "CC([NH+](C)C)C(C(=O)OC)C(=O)OC",
+                    "CC(N(C)C)C(C(=O)OC)C(=O)OC"
+                  ]
+                }
+              ]
+            }
+          ],
+          "product": {
+            "label": "dimethyl 2-ethylidenemalonate (dimethyl 2-ethylidenepropanedioate)",
+            "smiles": "CC=C(C(=O)OC)C(=O)OC"
+          },
+          "byproducts": "H₂O (the amine is regenerated)",
+          "mechanismRefs": [
+            "Mechanism: Named Reactions Explorer, Knoevenagel Condensation (mechanism image: iminium ion formation from the carbonyl compound and the secondary amine, deprotonation of the malonate by base and attack on the iminium carbon, elimination of the amine to the alkylidene malonate).",
+            "E. Knoevenagel. Condensation von Malonsäure mit aromatischen Aldehyden durch Ammoniak und Amine. Ber. Dtsch. Chem. Ges. 1898, 31, 2596–2619 (doi:10.1002/cber.18980310308).",
+            "G. Jones. The Knoevenagel Condensation. Org. React. 1967, 15, 204–599 (doi:10.1002/0471264180.or015.02)."
+          ],
+          "hints": [
+            {
+              "transition": "step 1 int 1",
+              "mol": "substrate",
+              "atom": 1
+            },
+            {
+              "transition": "step 1 int 3",
+              "mol": "reagent",
+              "step": 1,
+              "reagent": "dimethyl malonate",
+              "atom": 4
+            }
+          ],
+          "difficulty": {
+            "steps": 1,
+            "intermediates": 3,
+            "sigmaBondEvents": 4,
+            "score": 5.0
+          }
+        }
+      ]
     }
   ]
 }

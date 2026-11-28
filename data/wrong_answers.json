@@ -9,6 +9,32 @@
    },
    "examples": []
   },
+  "smn-demjanov-rearrangement-cyclopentanol": {
+   "rejected": 8,
+   "visitors": 10,
+   "categories": {
+    "fragment_difference": 6,
+    "other": 2,
+    "same_skeleton": 1,
+    "reagent_or_byproduct": 1
+   },
+   "examples": [
+    {
+     "smiles": "OCC1CCC1",
+     "visitors": 2,
+     "category": "fragment_difference (-N2)",
+     "nearest": "step 1 intermediate 1",
+     "similarity": 0.44
+    },
+    {
+     "smiles": "[CH2+]C1CCC1",
+     "visitors": 2,
+     "category": "fragment_difference (-N2)",
+     "nearest": "step 1 intermediate 2",
+     "similarity": 0.29
+    }
+   ]
+  },
   "smn-favorskii-cyclohexanecarboxylic-acid": {
    "rejected": 3,
    "visitors": 4,
